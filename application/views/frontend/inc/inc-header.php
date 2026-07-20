@@ -3,6 +3,34 @@ if ($lang == "") {
 	$lang = "thai";
 }
 ?>
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-premium.css?v=20260720-2">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-20">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-17">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260720-15">
+<script>
+document.body.classList.add('lms-premium-dashboard','precision-app-shell');
+(function () {
+  var loader = document.querySelector('.preloader .loader');
+  if (!loader) return;
+  loader.classList.add('precision-loader');
+  if (!loader.querySelector('.precision-loader-brand')) {
+    var brand = document.createElement('div');
+    brand.className = 'precision-loader-brand';
+    brand.innerHTML = '<img src="<?php echo REAL_PATH; ?>/images/logo.png" alt="ISUZU Thailand"><span></span><img src="<?php echo REAL_PATH; ?>/images/elearning_logo.png" alt="E-Learning">';
+    loader.insertBefore(brand, loader.firstChild);
+  }
+  if (!loader.querySelector('.precision-loader-progress')) {
+    var progress = document.createElement('div');
+    progress.className = 'precision-loader-progress';
+    progress.setAttribute('aria-hidden', 'true');
+    progress.innerHTML = '<span></span>';
+    loader.appendChild(progress);
+    var status = document.createElement('small');
+    status.textContent = <?php echo json_encode($lang === 'thai' ? 'กำลังเตรียมพื้นที่การเรียนรู้ของคุณ' : 'Preparing your learning workspace', JSON_UNESCAPED_UNICODE); ?>;
+    loader.appendChild(status);
+  }
+})();
+</script>
 <style>
 .elearning-logo {
   left: 0;
@@ -48,7 +76,7 @@ if ($lang == "") {
       </ul>
       <?php } ?>
 
-      <?php if (isset($page) && $page === 'dashboard' && !empty($emp_c)) { ?>
+      <?php if (!empty($emp_c)) { ?>
       <?php
         $precisionHeaderName = $lang === 'thai'
           ? ($foote[0]['fetch_usp']['fullname_th'] ?? $foote[0]['fetch_usp']['fullname_en'] ?? '')
@@ -69,9 +97,9 @@ if ($lang == "") {
           <strong><?php echo $lang === 'thai' ? 'ไทย' : ($lang === 'japan' ? '日本語' : 'EN'); ?></strong>
           <i class="mdi mdi-chevron-down"></i>
           <div class="precision-language-menu">
-            <a href="<?php echo REAL_PATH; ?>/home/change_lang/thai"><i class="flag-icon flag-icon-th"></i><span>ไทย</span></a>
-            <a href="<?php echo REAL_PATH; ?>/home/change_lang/english"><i class="flag-icon flag-icon-us"></i><span>English</span></a>
-            <a href="<?php echo REAL_PATH; ?>/home/change_lang/japan"><i class="flag-icon flag-icon-jp"></i><span>日本語</span></a>
+            <a class="<?php echo $lang === 'thai' ? 'is-active' : ''; ?>" href="<?php echo REAL_PATH; ?>/home/change_lang/thai"<?php echo $lang === 'thai' ? ' aria-current="true"' : ''; ?>><i class="flag-icon flag-icon-th"></i><span>ไทย</span><?php if ($lang === 'thai') { ?><i class="mdi mdi-check precision-language-check"></i><?php } ?></a>
+            <a class="<?php echo $lang === 'english' ? 'is-active' : ''; ?>" href="<?php echo REAL_PATH; ?>/home/change_lang/english"<?php echo $lang === 'english' ? ' aria-current="true"' : ''; ?>><i class="flag-icon flag-icon-us"></i><span>English</span><?php if ($lang === 'english') { ?><i class="mdi mdi-check precision-language-check"></i><?php } ?></a>
+            <a class="<?php echo $lang === 'japan' ? 'is-active' : ''; ?>" href="<?php echo REAL_PATH; ?>/home/change_lang/japan"<?php echo $lang === 'japan' ? ' aria-current="true"' : ''; ?>><i class="flag-icon flag-icon-jp"></i><span>日本語</span><?php if ($lang === 'japan') { ?><i class="mdi mdi-check precision-language-check"></i><?php } ?></a>
           </div>
         </div>
         <span class="precision-command-divider"></span>

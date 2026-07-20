@@ -16,8 +16,8 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css">
 <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard.css">
 <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-premium.css?v=20260720-1">
-<link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-17">
-<link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-9">
+<link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-20">
+<link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-15">
 <!-- Timeline CSS -->
 <link href="<?php echo REAL_PATH; ?>/assets/plugins/horizontal-timeline/css/horizontal-timeline.css" rel="stylesheet">
 
@@ -45,7 +45,12 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 
 <body class="fix-header fix-sidebar card-no-border lms-premium-dashboard">
 	<div class="preloader">
-		<div class="loader">
+		<div class="loader precision-loader">
+			<div class="precision-loader-brand">
+				<img src="<?php echo REAL_PATH; ?>/images/logo.png" alt="ISUZU Thailand">
+				<span></span>
+				<img src="<?php echo REAL_PATH; ?>/images/elearning_logo.png" alt="E-Learning">
+			</div>
 			<div class="loader__figure"></div>
 			<p class="loader__label">
 				<?php if ($lang == "thai") {
@@ -53,6 +58,8 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 				} else {
 					echo $foote[0]['da_title_en'];
 				} ?></p>
+			<div class="precision-loader-progress" aria-hidden="true"><span></span></div>
+			<small><?php echo $lang === 'thai' ? 'กำลังเตรียมพื้นที่การเรียนรู้ของคุณ' : 'Preparing your learning workspace'; ?></small>
 		</div>
 	</div>
 	<div id="main-wrapper">

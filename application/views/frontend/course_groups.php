@@ -45,7 +45,7 @@
     </style>
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
+<body class="fix-header fix-sidebar card-no-border precision-data-page">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
@@ -65,9 +65,10 @@
         <!-- ============================================================== -->
         <div class="page-wrapper">
             <div class="container-fluid">
-                <div class="row col-12 page-titles">
+                <div class="row col-12 page-titles precision-page-heading">
                     <div class="col-md-5 align-self-center">
                         <b><?php echo ucwords(strtolower($title)); ?></b>
+                        <small><?php echo $lang=="thai" ? "จัดการกลุ่มหลักสูตรทั้งหมดในระบบ" : "Manage all course groups in the system"; ?></small>
                     </div>
                     <div class="col-md-7 align-self-right">
                         <ol class="breadcrumb">
@@ -80,10 +81,14 @@
                     </div>
                 </div>  
 
-                <div class="row col-12 page-titles">
-                  <div class="col-md-12 card">
+                <div class="row col-12 page-titles precision-workspace-row">
+                  <div class="col-md-12 card precision-data-workspace">
                     <div class="card-body">
-                      <div class="col-md-12">
+                      <div class="col-md-12 precision-workspace-toolbar">
+                        <div class="precision-workspace-title">
+                          <span><?php echo ucwords(strtolower($title)); ?></span>
+                          <small><?php echo $lang=="thai" ? "ค้นหา ตรวจสอบ และจัดการข้อมูลได้จากพื้นที่เดียว" : "Search, review and manage records in one workspace"; ?></small>
+                        </div>
                         <?php if($btn_add=="1"){ ?>
                           <button name="add_button" id="add_button" class="btn btn-outline-info add_button float-right" data-toggle="modal" data-target="#modal-default"><i class="mdi mdi-plus-box-outline"></i> <?php echo ucwords(label('createcoursegroup')); ?></button>
                         <?php } ?>
@@ -128,7 +133,7 @@
                             </thead>
                           </table>
                       </div>
-                      <p><?php echo label('preNote'); ?>: <button type="button" class="btn btn-secondary btn-xs active"><i class="mdi mdi-alert text-warning"></i></button> = <b><?php echo label('d_waitapprove'); ?></b><?php if($btn_update=="1"){ ?> , <button type="button" class="btn btn-warning btn-xs"><i class="mdi mdi-lead-pencil"></i></button> = <b><?php echo label('m_edit'); ?></b><?php } ?><?php if($btn_delete=="1"){ ?> , <button type="button" class="btn btn-danger btn-xs"><i class="mdi mdi-window-close"></i></button> = <b><?php echo label('delete'); ?></b><?php } ?></p>
+                      <p class="precision-table-legend"><?php echo label('preNote'); ?>: <button type="button" class="btn btn-secondary btn-xs active"><i class="mdi mdi-alert text-warning"></i></button> = <b><?php echo label('d_waitapprove'); ?></b><?php if($btn_update=="1"){ ?> , <button type="button" class="btn btn-warning btn-xs"><i class="mdi mdi-lead-pencil"></i></button> = <b><?php echo label('m_edit'); ?></b><?php } ?><?php if($btn_delete=="1"){ ?> , <button type="button" class="btn btn-danger btn-xs"><i class="mdi mdi-window-close"></i></button> = <b><?php echo label('delete'); ?></b><?php } ?></p>
                     </div>
                   </div>
                 </div>
@@ -247,6 +252,7 @@
     <script type="text/javascript">
         $('.select2').select2();
         $("#cg_approve_by").select2({
+            dropdownParent: $("#modal-default"),
             maximumSelectionLength: 5,
             language: {
                 // You can find all of the options in the language files provided in the
@@ -322,6 +328,17 @@
                       }
                       table.page(page_num).draw(false);
                     }, 10 );
+                  },
+                  "drawCallback": function () {
+                    var $actionButtons = $('#myTable tbody .btn[title]');
+                    $actionButtons.attr({
+                      'data-toggle': 'tooltip',
+                      'data-placement': 'top',
+                      'data-container': 'body'
+                    });
+                    if ($.fn.tooltip) {
+                      $actionButtons.tooltip({trigger: 'hover focus'});
+                    }
                   }
             });
          }

@@ -1,0 +1,816 @@
+/* Global Precision UI compatibility layer for authenticated LMS pages. */
+.precision-app-shell {
+  --precision-red:#ed1c24;
+  --precision-red-dark:#c9151c;
+  --precision-ink:#171c25;
+  --precision-muted:#687386;
+  --precision-line:#dfe5ec;
+  --precision-surface:#fff;
+  --precision-bg:#f7f9fb;
+  background:var(--precision-bg) !important;
+  color:var(--precision-ink);
+}
+.precision-app-shell .page-wrapper { background:var(--precision-bg) !important; }
+.precision-app-shell .container-fluid { max-width:none; }
+.precision-app-shell .page-titles { background:transparent; }
+.precision-app-shell .page-titles > [class*="col-"] { min-width:0; }
+.precision-app-shell .card {
+  border:1px solid var(--precision-line);
+  border-radius:14px;
+  background:var(--precision-surface);
+  box-shadow:0 6px 20px rgba(15,23,42,.05);
+}
+.precision-app-shell .card-header { border-bottom:1px solid #e9edf2; background:#fff; }
+.precision-app-shell .card-title { color:var(--precision-ink); font-weight:800; }
+.precision-app-shell .lstick { background:var(--precision-red) !important; }
+.precision-app-shell .btn-primary {
+  border-color:#2563eb !important;
+  border-radius:9px;
+  background:#2563eb !important;
+  color:#fff !important;
+  box-shadow:0 6px 15px rgba(37,99,235,.16);
+}
+.precision-app-shell .btn-primary:hover { border-color:#1d4ed8 !important; background:#1d4ed8 !important; }
+.precision-app-shell .btn-info { border-color:#0284c7 !important; border-radius:9px; background:#0ea5e9 !important; color:#fff !important; box-shadow:0 6px 15px rgba(14,165,233,.16); }
+.precision-app-shell .btn-info:hover { border-color:#0369a1 !important; background:#0284c7 !important; }
+.precision-app-shell .btn-danger { border-color:#dc2626 !important; border-radius:9px; background:#ef4444 !important; color:#fff !important; box-shadow:0 6px 15px rgba(239,68,68,.16); }
+.precision-app-shell .btn-danger:hover { border-color:#b91c1c !important; background:#dc2626 !important; }
+.precision-app-shell .btn-success { border-color:#059669 !important; border-radius:9px; background:#10b981 !important; color:#fff !important; box-shadow:0 6px 15px rgba(16,185,129,.16); }
+.precision-app-shell .btn-success:hover { border-color:#047857 !important; background:#059669 !important; }
+.precision-app-shell .btn-warning { border-color:#d97706 !important; border-radius:9px; background:#f59e0b !important; color:#422006 !important; box-shadow:0 6px 15px rgba(245,158,11,.16); }
+.precision-app-shell .btn-warning:hover { border-color:#b45309 !important; background:#d97706 !important; color:#fff !important; }
+.precision-app-shell :is(.btn-primary,.btn-info,.btn-danger,.btn-success,.btn-warning):hover { transform:translateY(-1px); }
+.precision-app-shell .btn-outline-info { border-color:#38bdf8 !important; border-radius:9px; color:#0369a1 !important; background:#f0f9ff !important; }
+.precision-app-shell .btn-outline-info:hover { background:#0ea5e9 !important; color:#fff !important; }
+.precision-app-shell .btn-outline-success { border-color:#34d399 !important; border-radius:9px; color:#047857 !important; background:#ecfdf5 !important; }
+.precision-app-shell .btn-outline-success:hover { background:#10b981 !important; color:#fff !important; }
+.precision-app-shell :is(.btn-secondary,.btn-outline-secondary,.btn-light) { border-color:#dce2e9; border-radius:9px; background:#fff; color:#475467; }
+.precision-app-shell :is(.form-control,.custom-select,.select2-selection) {
+  min-height:42px;
+  border-color:#dce2e9 !important;
+  border-radius:9px !important;
+  background:#fff;
+  color:#344054;
+  box-shadow:none !important;
+}
+.precision-app-shell :is(.form-control,.custom-select):focus { border-color:#f28b90 !important; box-shadow:0 0 0 3px rgba(237,28,36,.09) !important; }
+.precision-app-shell .table-responsive { border-radius:11px; }
+.precision-app-shell table.table { color:#344054; }
+.precision-app-shell table.table thead th { border-top:0; border-bottom:1px solid #e5eaf0; background:#f7f9fb; color:#667085; font-size:11px; font-weight:800; }
+.precision-app-shell table.table tbody td { border-color:#edf0f4; }
+.precision-app-shell table.table tbody tr:hover td { background:#fff8f8; }
+.precision-app-shell table.table .btn-xs {
+  width:34px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:2px;
+  padding:0 !important;
+  border-radius:9px !important;
+  vertical-align:middle;
+}
+.precision-app-shell table.table .btn-xs i { margin:0; font-size:15px; }
+.precision-app-shell table.table .btn-outline-secondary { border-color:#d8dee7 !important; background:#fff !important; color:#596476 !important; }
+.precision-app-shell table.table .btn-outline-secondary:hover { border-color:#98a2b3 !important; background:#f2f4f7 !important; color:#344054 !important; }
+.precision-app-shell .pagination .page-link { border-color:#e1e6ed; color:#596476; }
+.precision-app-shell .pagination .active .page-link,
+.precision-app-shell .pagination .page-item.active .page-link { border-color:var(--precision-red); background:var(--precision-red); color:#fff; }
+.precision-app-shell .modal-content { overflow:hidden; border:1px solid #dfe5ec; border-radius:16px; box-shadow:0 24px 70px rgba(15,23,42,.18); }
+.precision-app-shell .modal-header { border-bottom:1px solid #e9edf2; background:#fff; }
+.precision-app-shell .modal-footer { border-top:1px solid #e9edf2; background:#f9fafb; }
+.precision-app-shell .dropdown-menu { overflow:hidden; border:1px solid #dfe5ec; border-radius:12px; box-shadow:0 16px 42px rgba(15,23,42,.14); }
+.precision-app-shell .dropdown-item:hover { background:#fff2f3; color:var(--precision-red); }
+.precision-app-shell .alert { border-radius:11px; }
+.precision-app-shell .badge { border-radius:99px; }
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.current { border-color:var(--precision-red) !important; background:var(--precision-red) !important; color:#fff !important; }
+.precision-app-shell .breadcrumb { background:transparent; }
+.precision-app-shell .container-fluid > .page-titles:first-of-type:not(#div_maincourse) {
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  margin:0 0 14px !important;
+  padding:10px 8px !important;
+}
+.precision-app-shell .container-fluid > .page-titles:first-of-type:not(#div_maincourse) > [class*="col-"] { padding:0 8px; }
+.precision-app-shell .container-fluid > .page-titles:first-of-type:not(#div_maincourse) b { color:#171c25; font-size:17px; font-weight:800; }
+.precision-app-shell .container-fluid > .page-titles:first-of-type:not(#div_maincourse) .breadcrumb { display:flex; justify-content:flex-end; align-items:center; margin:0; font-size:12px; }
+.precision-app-shell .precision-commandbar :is(strong,small,span,i,kbd),
+.precision-app-shell .precision-language > strong {
+  position:static !important;
+  inset:auto !important;
+  float:none !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  transform:none !important;
+}
+.precision-app-shell .precision-language > strong { display:inline !important; color:#384354 !important; font-size:11px !important; font-weight:800 !important; line-height:1 !important; }
+.precision-app-shell .precision-header-profile strong { display:block !important; color:#232a35 !important; font-size:11px !important; line-height:1.2 !important; }
+.precision-app-shell .precision-header-profile small { display:block !important; color:#8a94a4 !important; font-size:9px !important; line-height:1.2 !important; }
+.precision-app-shell a { transition:color .16s ease,background .16s ease,border-color .16s ease,transform .16s ease; }
+@media (max-width:991.98px) {
+  .precision-app-shell .container-fluid { padding-right:12px; padding-left:12px; }
+  .precision-app-shell .card { border-radius:12px; }
+}
+
+/* Premium responsive data-table system. */
+.precision-app-shell .dataTables_wrapper {
+  position:relative;
+  margin-top:16px;
+  color:#475467;
+}
+.precision-app-shell .card-body > .col-md-12:first-child { position:relative; }
+.precision-app-shell .card-body > .col-md-12:first-child > .btn.float-right { min-height:42px; margin:0 0 12px 8px; padding:8px 14px; font-size:12px; font-weight:800; }
+.precision-app-shell .dataTables_wrapper > .row:first-child,
+.precision-app-shell .dataTables_wrapper > .row:last-child {
+  align-items:center;
+  margin:0;
+  padding:14px 16px;
+  border:1px solid #e1e6ed;
+  background:#fff;
+}
+.precision-app-shell .dataTables_wrapper > .row:first-child { border-radius:12px 12px 0 0; }
+.precision-app-shell .dataTables_wrapper > .row:last-child { border-top:0; border-radius:0 0 12px 12px; }
+.precision-app-shell .dataTables_wrapper :is(.dataTables_length,.dataTables_filter) label {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0;
+  color:#667085;
+  font-size:11px;
+  font-weight:800;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_filter { display:flex; justify-content:flex-end; }
+.precision-app-shell .dataTables_wrapper .dataTables_filter input {
+  width:min(260px,100%);
+  min-height:40px;
+  margin-left:0 !important;
+  padding:8px 13px 8px 36px;
+  border:1px solid #dce2e9;
+  border-radius:9px;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23667085' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E") no-repeat 12px center;
+  color:#344054;
+  outline:0;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_filter input:focus { border-color:#f28b90; box-shadow:0 0 0 3px rgba(237,28,36,.08); }
+.precision-app-shell .dataTables_wrapper .dataTables_length select { min-width:68px; min-height:40px; padding:6px 26px 6px 10px; border:1px solid #dce2e9; border-radius:9px; background-color:#fff; color:#344054; }
+.precision-app-shell .dataTables_wrapper .dataTables_scroll,
+.precision-app-shell .dataTables_wrapper .table-responsive { border-right:1px solid #e1e6ed; border-left:1px solid #e1e6ed; background:#fff; }
+.precision-app-shell .dataTables_wrapper table.dataTable,
+.precision-app-shell table.table { margin:0 !important; border-collapse:separate !important; border-spacing:0; background:#fff; }
+.precision-app-shell .dataTables_wrapper table.dataTable thead th,
+.precision-app-shell table.table thead th {
+  position:relative;
+  height:58px;
+  padding:12px 14px !important;
+  border-right:1px solid #edf0f4 !important;
+  border-bottom:1px solid #dfe5ec !important;
+  background:#f8fafc !important;
+  color:#596476 !important;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.35;
+  vertical-align:middle;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody td,
+.precision-app-shell table.table tbody td {
+  padding:13px 14px !important;
+  border-right:1px solid #edf0f4 !important;
+  border-bottom:1px solid #edf0f4 !important;
+  background:#fff !important;
+  color:#344054;
+  font-size:12px;
+  line-height:1.5;
+  vertical-align:middle;
+  transition:background .14s ease;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr:nth-child(even) td,
+.precision-app-shell table.table-striped tbody tr:nth-of-type(odd) td { background:#fbfcfd !important; }
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr:hover td,
+.precision-app-shell table.table tbody tr:hover td { background:#fff5f5 !important; }
+.precision-app-shell .dataTables_wrapper .dataTables_info { padding:0 !important; color:#8a94a4; font-size:10px; }
+.precision-app-shell .dataTables_wrapper .dataTables_paginate { display:flex; justify-content:flex-end; gap:4px; padding:0 !important; }
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button {
+  min-width:34px;
+  height:34px;
+  display:inline-grid;
+  place-items:center;
+  margin:0 2px;
+  padding:0 9px !important;
+  border:1px solid #dfe5ec !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  color:#596476 !important;
+  box-shadow:none !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button:hover { border-color:#f6a2a6 !important; background:#fff2f3 !important; color:#ed1c24 !important; }
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.current { border-color:#ed1c24 !important; background:#ed1c24 !important; color:#fff !important; }
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.disabled { opacity:.42; cursor:not-allowed !important; }
+
+@media (min-width:992px) {
+  .precision-app-shell .dataTables_wrapper .dataTables_scrollHead { position:sticky; top:88px; z-index:8; }
+}
+@media (max-width:767.98px) {
+  .precision-app-shell .page-titles { margin-inline:0 !important; }
+  .precision-app-shell .card-body { padding:14px; }
+  .precision-app-shell .card-body > .col-md-12:first-child { padding:0; }
+  .precision-app-shell .card-body > .col-md-12:first-child > .btn.float-right { width:100%; float:none !important; margin:0 0 8px; }
+  .precision-app-shell .dataTables_wrapper > .row:first-child { gap:12px; padding:12px; }
+  .precision-app-shell .dataTables_wrapper > .row:first-child > div { flex:0 0 100%; max-width:100%; }
+  .precision-app-shell .dataTables_wrapper .dataTables_filter { justify-content:stretch; margin-top:10px; }
+  .precision-app-shell .dataTables_wrapper .dataTables_filter label,
+  .precision-app-shell .dataTables_wrapper .dataTables_filter input { width:100%; }
+  .precision-app-shell .table-responsive,
+  .precision-app-shell .dataTables_scrollBody { overflow-x:auto !important; overscroll-behavior-x:contain; scrollbar-width:thin; scrollbar-color:#f05a60 #eef1f4; -webkit-overflow-scrolling:touch; }
+  .precision-app-shell .table-responsive > table,
+  .precision-app-shell .dataTables_scrollBody > table { min-width:900px !important; }
+  .precision-app-shell .dataTables_wrapper table.dataTable thead th:first-child,
+  .precision-app-shell .dataTables_wrapper table.dataTable tbody td:first-child,
+  .precision-app-shell .table-responsive > table thead th:first-child,
+  .precision-app-shell .table-responsive > table tbody td:first-child {
+    position:sticky;
+    left:0;
+    z-index:3;
+    box-shadow:8px 0 14px -12px rgba(15,23,42,.35);
+  }
+  .precision-app-shell .dataTables_wrapper table.dataTable thead th:first-child,
+  .precision-app-shell .table-responsive > table thead th:first-child { z-index:5; background:#f8fafc !important; }
+  .precision-app-shell .dataTables_wrapper > .row:last-child { gap:10px; }
+  .precision-app-shell .dataTables_wrapper > .row:last-child > div { flex:0 0 100%; max-width:100%; text-align:center; }
+  .precision-app-shell .dataTables_wrapper .dataTables_paginate { justify-content:center; margin-top:8px; }
+}
+
+/* Premium data workspace — compact, calm and purpose-led. */
+.precision-data-page .precision-page-heading {
+  min-height:72px !important;
+  margin-bottom:8px !important;
+  padding-inline:16px !important;
+}
+.precision-data-page .precision-page-heading b { display:block; font-size:22px !important; letter-spacing:-.025em; }
+.precision-data-page .precision-page-heading small { display:block; margin-top:4px; color:#8993a3; font-size:11px; font-weight:500; }
+.precision-data-page .precision-workspace-row { margin-top:0 !important; padding-top:0 !important; }
+.precision-data-page .precision-data-workspace { overflow:hidden; border-radius:18px; box-shadow:0 12px 34px rgba(15,23,42,.055); }
+.precision-data-page .precision-data-workspace > .card-body { padding:20px 22px 18px; }
+.precision-data-page .precision-workspace-toolbar {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  gap:14px;
+  padding:0 0 18px !important;
+}
+.precision-data-page .precision-workspace-title { flex:0 0 100%; margin-bottom:2px; }
+.precision-data-page .precision-workspace-title > span { display:block; color:#171c25; font-size:19px; font-weight:850; letter-spacing:-.02em; }
+.precision-data-page .precision-workspace-title > small { display:block; margin-top:3px; color:#8a94a4; font-size:10px; }
+.precision-data-page .precision-workspace-toolbar > .row { flex:1 1 620px; margin:0; }
+.precision-data-page .precision-workspace-toolbar > .row > div { padding:0; }
+.precision-data-page .precision-workspace-toolbar label { margin:0 0 7px; color:#667085; font-size:10px; font-weight:800; }
+.precision-data-page .precision-workspace-toolbar .add_button {
+  order:3;
+  min-height:44px !important;
+  margin:0 0 0 auto !important;
+  padding:9px 18px !important;
+  border-radius:10px !important;
+}
+.precision-data-page .dataTables_wrapper { clear:both; margin-top:0; }
+.precision-data-page .dataTables_wrapper > .row:first-child { min-height:72px; padding:14px 18px; }
+.precision-data-page .dataTables_wrapper .dataTables_scrollHeadInner,
+.precision-data-page .dataTables_wrapper .dataTables_scrollHeadInner > table { width:100% !important; }
+.precision-data-page .dataTables_wrapper .dataTables_scrollBody { max-height:none !important; }
+.precision-data-page .dataTables_wrapper table.dataTable thead th { height:58px; background:#fbfcfe !important; }
+.precision-data-page .dataTables_wrapper table.dataTable tbody td { height:66px; }
+.precision-data-page .precision-table-legend {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+  margin:14px 0 0;
+  padding:9px 12px;
+  border:1px solid #e7ebf0;
+  border-radius:10px;
+  background:#f8fafc;
+  color:#667085;
+  font-size:10px;
+}
+.precision-data-page .precision-table-legend b { margin-right:5px; color:#475467; font-size:10px; }
+.precision-data-page .precision-table-legend .btn-xs {
+  width:25px !important;
+  height:25px !important;
+  margin:0 2px 0 4px !important;
+  pointer-events:none;
+}
+.precision-data-page .precision-table-legend .btn-xs i { font-size:12px !important; }
+.precision-app-shell .tooltip { z-index:1080; }
+.precision-app-shell .tooltip .tooltip-inner {
+  padding:6px 9px;
+  border-radius:7px;
+  background:#182132;
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  box-shadow:0 8px 18px rgba(15,23,42,.18);
+}
+.precision-app-shell .bs-tooltip-top .arrow::before,
+.precision-app-shell .tooltip.bs-tooltip-top .arrow::before { border-top-color:#182132; }
+.precision-data-page table.table .btn-xs { border-radius:50% !important; }
+.precision-data-page table.table .btn-warning { background:#eef4ff !important; color:#2563eb !important; }
+.precision-data-page table.table .btn-warning:hover { background:#2563eb !important; color:#fff !important; }
+.precision-data-page table.table .btn-danger { background:#fff0f1 !important; color:#e11d2e !important; }
+.precision-data-page table.table .btn-danger:hover { background:#ed1c24 !important; color:#fff !important; }
+.precision-data-page table.table .btn-secondary { background:#182132 !important; color:#fff !important; }
+.precision-data-page table.table .btn-secondary:hover { background:#0f172a !important; }
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.current { background:#fff !important; color:#ed1c24 !important; box-shadow:inset 0 0 0 1px #ed1c24 !important; }
+
+@media (max-width:767.98px) {
+  .precision-data-page .precision-page-heading { min-height:auto !important; padding:8px 4px 14px !important; }
+  .precision-data-page .precision-page-heading b { font-size:19px !important; }
+  .precision-data-page .precision-page-heading .breadcrumb { display:none !important; }
+  .precision-data-page .precision-data-workspace > .card-body { padding:14px; }
+  .precision-data-page .precision-workspace-toolbar { gap:10px; padding-bottom:14px !important; }
+  .precision-data-page .precision-workspace-toolbar > .row { flex-basis:100%; }
+  .precision-data-page .precision-workspace-toolbar .add_button { width:100%; order:4; }
+}
+
+/* Data workspace v2 — cleaner, denser and less Bootstrap-like. */
+.precision-app-shell .dataTables_wrapper { overflow:hidden; border:1px solid #e3e8ef; border-radius:14px; background:#fff; box-shadow:0 8px 26px rgba(15,23,42,.045); }
+.precision-app-shell .dataTables_wrapper > .row:first-child,
+.precision-app-shell .dataTables_wrapper > .row:last-child { border:0; border-radius:0; }
+.precision-app-shell .dataTables_wrapper > .row:first-child { min-height:68px; border-bottom:1px solid #edf0f4; background:#fff; }
+.precision-app-shell .dataTables_wrapper > .row:last-child { min-height:62px; border-top:1px solid #edf0f4; background:#fbfcfd; }
+.precision-app-shell .dataTables_wrapper .dataTables_scroll { margin:0 !important; padding:0 !important; border:0 !important; }
+.precision-app-shell .dataTables_wrapper .dataTables_scrollHead {
+  position:static !important;
+  top:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_scrollHeadInner { margin:0 !important; padding:0 !important; }
+.precision-app-shell .dataTables_wrapper .dataTables_scrollBody { margin:0 !important; border:0 !important; }
+.precision-app-shell .dataTables_wrapper table.dataTable thead th,
+.precision-app-shell table.table thead th {
+  height:52px;
+  border-right:0 !important;
+  border-bottom:1px solid #dfe5ec !important;
+  background:#f8fafc !important;
+  color:#667085 !important;
+  letter-spacing:.01em;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody td,
+.precision-app-shell table.table tbody td {
+  height:62px;
+  border-right:0 !important;
+  border-bottom:1px solid #edf0f4 !important;
+  background:#fff !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr:nth-child(even) td,
+.precision-app-shell table.table-striped tbody tr:nth-of-type(odd) td { background:#fcfdfe !important; }
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr:hover td,
+.precision-app-shell table.table tbody tr:hover td { background:#fff8f8 !important; }
+.precision-app-shell table.table .btn-xs {
+  width:36px;
+  height:36px;
+  border:0 !important;
+  border-radius:10px !important;
+  box-shadow:none !important;
+}
+.precision-app-shell table.table .btn-warning { background:#fff4d6 !important; color:#a15c00 !important; }
+.precision-app-shell table.table .btn-warning:hover { background:#f59e0b !important; color:#fff !important; }
+.precision-app-shell table.table .btn-danger { background:#fff0f1 !important; color:#d92d20 !important; }
+.precision-app-shell table.table .btn-danger:hover { background:#ed1c24 !important; color:#fff !important; }
+.precision-app-shell table.table .btn-primary { background:#eef4ff !important; color:#2563eb !important; }
+.precision-app-shell table.table .btn-primary:hover { background:#2563eb !important; color:#fff !important; }
+.precision-app-shell table.table .btn-info { background:#ecfdff !important; color:#087e8b !important; }
+.precision-app-shell table.table .btn-info:hover { background:#0891b2 !important; color:#fff !important; }
+.precision-app-shell .card-body > .col-md-12:first-child > .add_button { border-color:#ed1c24 !important; background:#ed1c24 !important; color:#fff !important; box-shadow:0 8px 18px rgba(237,28,36,.18); }
+.precision-app-shell .card-body > .col-md-12:first-child > .add_button:hover { border-color:#c9151c !important; background:#c9151c !important; }
+.precision-app-shell .dataTables_wrapper .dataTables_filter input { border-color:#e1e6ed; background-color:#f9fafb; }
+.precision-app-shell .dataTables_wrapper .dataTables_length select { border-color:#e1e6ed; background-color:#f9fafb; }
+
+@media (max-width:767.98px) {
+  .precision-app-shell .dataTables_wrapper { border-radius:12px; }
+  .precision-app-shell .dataTables_wrapper table.dataTable tbody td,
+  .precision-app-shell table.table tbody td { height:58px; }
+}
+
+/* Data workspace v3: compact rows, premium Select2 and pagination. */
+.precision-data-page .dataTables_wrapper table.dataTable thead th,
+.precision-data-page .dataTables_wrapper table.dataTable tbody td {
+  height:auto !important;
+}
+.precision-data-page .dataTables_wrapper table.dataTable thead th {
+  padding:10px 13px !important;
+  line-height:1.25 !important;
+}
+.precision-data-page .dataTables_wrapper table.dataTable tbody td {
+  padding:9px 13px !important;
+  line-height:1.35 !important;
+}
+.precision-data-page .dataTables_wrapper table.dataTable tbody tr { height:56px !important; }
+.precision-data-page table.table .btn-xs {
+  width:32px;
+  height:32px;
+  margin:1px 3px 1px 0;
+}
+.precision-data-page table.table .btn-xs i { font-size:14px; }
+
+/* Select2 field */
+.precision-app-shell .select2-container { width:100% !important; font-size:13px; }
+.precision-app-shell .select2-container .select2-selection--single {
+  height:46px !important;
+  display:flex !important;
+  align-items:center;
+  border:1px solid #dfe5ec !important;
+  border-radius:11px !important;
+  background:#fbfcfe !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.02) !important;
+  transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.precision-app-shell .select2-container--open .select2-selection--single,
+.precision-app-shell .select2-container--focus .select2-selection--single {
+  border-color:#ed1c24 !important;
+  background:#fff !important;
+  box-shadow:0 0 0 4px rgba(237,28,36,.08) !important;
+}
+.precision-app-shell .select2-container .select2-selection--single .select2-selection__rendered {
+  width:100%;
+  padding:0 44px 0 14px !important;
+  color:#344054 !important;
+  line-height:44px !important;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.precision-app-shell .select2-container .select2-selection--single .select2-selection__arrow {
+  top:50% !important;
+  right:12px !important;
+  width:24px !important;
+  height:24px !important;
+  display:grid;
+  place-items:center;
+  transform:translateY(-50%);
+}
+.precision-app-shell .select2-container .select2-selection--single .select2-selection__arrow b {
+  position:static !important;
+  width:7px !important;
+  height:7px !important;
+  margin:0 !important;
+  border:0 !important;
+  border-right:1.5px solid #667085 !important;
+  border-bottom:1.5px solid #667085 !important;
+  transform:rotate(45deg) translate(-1px,-1px);
+}
+.select2-container--open .select2-dropdown {
+  overflow:hidden;
+  margin-top:7px;
+  padding:8px;
+  border:1px solid #dfe5ec !important;
+  border-radius:13px !important;
+  background:#fff;
+  box-shadow:0 18px 45px rgba(15,23,42,.16) !important;
+}
+.select2-container--open .select2-search--dropdown { padding:2px 2px 8px !important; }
+.select2-container--open .select2-search--dropdown .select2-search__field {
+  height:40px;
+  padding:8px 12px 8px 36px;
+  border:1px solid #dfe5ec !important;
+  border-radius:9px;
+  outline:0;
+  background:#f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='none' stroke='%23667085' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E") no-repeat 12px center;
+}
+.select2-container--open .select2-search--dropdown .select2-search__field:focus {
+  border-color:#f28b90 !important;
+  box-shadow:0 0 0 3px rgba(237,28,36,.08);
+}
+.select2-container--open .select2-results__options {
+  max-height:260px !important;
+  padding:2px;
+  scrollbar-width:thin;
+  scrollbar-color:#f27b80 #f2f4f7;
+}
+.select2-container--open .select2-results__group {
+  padding:7px 10px !important;
+  color:#98a2b3;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.select2-container--open .select2-results__option {
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  margin:2px 0;
+  padding:9px 11px !important;
+  border-radius:8px;
+  color:#475467;
+  font-size:12px;
+}
+.select2-container--open .select2-results__option[aria-selected=true] {
+  background:#fff0f1 !important;
+  color:#c9151c !important;
+  font-weight:750;
+}
+.select2-container--open .select2-results__option--highlighted[aria-selected] {
+  background:#ed1c24 !important;
+  color:#fff !important;
+}
+
+/* Pagination footer */
+.precision-data-page .dataTables_wrapper > .row:last-child {
+  min-height:64px;
+  padding:12px 18px;
+  background:#fbfcfe;
+}
+.precision-data-page .dataTables_wrapper .dataTables_info {
+  color:#8490a1;
+  font-size:11px;
+  font-weight:600;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate { gap:6px; }
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button {
+  min-width:36px;
+  height:36px;
+  margin:0 !important;
+  padding:0 11px !important;
+  border:1px solid #e1e6ed !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  color:#596476 !important;
+  font-size:12px;
+  font-weight:750;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  border-color:#f5a0a4 !important;
+  background:#fff2f3 !important;
+  color:#d71920 !important;
+  transform:translateY(-1px);
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  border-color:#ed1c24 !important;
+  background:#ed1c24 !important;
+  color:#fff !important;
+  box-shadow:0 6px 14px rgba(237,28,36,.18) !important;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+  border-color:#eef1f4 !important;
+  background:#f5f7f9 !important;
+  color:#c4cad3 !important;
+  transform:none;
+}
+
+@media (max-width:767.98px) {
+  .precision-data-page .dataTables_wrapper table.dataTable tbody tr { height:52px !important; }
+  .precision-data-page .dataTables_wrapper table.dataTable tbody td { padding:8px 11px !important; }
+  .precision-data-page .dataTables_wrapper > .row:last-child { padding:12px; }
+  .precision-data-page .dataTables_wrapper .dataTables_info { text-align:center; }
+}
+
+/* Compact Select2 correction: keep optgroups vertical and proportionate. */
+.precision-app-shell .select2-container .select2-selection--single { height:40px !important; border-radius:9px !important; }
+.precision-app-shell .select2-container .select2-selection--single .select2-selection__rendered {
+  padding-right:40px !important;
+  padding-left:12px !important;
+  line-height:38px !important;
+  font-size:12px;
+}
+.select2-container--open .select2-dropdown {
+  max-width:720px;
+  margin-top:5px;
+  padding:6px;
+  border-radius:11px !important;
+}
+.select2-container--open .select2-search--dropdown { padding:0 0 6px !important; }
+.select2-container--open .select2-search--dropdown .select2-search__field {
+  height:36px;
+  padding-top:6px;
+  padding-bottom:6px;
+  font-size:12px;
+}
+.select2-container--open .select2-results__options { max-height:220px !important; }
+.select2-container--open .select2-results__option[role="group"] {
+  min-height:0;
+  display:block !important;
+  margin:0;
+  padding:0 !important;
+  border-radius:0;
+  background:#fff !important;
+}
+.select2-container--open .select2-results__option[role="group"] > .select2-results__group {
+  display:block;
+  padding:5px 9px 4px !important;
+}
+.select2-container--open .select2-results__option[role="group"] > .select2-results__options {
+  display:block !important;
+  padding:0 !important;
+}
+.select2-container--open .select2-results__option[role="option"] {
+  min-height:34px;
+  display:block;
+  margin:1px 0;
+  padding:7px 10px !important;
+  line-height:1.35;
+  font-size:11px;
+  white-space:normal;
+}
+@media (max-width:767.98px) {
+  .select2-container--open .select2-dropdown { max-width:calc(100vw - 28px); }
+  .select2-container--open .select2-results__options { max-height:190px !important; }
+}
+
+/* Select2 multiple inside forms and modals. */
+.precision-app-shell .modal .select2-container { width:100% !important; }
+.precision-app-shell .select2-container .select2-selection--multiple {
+  min-height:42px !important;
+  display:flex;
+  align-items:center;
+  padding:4px 34px 4px 6px !important;
+  border:1px solid #dfe5ec !important;
+  border-radius:9px !important;
+  background:#fbfcfe !important;
+  box-shadow:none !important;
+  cursor:text;
+  transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.precision-app-shell .select2-container--focus .select2-selection--multiple,
+.precision-app-shell .select2-container--open .select2-selection--multiple {
+  border-color:#ed1c24 !important;
+  background:#fff !important;
+  box-shadow:0 0 0 3px rgba(237,28,36,.08) !important;
+}
+.precision-app-shell .select2-container .select2-selection--multiple .select2-selection__rendered {
+  width:100%;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:4px;
+  margin:0 !important;
+  padding:0 !important;
+  line-height:1.2 !important;
+}
+.precision-app-shell .select2-container .select2-selection--multiple .select2-selection__choice {
+  max-width:100%;
+  display:inline-flex;
+  align-items:center;
+  flex-direction:row-reverse;
+  gap:6px;
+  margin:0 !important;
+  padding:6px 9px !important;
+  border:0 !important;
+  border-radius:7px !important;
+  background:#fff0f1 !important;
+  color:#c9151c !important;
+  font-size:11px;
+  font-weight:750;
+  line-height:1.2;
+  box-shadow:inset 0 0 0 1px rgba(237,28,36,.12);
+}
+.precision-app-shell .select2-container .select2-selection--multiple .select2-selection__choice__remove {
+  position:static !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#d92d20 !important;
+  font-size:15px;
+  font-weight:500;
+  line-height:1;
+}
+.precision-app-shell .select2-container .select2-selection--multiple .select2-selection__choice__remove:hover { color:#8f1016 !important; }
+.precision-app-shell .select2-container .select2-search--inline { margin:0 !important; }
+.precision-app-shell .select2-container .select2-search--inline .select2-search__field {
+  width:auto !important;
+  min-width:80px;
+  height:28px;
+  margin:0 !important;
+  padding:4px 6px !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#344054;
+  font-size:11px;
+  box-shadow:none !important;
+}
+.precision-app-shell .modal .select2-dropdown {
+  z-index:1065;
+  max-width:none;
+}
+.precision-app-shell .modal .select2-results__options { max-height:190px !important; }
+.precision-app-shell .modal .select2-results__option[role="option"] {
+  min-height:32px;
+  padding:7px 10px !important;
+}
+.precision-app-shell .modal .select2-results__option[aria-selected=true]::after {
+  content:"✓";
+  float:right;
+  margin-left:10px;
+  font-weight:900;
+}
+
+/* Multiple Select2 interaction correction. */
+.precision-app-shell .select2-container .select2-selection--multiple .select2-search--inline {
+  flex:1 1 90px;
+  min-width:70px;
+  height:28px;
+  display:flex !important;
+  align-items:center !important;
+  align-self:center !important;
+}
+.precision-app-shell .select2-container .select2-selection--multiple .select2-search--inline .select2-search__field,
+.precision-app-shell .select2-container .select2-selection--multiple .select2-search--inline .select2-search__field:focus {
+  width:100% !important;
+  min-width:60px !important;
+  height:28px !important;
+  margin:0 !important;
+  padding:3px 5px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  line-height:20px !important;
+  vertical-align:middle !important;
+  box-sizing:border-box !important;
+}
+.precision-app-shell .select2-container .select2-selection--multiple .select2-selection__choice {
+  flex:0 1 auto;
+  min-height:28px;
+  align-self:center;
+  padding:6px 8px !important;
+}
+.precision-app-shell .modal .select2-results__option[aria-selected=true] {
+  position:relative;
+  padding-right:32px !important;
+  background:#fff0f1 !important;
+  color:#c9151c !important;
+  font-weight:750;
+}
+.precision-app-shell .modal .select2-results__option[aria-selected=true]::after {
+  position:absolute;
+  top:50%;
+  right:11px;
+  margin:0;
+  color:#ed1c24;
+  transform:translateY(-50%);
+}
+.precision-app-shell .modal .select2-results__option--highlighted[aria-selected=false] {
+  background:#f6f8fa !important;
+  color:#182132 !important;
+}
+.precision-app-shell .modal .select2-results__option--highlighted[aria-selected=true] {
+  background:#ffe5e7 !important;
+  color:#b51219 !important;
+}
+
+/* DataTables scrollX keeps a sizing-only thead inside scrollBody; collapse it fully. */
+.precision-app-shell .dataTables_scrollBody table.dataTable > thead {
+  height:0 !important;
+  visibility:collapse !important;
+}
+.precision-app-shell .dataTables_scrollBody table.dataTable > thead > tr,
+.precision-app-shell .dataTables_scrollBody table.dataTable > thead > tr > th,
+.precision-app-shell .dataTables_scrollBody table.dataTable > thead > tr > td {
+  height:0 !important;
+  min-height:0 !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+  border-top:0 !important;
+  border-bottom:0 !important;
+  line-height:0 !important;
+}
+
+/* Lock compact action controls to a true square across legacy button rules. */
+.precision-data-page table.table .btn.btn-xs {
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+  height:32px !important;
+  min-height:32px !important;
+  max-height:32px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  padding:0 !important;
+  border-radius:9px !important;
+  line-height:1 !important;
+  box-sizing:border-box !important;
+}
+.precision-data-page table.table .btn.btn-xs i {
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  line-height:1 !important;
+}
+.precision-data-page .precision-table-legend .btn.btn-xs {
+  width:28px !important;
+  min-width:28px !important;
+  max-width:28px !important;
+  height:28px !important;
+  min-height:28px !important;
+  max-height:28px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  margin:0 3px !important;
+  padding:0 !important;
+  border-radius:8px !important;
+  line-height:1 !important;
+  box-sizing:border-box !important;
+}

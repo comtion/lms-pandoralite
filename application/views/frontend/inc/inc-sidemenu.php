@@ -59,6 +59,9 @@ $precisionRenderBranch = static function (array $items, int $level = 0) use (&$p
         $path = (string) ($item['mu_path'] ?? '');
         $icon = trim((string) ($item['mu_icon'] ?? 'mdi mdi-circle-outline')) ?: 'mdi mdi-circle-outline';
         $name = $precisionMenuName($item);
+        if ($level === 0 && (stripos($name, 'report') !== false || strpos($name, 'รายงาน') !== false)) {
+            $icon = 'mdi mdi-chart-line';
+        }
         ?>
         <li class="precision-nav-item level-<?php echo $level; ?><?php echo $active ? ' active' : ''; ?><?php echo $hasChildren ? ' has-children' : ''; ?>">
             <?php if ($hasChildren) { ?>
@@ -161,9 +164,36 @@ document.addEventListener('DOMContentLoaded', function () {
     if (collapseButton) {
         collapseButton.addEventListener('click', function () {
             closeMenus(null);
+            hideRailTooltip();
             document.body.classList.toggle('precision-sidebar-collapsed');
             collapseButton.setAttribute('aria-expanded', document.body.classList.contains('precision-sidebar-collapsed') ? 'false' : 'true');
         });
     }
+
+    var railTooltip = document.createElement('div');
+    railTooltip.className = 'precision-rail-tooltip';
+    railTooltip.hidden = true;
+    document.body.appendChild(railTooltip);
+
+    function showRailTooltip(control) {
+        if (!document.body.classList.contains('precision-sidebar-collapsed')) return;
+        var label = control.querySelector(':scope > .hide-menu');
+        if (!label) return;
+        var rect = control.getBoundingClientRect();
+        railTooltip.textContent = label.textContent.trim();
+        railTooltip.style.left = (rect.right + 12) + 'px';
+        railTooltip.style.top = (rect.top + rect.height / 2) + 'px';
+        railTooltip.hidden = false;
+    }
+
+    function hideRailTooltip() { railTooltip.hidden = true; }
+
+    sidebar.querySelectorAll('.precision-nav-root > .level-0 > .precision-nav-link, .precision-nav-root > .level-0 > .precision-nav-trigger').forEach(function (control) {
+        control.addEventListener('mouseenter', function () { showRailTooltip(control); });
+        control.addEventListener('mouseleave', hideRailTooltip);
+        control.addEventListener('focus', function () { showRailTooltip(control); });
+        control.addEventListener('blur', hideRailTooltip);
+    });
+    sidebar.querySelector('.sidebar-nav').addEventListener('scroll', hideRailTooltip, { passive: true });
 });
 </script>
