@@ -257,7 +257,7 @@ strong {
                             </thead>
                           </table>
                       </div> -->
-              <p><?php echo label('preNote'); ?>: 
+              <p class="precision-table-legend"><?php echo label('preNote'); ?>:
               <?php  if(!in_array($user['ug_name_th'], array("Learner", "Learner (Manager)"))){ ?>
                   <button type="button" class="btn btn-outline-secondary btn-xs"><i
                     class="mdi mdi-content-copy"></i></button> = <b><?php echo label('duplicateCourse'); ?></b> ,

@@ -133,6 +133,15 @@ class Setting extends CI_Controller
 		if ($file_name == "") {
 			redirect(base_url() . 'dashboard');
 		}
+
+		// Older database records contain the production-domain URL. Prefer the
+		// local migrated copy so the browser can embed it without CORS or
+		// X-Frame-Options restrictions from the production server.
+		$manual_basename = basename((string) parse_url($file_name, PHP_URL_PATH));
+		$local_manual = ROOT_DIR . 'uploads/user_manual/' . $manual_basename;
+		if ($manual_basename !== '' && is_file($local_manual)) {
+			$file_name = base_url('uploads/user_manual/' . rawurlencode($manual_basename));
+		}
 		$arr['path'] = $file_name;
 		$arr['main_menu'] = $this->manage->checkmenu();
 		$arr['title'] = $this->manage->get_namemenu($arr['page']);
@@ -1296,8 +1305,18 @@ class Setting extends CI_Controller
 					}
 				}
 			}
-			unset($_REQUEST['myTable_length']);
-			$msg = $this->setting->insert_about($_REQUEST, '1');
+			// $_REQUEST also contains browser cookies (for example
+			// "i18n_redirected"), which must never be treated as table columns.
+			// Start with submitted form fields, then retain values generated above
+			// for successfully uploaded files.
+			$data = $_POST;
+			foreach (array_keys($_FILES) as $key) {
+				if (isset($_REQUEST[$key])) {
+					$data[$key] = $_REQUEST[$key];
+				}
+			}
+			unset($data['myTable_length']);
+			$msg = $this->setting->insert_about($data, '1');
 		}
 		echo $msg;
 	}

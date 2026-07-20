@@ -6,7 +6,17 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<?php
+  $dropifyLanguage = isset($lang) ? strtolower((string) $lang) : strtolower((string) $this->session->userdata('lang'));
+  if (in_array($dropifyLanguage, array('thai', 'th', 'thailand'), true)) {
+      $dropifyLocale = 'th';
+  } elseif (in_array($dropifyLanguage, array('japanese', 'japan', 'jp', 'ja'), true)) {
+      $dropifyLocale = 'ja';
+  } else {
+      $dropifyLocale = 'en';
+  }
+?>
+<html lang="<?php echo $dropifyLocale; ?>">
 
 <?php 
   function isMobile() {
@@ -76,6 +86,73 @@ header("Pragma: no-cache");
     <!-- ============================================================== -->
     <script src="<?php echo REAL_PATH; ?>/assets/js/perfect-scrollbar.jquery.min.js"></script>
     <script src="<?php echo REAL_PATH; ?>/assets/plugins/dropify/dist/js/dropify.min.js"></script>
+    <script>
+    /* Apply the active system language to every Dropify instance, including
+       instances created later inside AJAX content and modals. */
+    (function ($) {
+      if (!$ || !$.fn || !$.fn.dropify) return;
+
+      var locale = <?php echo json_encode($dropifyLocale); ?>;
+      var translations = {
+        th: {
+          messages: {
+            'default': 'ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์',
+            'replace': 'ลากไฟล์มาวาง หรือคลิกเพื่อเปลี่ยนไฟล์',
+            'remove': 'ลบไฟล์',
+            'error': 'ไม่สามารถใช้ไฟล์นี้ได้ กรุณาตรวจสอบอีกครั้ง'
+          },
+          error: {
+            'fileSize': 'ไฟล์มีขนาดใหญ่เกินกำหนด (สูงสุด {{ value }})',
+            'minWidth': 'ความกว้างของรูปภาพต้องไม่น้อยกว่า {{ value }}px',
+            'maxWidth': 'ความกว้างของรูปภาพต้องไม่เกิน {{ value }}px',
+            'minHeight': 'ความสูงของรูปภาพต้องไม่น้อยกว่า {{ value }}px',
+            'maxHeight': 'ความสูงของรูปภาพต้องไม่เกิน {{ value }}px',
+            'imageFormat': 'รองรับเฉพาะไฟล์รูปแบบ {{ value }} เท่านั้น'
+          }
+        },
+        ja: {
+          messages: {
+            'default': 'ファイルをここにドロップするか、クリックして選択',
+            'replace': 'ファイルをドロップするか、クリックして変更',
+            'remove': 'ファイルを削除',
+            'error': 'このファイルは使用できません。もう一度確認してください'
+          },
+          error: {
+            'fileSize': 'ファイルサイズが上限を超えています（最大 {{ value }}）',
+            'minWidth': '画像の幅は {{ value }}px 以上にしてください',
+            'maxWidth': '画像の幅は {{ value }}px 以下にしてください',
+            'minHeight': '画像の高さは {{ value }}px 以上にしてください',
+            'maxHeight': '画像の高さは {{ value }}px 以下にしてください',
+            'imageFormat': '使用できる画像形式は {{ value }} のみです'
+          }
+        },
+        en: {
+          messages: {
+            'default': 'Drag and drop a file here, or click to browse',
+            'replace': 'Drag and drop or click to replace the file',
+            'remove': 'Remove file',
+            'error': 'This file cannot be used. Please check it and try again.'
+          },
+          error: {
+            'fileSize': 'The file is too large ({{ value }} maximum).',
+            'minWidth': 'The image must be at least {{ value }}px wide.',
+            'maxWidth': 'The image must not exceed {{ value }}px in width.',
+            'minHeight': 'The image must be at least {{ value }}px high.',
+            'maxHeight': 'The image must not exceed {{ value }}px in height.',
+            'imageFormat': 'Only {{ value }} image files are allowed.'
+          }
+        }
+      };
+
+      var originalDropify = $.fn.dropify;
+      $.fn.dropify = function (options) {
+        var localizedOptions = $.extend(true, {}, translations[locale] || translations.en, options || {});
+        return originalDropify.call(this, localizedOptions);
+      };
+      $.fn.dropify.Constructor = originalDropify.Constructor;
+      window.PRECISION_DROPIFY_LOCALE = locale;
+    })(window.jQuery);
+    </script>
     <!-- Sweet-Alert  -->
     <script src="<?php echo REAL_PATH; ?>/assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="<?php echo REAL_PATH; ?>/assets/plugins/sweetalert/jquery.sweet-alert.custom.js"></script>

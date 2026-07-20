@@ -1,0 +1,375 @@
+.manual-page {
+  background: #f5f7fa;
+  color: #202631;
+}
+
+.manual-page .manual-container {
+  max-width: 1440px;
+  padding: 34px 32px 58px;
+}
+
+.manual-hero {
+  align-items: flex-end;
+  display: flex;
+  gap: 28px;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.manual-heading {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+}
+
+.manual-heading-icon {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e2e6ed;
+  border-radius: 15px;
+  box-shadow: 0 8px 22px rgba(27, 38, 55, .07);
+  color: #e31e2f;
+  display: flex;
+  flex: 0 0 58px;
+  font-size: 28px;
+  height: 58px;
+  justify-content: center;
+}
+
+.manual-eyebrow {
+  color: #e31e2f;
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  margin-bottom: 4px;
+}
+
+.manual-heading h1 {
+  color: #202631;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 4px;
+}
+
+.manual-heading p {
+  color: #737d8c;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.manual-actions,
+.manual-error-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.manual-button {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 7px;
+  height: 42px;
+  justify-content: center;
+  padding: 0 16px;
+  transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, color .18s ease;
+}
+
+.manual-button:hover {
+  text-decoration: none;
+}
+
+.manual-button-primary {
+  background: #e31e2f;
+  border-color: #e31e2f;
+  color: #fff;
+  box-shadow: 0 7px 16px rgba(227, 30, 47, .18);
+}
+
+.manual-button-primary:hover {
+  background: #c91829;
+  border-color: #c91829;
+  color: #fff;
+}
+
+.manual-button-secondary {
+  background: #fff;
+  border-color: #dce1e8;
+  color: #4c5869;
+}
+
+.manual-button-secondary:hover {
+  background: #f9fafb;
+  border-color: #cbd2dc;
+  color: #e31e2f;
+}
+
+.manual-card {
+  background: #fff;
+  border: 1px solid #dfe4eb;
+  border-radius: 16px;
+  box-shadow: 0 14px 38px rgba(27, 38, 55, .07);
+  overflow: hidden;
+}
+
+.manual-card-toolbar {
+  align-items: center;
+  border-bottom: 1px solid #e9edf2;
+  display: flex;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 12px 20px;
+}
+
+.manual-file-info {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.manual-file-icon {
+  align-items: center;
+  background: #fff1f2;
+  border-radius: 10px;
+  color: #e31e2f;
+  display: flex;
+  flex: 0 0 40px;
+  font-size: 22px;
+  height: 40px;
+  justify-content: center;
+}
+
+.manual-file-info strong,
+.manual-file-info span {
+  display: block;
+}
+
+.manual-file-info strong {
+  color: #2d3643;
+  font-size: 13px;
+  max-width: 620px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.manual-file-info div > span {
+  color: #929ba8;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.manual-status {
+  align-items: center;
+  background: #f3f5f7;
+  border-radius: 999px;
+  color: #707b8b;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  gap: 7px;
+  padding: 7px 11px;
+}
+
+.manual-status > i {
+  font-size: 8px;
+}
+
+.manual-status-ready {
+  background: #eaf8f1;
+  color: #168958;
+}
+
+.manual-status-error {
+  background: #fff0f1;
+  color: #c91d2e;
+}
+
+.manual-status-loading > i {
+  animation: manualPulse 1s ease-in-out infinite;
+  color: #e49a13;
+}
+
+.manual-viewer {
+  background: #eef1f5;
+  height: calc(100vh - 300px);
+  min-height: 540px;
+  position: relative;
+}
+
+.manual-media {
+  background: #fff;
+  border: 0;
+  display: none;
+  height: 100%;
+  width: 100%;
+}
+
+.manual-image {
+  object-fit: contain;
+}
+
+.manual-video {
+  background: #101318;
+}
+
+.manual-loading,
+.manual-error,
+.manual-unsupported {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  left: 0;
+  padding: 36px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+}
+
+.manual-loading strong,
+.manual-error h2,
+.manual-unsupported h2 {
+  color: #2c3542;
+  font-size: 18px;
+  margin: 16px 0 5px;
+}
+
+.manual-loading p,
+.manual-error p,
+.manual-unsupported p {
+  color: #7e8897;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 520px;
+}
+
+.manual-spinner {
+  animation: manualSpin .8s linear infinite;
+  border: 3px solid #d9dee6;
+  border-radius: 50%;
+  border-top-color: #e31e2f;
+  display: block;
+  height: 38px;
+  width: 38px;
+}
+
+.manual-error {
+  background: #fff;
+  display: none;
+}
+
+.manual-error-icon,
+.manual-unsupported > i {
+  align-items: center;
+  background: #fff0f1;
+  border-radius: 16px;
+  color: #e31e2f;
+  display: flex;
+  font-size: 30px;
+  height: 64px;
+  justify-content: center;
+  width: 64px;
+}
+
+.manual-error-actions {
+  margin-top: 22px;
+}
+
+.manual-unsupported {
+  background: #fff;
+}
+
+@keyframes manualSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes manualPulse {
+  50% { opacity: .35; }
+}
+
+@media (max-width: 767px) {
+  .manual-page .manual-container {
+    padding: 24px 16px 42px;
+  }
+
+  .manual-hero {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .manual-heading {
+    align-items: flex-start;
+  }
+
+  .manual-heading-icon {
+    border-radius: 12px;
+    flex-basis: 48px;
+    font-size: 24px;
+    height: 48px;
+  }
+
+  .manual-heading h1 {
+    font-size: 24px;
+  }
+
+  .manual-actions {
+    width: 100%;
+  }
+
+  .manual-actions .manual-button {
+    flex: 1 1 50%;
+    padding: 0 10px;
+  }
+
+  .manual-card {
+    border-radius: 13px;
+  }
+
+  .manual-card-toolbar {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .manual-file-info strong {
+    max-width: 180px;
+  }
+
+  .manual-status {
+    margin-top: 5px;
+  }
+
+  .manual-viewer {
+    height: 62vh;
+    min-height: 460px;
+  }
+
+  .manual-error,
+  .manual-loading,
+  .manual-unsupported {
+    padding: 24px 18px;
+  }
+
+  .manual-error-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .manual-error-actions .manual-button {
+    width: 100%;
+  }
+}

@@ -228,10 +228,37 @@ class Home extends CI_Controller {
 		$arr['emp_c'] = isset($sess['emp_c']) ? $sess['emp_c'] : "";
 		$arr['lang'] = $lang;
 		$arr['user'] = $sess;
+		$arr['com_admin'] = isset($sess['com_admin']) ? $sess['com_admin'] : "";
+		$arr['com_id'] = isset($sess['com_id']) ? $sess['com_id'] : "";
 		$this->load->model('Home_model', 'home', FALSE);
 		$this->home->loadDB();
 		$arr['useron'] = $this->home->onlineUser();
 		$arr['pic'] = $this->home->getpic();
+
+		if (!empty($sess)) {
+			$this->load->model('Manage_model', 'manage', FALSE);
+			$this->manage->loadDB();
+			$arr['arr_permission'] = $this->manage->chk_permission_page();
+			$arr['main_menu'] = $this->manage->checkmenu();
+			$arr['title'] = $this->manage->get_namemenu($arr['page']);
+			$arr['title_main'] = $this->manage->get_namemenu_sub($arr['page']);
+			$arr['submenu'] = array();
+			$arr['submenu_b'] = array();
+			foreach ($arr['main_menu'] as $valueMainMenu) {
+				$menuId = $valueMainMenu['mu_id'];
+				$children = $this->manage->checkmenu_sub($menuId);
+				if (countArray($children)) {
+					$arr['submenu'][$menuId] = $children;
+					foreach ($children as $child) {
+						$grandchildren = $this->manage->checkmenu_sub($child['mu_id']);
+						if (countArray($grandchildren)) {
+							$arr['submenu_b'][$child['mu_id']] = $grandchildren;
+						}
+					}
+				}
+			}
+			$this->manage->closeDB();
+		}
 
 
 		$this->home->closeDB();

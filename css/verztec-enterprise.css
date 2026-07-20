@@ -25,7 +25,7 @@ body {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(245, 180, 0, 0.55) !important;
+  /* outline: 3px solid rgba(245, 180, 0, 0.55) !important; */
   outline-offset: 3px !important;
 }
 
@@ -104,7 +104,7 @@ body {
 .table-responsive,
 .ribbon-wrapper,
 .course-card {
-  border: 1px solid var(--border-color) !important;
+  border: 0px solid var(--border-color) !important;
   border-radius: var(--radius-md) !important;
   background: var(--brand-white) !important;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;

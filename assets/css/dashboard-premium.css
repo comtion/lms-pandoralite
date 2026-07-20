@@ -161,7 +161,7 @@
 .lms-premium-dashboard .carousel-indicators li { width: 8px; height: 8px; border-radius: 99px; transition: width .2s ease; }
 .lms-premium-dashboard .carousel-indicators li.active { width: 28px; background: var(--lms-red); }
 
-.lms-premium-dashboard .table-responsive { border-radius: 14px; border: 1px solid var(--lms-line); }
+.lms-premium-dashboard .table-responsive { border-radius: 14px; border: 0px solid var(--lms-line); }
 .lms-premium-dashboard .table { margin-bottom: 0; }
 .lms-premium-dashboard .table thead th { border: 0; background: #f8fafc; color: #64748b; font-size: 12px; font-weight: 800; letter-spacing: .02em; }
 .lms-premium-dashboard .table td { border-color: #edf1f5; color: #334155; vertical-align: middle; }

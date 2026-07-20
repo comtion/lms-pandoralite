@@ -241,6 +241,210 @@
   .precision-app-shell .dataTables_wrapper .dataTables_paginate { justify-content:center; margin-top:8px; }
 }
 
+/* Premium DataTables sorting indicators. */
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc_disabled,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc_disabled {
+  position:relative !important;
+  padding-right:34px !important;
+  background-image:none !important;
+  cursor:pointer;
+  transition:background-color .16s ease,color .16s ease,box-shadow .16s ease;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting:hover {
+  background-color:#f3f6f9 !important;
+  color:#344054 !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc {
+  background-color:#fff7f7 !important;
+  color:#182132 !important;
+  box-shadow:inset 0 -2px 0 #ed1c24;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting::before,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc::before,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc::before,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc_disabled::before,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc_disabled::before {
+  content:"▲" !important;
+  position:absolute !important;
+  top:50% !important;
+  right:12px !important;
+  bottom:auto !important;
+  display:block !important;
+  margin:0 !important;
+  color:#b8c0cc !important;
+  font-family:Arial,sans-serif !important;
+  font-size:7px !important;
+  line-height:1 !important;
+  opacity:.72 !important;
+  transform:translateY(-7px) !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting::after,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc::after,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc::after,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc_disabled::after,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc_disabled::after {
+  content:"▼" !important;
+  position:absolute !important;
+  top:50% !important;
+  right:12px !important;
+  bottom:auto !important;
+  display:block !important;
+  margin:0 !important;
+  color:#b8c0cc !important;
+  font-family:Arial,sans-serif !important;
+  font-size:7px !important;
+  line-height:1 !important;
+  opacity:.72 !important;
+  transform:translateY(2px) !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc::before,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc::after {
+  color:#ed1c24 !important;
+  opacity:1 !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc::after,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc::before {
+  color:#d7dce3 !important;
+  opacity:.5 !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_asc_disabled::before,
+.precision-app-shell .dataTables_wrapper table.dataTable thead > tr > :is(th,td).sorting_desc_disabled::after {
+  opacity:.18 !important;
+}
+
+/* Premium DataTable workspace: generous toolbar/footer spacing and refined surfaces. */
+.precision-app-shell .dataTables_wrapper {
+  border:1px solid #e2e7ee !important;
+  border-radius:16px !important;
+  background:#fff !important;
+  box-shadow:0 10px 32px rgba(15,23,42,.055) !important;
+}
+.precision-app-shell .dataTables_wrapper > .row:first-child {
+  min-height:76px !important;
+  align-items:center;
+  padding:16px 18px 14px !important;
+  border-bottom:0 !important;
+  background:linear-gradient(180deg,#fff 0%,#fcfdff 100%) !important;
+}
+.precision-app-shell .dataTables_wrapper > .dt-buttons,
+.precision-app-shell .dataTables_wrapper > .dataTables_length {
+  margin:18px 0 16px 18px !important;
+}
+.precision-app-shell .dataTables_wrapper > .dataTables_filter {
+  margin:18px 18px 16px 0 !important;
+}
+.precision-app-shell .dataTables_wrapper .dt-buttons {
+  display:inline-flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.precision-app-shell .dataTables_wrapper .dt-buttons .dt-button,
+.precision-app-shell .dataTables_wrapper .dt-buttons button {
+  min-height:36px;
+  margin:0 !important;
+  padding:7px 14px !important;
+  border:1px solid #dfe5ec !important;
+  border-radius:9px !important;
+  background:#fff !important;
+  color:#344054 !important;
+  font-size:12px !important;
+  font-weight:750 !important;
+  line-height:1.2 !important;
+  box-shadow:0 2px 6px rgba(15,23,42,.04) !important;
+  transition:all .16s ease;
+}
+.precision-app-shell .dataTables_wrapper .dt-buttons .dt-button:hover,
+.precision-app-shell .dataTables_wrapper .dt-buttons button:hover {
+  border-color:#ed1c24 !important;
+  background:#fff1f2 !important;
+  color:#d71920 !important;
+  box-shadow:0 5px 13px rgba(237,28,36,.1) !important;
+  transform:translateY(-1px);
+}
+.precision-app-shell .dataTables_wrapper .dataTables_filter label {
+  color:#667085 !important;
+  font-size:11px !important;
+  font-weight:750 !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_filter input {
+  width:min(260px,36vw) !important;
+  height:40px !important;
+  margin-left:9px !important;
+  padding:8px 12px !important;
+  border:1px solid #dfe5ec !important;
+  border-radius:10px !important;
+  background:#f8fafc !important;
+  color:#182132 !important;
+  box-shadow:inset 0 1px 2px rgba(15,23,42,.025) !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_filter input:focus {
+  border-color:#ef6b71 !important;
+  background:#fff !important;
+  outline:0 !important;
+  box-shadow:0 0 0 4px rgba(237,28,36,.08) !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_scroll,
+.precision-app-shell .dataTables_wrapper .dataTables_scrollHead,
+.precision-app-shell .dataTables_wrapper .dataTables_scrollBody,
+.precision-app-shell .dataTables_wrapper > table.dataTable {
+  border-top:1px solid #e7ebf0 !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead th {
+  border-bottom:1px solid #dce2e9 !important;
+  background:linear-gradient(180deg,#fafbfd 0%,#f5f7fa 100%) !important;
+  color:#536074 !important;
+  font-weight:800 !important;
+  letter-spacing:.01em;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody td {
+  border-bottom:1px solid #e9edf2 !important;
+  color:#3f4c60 !important;
+  font-variant-numeric:tabular-nums;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr:nth-child(even) td {
+  background:#fbfcfe !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr:hover td {
+  background:#fff5f6 !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr:hover td:first-child {
+  box-shadow:inset 3px 0 0 #ed1c24;
+}
+.precision-app-shell .dataTables_wrapper > .row:last-child {
+  min-height:76px !important;
+  align-items:center;
+  padding:14px 18px 18px !important;
+  border-top:0 !important;
+  background:linear-gradient(180deg,#fcfdff 0%,#f8fafc 100%) !important;
+}
+.precision-app-shell .dataTables_wrapper > .dataTables_info {
+  margin:16px 0 18px 18px !important;
+}
+.precision-app-shell .dataTables_wrapper > .dataTables_paginate {
+  margin:12px 18px 14px auto !important;
+}
+@media (max-width:767.98px) {
+  .precision-app-shell .dataTables_wrapper > .row:first-child,
+  .precision-app-shell .dataTables_wrapper > .row:last-child {
+    padding:14px !important;
+  }
+  .precision-app-shell .dataTables_wrapper > .dt-buttons,
+  .precision-app-shell .dataTables_wrapper > .dataTables_length,
+  .precision-app-shell .dataTables_wrapper > .dataTables_filter,
+  .precision-app-shell .dataTables_wrapper > .dataTables_info,
+  .precision-app-shell .dataTables_wrapper > .dataTables_paginate {
+    margin:12px 14px !important;
+  }
+  .precision-app-shell .dataTables_wrapper .dataTables_filter input {
+    width:100% !important;
+    margin:7px 0 0 !important;
+  }
+}
+
 /* Premium data workspace — compact, calm and purpose-led. */
 .precision-data-page .precision-page-heading {
   min-height:72px !important;
@@ -332,7 +536,7 @@
 }
 
 /* Data workspace v2 — cleaner, denser and less Bootstrap-like. */
-.precision-app-shell .dataTables_wrapper { overflow:hidden; border:1px solid #e3e8ef; border-radius:14px; background:#fff; box-shadow:0 8px 26px rgba(15,23,42,.045); }
+.precision-app-shell .dataTables_wrapper { overflow:hidden; border:0px solid #e3e8ef; border-radius:14px; background:#fff; box-shadow:0 8px 26px rgba(15,23,42,.045); }
 .precision-app-shell .dataTables_wrapper > .row:first-child,
 .precision-app-shell .dataTables_wrapper > .row:last-child { border:0; border-radius:0; }
 .precision-app-shell .dataTables_wrapper > .row:first-child { min-height:68px; border-bottom:1px solid #edf0f4; background:#fff; }
@@ -478,8 +682,6 @@
   background:#f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='none' stroke='%23667085' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E") no-repeat 12px center;
 }
 .select2-container--open .select2-search--dropdown .select2-search__field:focus {
-  border-color:#f28b90 !important;
-  box-shadow:0 0 0 3px rgba(237,28,36,.08);
 }
 .select2-container--open .select2-results__options {
   max-height:260px !important;
@@ -780,12 +982,12 @@
 
 /* Lock compact action controls to a true square across legacy button rules. */
 .precision-data-page table.table .btn.btn-xs {
-  width:32px !important;
-  min-width:32px !important;
-  max-width:32px !important;
-  height:32px !important;
-  min-height:32px !important;
-  max-height:32px !important;
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  max-height:34px !important;
   display:inline-grid !important;
   place-items:center !important;
   padding:0 !important;
@@ -813,4 +1015,1096 @@
   border-radius:8px !important;
   line-height:1 !important;
   box-sizing:border-box !important;
+}
+
+/* Global square icon-button component for every legacy table/page. */
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-xs:has(i),
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) a.btn.btn-xs:has(i) {
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  max-height:34px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  margin:2px !important;
+  padding:0 !important;
+  border-radius:9px !important;
+  line-height:1 !important;
+  vertical-align:middle !important;
+  box-sizing:border-box !important;
+  aspect-ratio:1 / 1 !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-xs:has(i) > i,
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) a.btn.btn-xs:has(i) > i {
+  width:auto !important;
+  height:auto !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  font-size:14px !important;
+  line-height:1 !important;
+  transform:none !important;
+}
+/* Fallback for older engines without :has(), scoped to table action cells. */
+.precision-app-shell table .btn.btn-xs {
+  min-width:34px !important;
+  min-height:34px !important;
+  padding:0 !important;
+  vertical-align:middle !important;
+}
+
+/* Neutral copy/duplicate action — visible on white table surfaces. */
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-outline-secondary.btn-xs,
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.duplicateCourse {
+  border:1px solid #d9e0e8 !important;
+  background:#f2f4f7 !important;
+  color:#475467 !important;
+  box-shadow:0 2px 5px rgba(15,23,42,.05) !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-outline-secondary.btn-xs:hover,
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.duplicateCourse:hover,
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-outline-secondary.btn-xs:focus,
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.duplicateCourse:focus {
+  border-color:#182132 !important;
+  background:#182132 !important;
+  color:#fff !important;
+  box-shadow:0 6px 14px rgba(15,23,42,.16) !important;
+  outline:0 !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.duplicateCourse i,
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-outline-secondary.btn-xs i {
+  color:inherit !important;
+}
+
+/* Unified table action buttons: rows and their legend use one visual system. */
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-xs,
+.precision-data-page .precision-table-legend .btn.btn-xs {
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  max-height:34px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  padding:0 !important;
+  margin:2px !important;
+  border:1px solid transparent !important;
+  border-radius:9px !important;
+  line-height:1 !important;
+  vertical-align:middle !important;
+  box-sizing:border-box !important;
+  aspect-ratio:1 / 1 !important;
+  box-shadow:none !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn.btn-xs i,
+.precision-data-page .precision-table-legend .btn.btn-xs i {
+  display:block !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  color:inherit !important;
+  font-size:14px !important;
+  line-height:1 !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-primary.btn-xs {
+  border-color:#dbe7ff !important; background:#eef4ff !important; color:#2563eb !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-info.btn-xs {
+  border-color:#cceff4 !important; background:#ecfdff !important; color:#087e8b !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-warning.btn-xs {
+  border-color:#f8e4b2 !important; background:#fff4d6 !important; color:#a15c00 !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-danger.btn-xs {
+  border-color:#ffd9de !important; background:#fff0f1 !important; color:#d92d20 !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-secondary.btn-xs {
+  border-color:#d9e0e8 !important; background:#f2f4f7 !important; color:#475467 !important;
+}
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-primary.btn-xs:hover { border-color:#2563eb !important; background:#2563eb !important; color:#fff !important; }
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-info.btn-xs:hover { border-color:#0891b2 !important; background:#0891b2 !important; color:#fff !important; }
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-warning.btn-xs:hover { border-color:#f59e0b !important; background:#f59e0b !important; color:#fff !important; }
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-danger.btn-xs:hover { border-color:#ed1c24 !important; background:#ed1c24 !important; color:#fff !important; }
+.precision-app-shell :is(table,.dataTables_wrapper,.precision-table-legend) .btn-secondary.btn-xs:hover { border-color:#182132 !important; background:#182132 !important; color:#fff !important; }
+
+/* Premium pagination: compact control group with clear current/hover states. */
+.precision-app-shell .dataTables_wrapper .dataTables_paginate {
+  width:max-content;
+  max-width:100%;
+  display:flex !important;
+  align-items:center;
+  justify-content:flex-end;
+  gap:3px !important;
+  margin:0 0 0 auto !important;
+  padding:4px !important;
+  border:1px solid #e3e8ef;
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 5px 18px rgba(15,23,42,.06);
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate span {
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button {
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px;
+  height:34px !important;
+  min-height:34px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:1px solid transparent !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  color:#596579 !important;
+  font-size:12px !important;
+  font-weight:750 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+  transition:background-color .16s ease,border-color .16s ease,color .16s ease,transform .16s ease,box-shadow .16s ease;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.next {
+  width:auto !important;
+  min-width:72px !important;
+  max-width:none;
+  padding:0 14px !important;
+  border-radius:999px !important;
+  border-color:#e8ecf1 !important;
+  background:#f8fafc !important;
+  color:#475467 !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  border-color:#ffc9cc !important;
+  background:#fff1f2 !important;
+  color:#d71920 !important;
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(237,28,36,.09) !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  border-color:#ed1c24 !important;
+  background:linear-gradient(145deg,#ff3038,#d90f17) !important;
+  color:#fff !important;
+  transform:none;
+  box-shadow:0 5px 12px rgba(237,28,36,.25) !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  border-color:transparent !important;
+  background:transparent !important;
+  color:#c3cad4 !important;
+  opacity:1 !important;
+  transform:none;
+  box-shadow:none !important;
+  cursor:not-allowed !important;
+}
+@media (max-width:575.98px) {
+  .precision-app-shell .dataTables_wrapper .dataTables_paginate {
+    width:100%;
+    justify-content:center;
+    overflow-x:auto;
+  }
+  .precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+  .precision-app-shell .dataTables_wrapper .dataTables_paginate .paginate_button.next {
+    min-width:58px !important;
+    padding-inline:9px !important;
+  }
+}
+
+/* Pagination state parity: active and hover must have the same round silhouette. */
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button:not(.previous):not(.next),
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button:not(.previous):not(.next):hover,
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  max-height:34px !important;
+  padding:0 !important;
+  border-radius:50% !important;
+  box-sizing:border-box !important;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button:not(.current):not(.disabled):hover,
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  border-color:#ed1c24 !important;
+  background:linear-gradient(145deg,#ff3038,#d90f17) !important;
+  color:#fff !important;
+  box-shadow:0 5px 12px rgba(237,28,36,.22) !important;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.previous:hover,
+.precision-data-page .dataTables_wrapper .dataTables_paginate .paginate_button.next:hover {
+  border-radius:999px !important;
+}
+
+/* DataTables Bootstrap renders li.paginate_button > a.page-link.
+   Keep decoration on the inner link only to avoid square + circle stacking. */
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button,
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button:hover,
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.current,
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.active {
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button .page-link {
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  max-height:34px !important;
+  display:grid !important;
+  place-items:center !important;
+  padding:0 !important;
+  border:1px solid transparent !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  color:#596579 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button:not(.disabled) .page-link:hover,
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.active .page-link,
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.current .page-link {
+  border-color:#ed1c24 !important;
+  border-radius:50% !important;
+  background:linear-gradient(145deg,#ff3038,#d90f17) !important;
+  color:#fff !important;
+  box-shadow:0 5px 12px rgba(237,28,36,.22) !important;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.previous .page-link,
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.next .page-link {
+  width:auto !important;
+  min-width:72px !important;
+  max-width:none !important;
+  padding:0 14px !important;
+  border-color:#e8ecf1 !important;
+  border-radius:999px !important;
+  background:#f8fafc !important;
+}
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.previous:not(.disabled) .page-link:hover,
+.precision-data-page .dataTables_wrapper .dataTables_paginate li.paginate_button.next:not(.disabled) .page-link:hover {
+  border-color:#ed1c24 !important;
+  border-radius:999px !important;
+  background:linear-gradient(145deg,#ff3038,#d90f17) !important;
+  color:#fff !important;
+}
+
+/* Global Bootstrap pagination override (some legacy pages do not carry precision-data-page). */
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item:hover,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item.active {
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item > a.page-link {
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  max-height:34px !important;
+  display:grid !important;
+  place-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:1px solid transparent !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  color:#596579 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item:not(.disabled) > a.page-link:hover,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item.active > a.page-link,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item.active > a.page-link:hover {
+  border-color:#ed1c24 !important;
+  border-radius:50% !important;
+  background:linear-gradient(145deg,#ff3038,#d90f17) !important;
+  color:#fff !important;
+  box-shadow:0 5px 12px rgba(237,28,36,.22) !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item.previous > a.page-link,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item.next > a.page-link {
+  width:auto !important;
+  min-width:72px !important;
+  max-width:none !important;
+  padding:0 14px !important;
+  border-color:#e8ecf1 !important;
+  border-radius:999px !important;
+  background:#f8fafc !important;
+}
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item.previous:not(.disabled) > a.page-link:hover,
+.precision-app-shell .dataTables_wrapper .dataTables_paginate .pagination > li.page-item.next:not(.disabled) > a.page-link:hover {
+  border-color:#ed1c24 !important;
+  border-radius:999px !important;
+  background:linear-gradient(145deg,#ff3038,#d90f17) !important;
+  color:#fff !important;
+}
+
+/* Global action legend: every legacy note paragraph containing btn-xs. */
+.precision-app-shell p:has(.btn.btn-xs) {
+  color:#475467;
+  font-size:12px;
+  line-height:42px;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn.btn-xs {
+  width:34px !important;
+  min-width:34px !important;
+  max-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  max-height:34px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  margin:2px 4px !important;
+  padding:0 !important;
+  border:1px solid transparent !important;
+  border-radius:9px !important;
+  line-height:1 !important;
+  vertical-align:middle !important;
+  box-sizing:border-box !important;
+  aspect-ratio:1 / 1 !important;
+  box-shadow:none !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn.btn-xs i {
+  display:block !important;
+  width:auto !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  color:inherit !important;
+  font-size:14px !important;
+  line-height:1 !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn-primary.btn-xs {
+  border-color:#dbe7ff !important; background:#eef4ff !important; color:#2563eb !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn-info.btn-xs {
+  border-color:#cceff4 !important; background:#ecfdff !important; color:#087e8b !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn-success.btn-xs {
+  border-color:#cdeedd !important; background:#ecfdf3 !important; color:#079455 !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn-warning.btn-xs {
+  border-color:#f8e4b2 !important; background:#fff4d6 !important; color:#a15c00 !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn-danger.btn-xs {
+  border-color:#ffd9de !important; background:#fff0f1 !important; color:#d92d20 !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) :is(.btn-secondary,.btn-outline-secondary).btn-xs {
+  border-color:#d9e0e8 !important; background:#f2f4f7 !important; color:#475467 !important;
+}
+.precision-app-shell p:has(.btn.btn-xs) .btn-primary.btn-xs:hover { border-color:#2563eb !important; background:#2563eb !important; color:#fff !important; }
+.precision-app-shell p:has(.btn.btn-xs) .btn-info.btn-xs:hover { border-color:#0891b2 !important; background:#0891b2 !important; color:#fff !important; }
+.precision-app-shell p:has(.btn.btn-xs) .btn-success.btn-xs:hover { border-color:#079455 !important; background:#079455 !important; color:#fff !important; }
+.precision-app-shell p:has(.btn.btn-xs) .btn-warning.btn-xs:hover { border-color:#f59e0b !important; background:#f59e0b !important; color:#fff !important; }
+.precision-app-shell p:has(.btn.btn-xs) .btn-danger.btn-xs:hover { border-color:#ed1c24 !important; background:#ed1c24 !important; color:#fff !important; }
+.precision-app-shell p:has(.btn.btn-xs) :is(.btn-secondary,.btn-outline-secondary).btn-xs:hover { border-color:#182132 !important; background:#182132 !important; color:#fff !important; }
+
+/* Global DataTables density: compact enough for scanning, roomy enough for actions. */
+.precision-app-shell .dataTables_wrapper table.dataTable tbody tr,
+.precision-app-shell .dataTables_wrapper table.dataTable.display tbody tr,
+.precision-app-shell .dataTables_wrapper table.dataTable.table tbody tr {
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable tbody td,
+.precision-app-shell .dataTables_wrapper table.dataTable.display tbody td,
+.precision-app-shell .dataTables_wrapper table.dataTable.table tbody td {
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  padding:8px 12px !important;
+  font-size:12px !important;
+  line-height:1.35 !important;
+  vertical-align:middle !important;
+  box-sizing:border-box !important;
+}
+.precision-app-shell .dataTables_wrapper table.dataTable thead th,
+.precision-app-shell .dataTables_wrapper table.dataTable.display thead th,
+.precision-app-shell .dataTables_wrapper table.dataTable.table thead th {
+  height:auto !important;
+  min-height:0 !important;
+  padding:10px 12px !important;
+  line-height:1.3 !important;
+  vertical-align:middle !important;
+}
+@media (max-width:767.98px) {
+  .precision-app-shell .dataTables_wrapper table.dataTable tbody tr,
+  .precision-app-shell .dataTables_wrapper table.dataTable tbody td {
+    height:auto !important;
+    min-height:0 !important;
+  }
+  .precision-app-shell .dataTables_wrapper table.dataTable tbody td {
+    padding:7px 10px !important;
+  }
+}
+/* Premium command bar: unified search, language, alerts and account controls. */
+.precision-app-shell .precision-commandbar {
+  min-height:64px !important;
+  grid-template-columns:minmax(320px,1fr) auto auto auto auto auto auto !important;
+  gap:8px !important;
+  padding:7px 10px !important;
+  border:1px solid #e2e7ee !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.98) !important;
+  box-shadow:0 10px 30px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.03) !important;
+}
+.precision-app-shell .precision-search-trigger {
+  min-height:48px !important;
+  margin:0 !important;
+  padding:0 10px 0 14px !important;
+  border:1px solid transparent !important;
+  border-radius:12px !important;
+  background:#f7f9fc !important;
+  color:#7b8799 !important;
+  box-shadow:inset 0 0 0 1px rgba(216,223,232,.72) !important;
+}
+.precision-app-shell .precision-search-trigger:hover {
+  border-color:#f4c4c7 !important;
+  background:#fff5f5 !important;
+  color:#4b5565 !important;
+  box-shadow:0 5px 14px rgba(237,28,36,.07) !important;
+}
+.precision-app-shell .precision-search-trigger:focus,
+.precision-app-shell .precision-search-trigger:focus-visible {
+  border-color:#ed1c24 !important;
+  outline:0 !important;
+  background:#fff !important;
+  box-shadow:0 0 0 4px rgba(237,28,36,.10) !important;
+}
+.precision-app-shell .precision-search-trigger > i {
+  color:#4e5b70 !important;
+  font-size:22px !important;
+}
+.precision-app-shell .precision-search-trigger:hover > i { color:#ed1c24 !important; }
+.precision-app-shell .precision-search-trigger > span { font-size:12px !important; font-weight:600 !important; }
+.precision-app-shell .precision-search-trigger kbd {
+  min-width:44px;
+  padding:6px 8px !important;
+  border:1px solid #dfe5ed !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  color:#7b8799 !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+  text-align:center;
+}
+.precision-app-shell .precision-command-divider {
+  width:1px !important;
+  height:30px !important;
+  margin:0 2px !important;
+  background:#e6eaf0 !important;
+}
+.precision-app-shell .precision-language {
+  min-height:44px !important;
+  padding:0 11px !important;
+  border:1px solid transparent;
+  border-radius:11px !important;
+}
+.precision-app-shell .precision-language:hover {
+  border-color:#f6d4d6;
+  background:#fff3f4 !important;
+}
+.precision-app-shell .precision-language > .flag-icon {
+  width:24px !important;
+  height:16px !important;
+  border-radius:4px !important;
+  box-shadow:0 0 0 1px rgba(15,23,42,.12);
+}
+.precision-app-shell .precision-notification {
+  width:44px !important;
+  height:44px !important;
+  border:1px solid transparent !important;
+  border-radius:11px !important;
+}
+.precision-app-shell .precision-notification:hover {
+  border-color:#f6d4d6 !important;
+  background:#fff3f4 !important;
+  color:#ed1c24 !important;
+}
+.precision-app-shell .precision-notification span {
+  top:-3px !important;
+  right:-3px !important;
+  min-width:19px !important;
+  height:19px !important;
+  border:2px solid #fff !important;
+  box-shadow:0 2px 7px rgba(237,28,36,.25);
+}
+.precision-app-shell .precision-header-profile {
+  min-height:48px !important;
+  padding:4px 8px 4px 5px !important;
+  border:1px solid transparent !important;
+  border-radius:12px !important;
+}
+.precision-app-shell .precision-header-profile:hover {
+  border-color:#e4e9f0 !important;
+  background:#f7f9fc !important;
+}
+.precision-app-shell .precision-header-profile img {
+  width:40px !important;
+  height:40px !important;
+  border:2px solid #fff !important;
+  background:#f2f4f7;
+  box-shadow:0 0 0 1px #dfe5ec,0 3px 9px rgba(15,23,42,.08);
+}
+@media (max-width:767.98px) {
+  .precision-app-shell .precision-commandbar { min-height:58px !important; grid-template-columns:minmax(0,1fr) auto auto !important; }
+  .precision-app-shell .precision-command-divider { display:none !important; }
+  .precision-app-shell .precision-header-profile > span,
+  .precision-app-shell .precision-header-profile > .mdi-chevron-down,
+  .precision-app-shell .precision-language > strong { display:none !important; }
+  .precision-app-shell .precision-header-profile { display:flex !important; min-width:44px !important; justify-content:center; padding:2px !important; }
+}
+/* Premium rich-text editor system: TinyMCE 4/5+ and CKEditor. */
+.precision-app-shell :is(.mce-tinymce,.tox-tinymce,.cke) {
+  overflow:hidden !important;
+  border:1px solid #dce3eb !important;
+  border-radius:14px !important;
+  background:#fff !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.07) !important;
+  transition:border-color .18s ease,box-shadow .18s ease !important;
+}
+.precision-app-shell :is(.mce-tinymce,.tox-tinymce,.cke):focus-within {
+  border-color:#f08b90 !important;
+  box-shadow:0 0 0 4px rgba(237,28,36,.08),0 12px 30px rgba(15,23,42,.08) !important;
+}
+.precision-app-shell .mce-tinymce > .mce-container-body,
+.precision-app-shell .tox-tinymce > .tox-editor-container { border:0 !important; }
+.precision-app-shell :is(.mce-menubar,.tox-menubar,.cke_top) {
+  min-height:42px !important;
+  padding:5px 8px !important;
+  border:0 !important;
+  border-bottom:1px solid #e7ebf1 !important;
+  background:#fbfcfe !important;
+}
+.precision-app-shell .mce-menubar .mce-menubtn {
+  margin:1px !important;
+  padding:0 7px !important;
+  border:0 !important;
+  border-radius:8px !important;
+  background:transparent !important;
+}
+.precision-app-shell .mce-menubar .mce-menubtn:hover,
+.precision-app-shell .mce-menubar .mce-menubtn.mce-active,
+.precision-app-shell .tox-mbtn:hover,
+.precision-app-shell .tox-mbtn--active {
+  background:#fff0f1 !important;
+  color:#d91820 !important;
+}
+.precision-app-shell :is(.mce-toolbar-grp,.tox-toolbar-overlord,.tox-toolbar__primary,.cke_toolbox) {
+  padding:6px 8px !important;
+  border:0 !important;
+  border-bottom:1px solid #e7ebf1 !important;
+  background:#fff !important;
+}
+.precision-app-shell :is(.mce-toolbar,.tox-toolbar__group) { display:flex !important; align-items:center !important; gap:2px; }
+.precision-app-shell .mce-btn-group { margin:2px 4px 2px 0 !important; padding-right:4px; border-right:1px solid #edf0f4; }
+.precision-app-shell .mce-btn-group:last-child { border-right:0; }
+.precision-app-shell :is(.mce-btn,.tox-tbtn,.cke_button,.cke_combo_button) {
+  min-width:34px !important;
+  min-height:34px !important;
+  margin:1px !important;
+  border:1px solid transparent !important;
+  border-radius:8px !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transition:background .15s ease,border-color .15s ease,color .15s ease !important;
+}
+.precision-app-shell :is(.mce-btn,.tox-tbtn,.cke_button,.cke_combo_button):hover {
+  border-color:#f5c6c9 !important;
+  background:#fff1f2 !important;
+  color:#d91820 !important;
+}
+.precision-app-shell .mce-btn.mce-active,
+.precision-app-shell .mce-btn.mce-active:hover,
+.precision-app-shell .tox-tbtn--enabled,
+.precision-app-shell .cke_button_on {
+  border-color:#f2aeb2 !important;
+  background:#ffe5e7 !important;
+  color:#c9151c !important;
+}
+.precision-app-shell .mce-btn button { min-width:32px !important; min-height:32px !important; padding:4px 7px !important; }
+.precision-app-shell :is(.mce-btn i,.tox-tbtn svg,.cke_button_icon) { color:#5f6c80 !important; opacity:1 !important; }
+.precision-app-shell :is(.mce-btn,.tox-tbtn,.cke_button):hover :is(i,svg,.cke_button_icon),
+.precision-app-shell :is(.mce-btn.mce-active,.tox-tbtn--enabled,.cke_button_on) :is(i,svg,.cke_button_icon) { color:#d91820 !important; fill:currentColor !important; }
+.precision-app-shell :is(.mce-edit-area,.tox-edit-area,.cke_contents) {
+  border:0 !important;
+  background:#fff !important;
+}
+.precision-app-shell :is(.mce-edit-area iframe,.tox-edit-area iframe,.cke_wysiwyg_frame) {
+  width:100% !important;
+  min-height:260px;
+  background:#fff !important;
+}
+.precision-app-shell :is(.mce-statusbar,.tox-statusbar,.cke_bottom) {
+  min-height:34px !important;
+  padding:5px 9px !important;
+  border:0 !important;
+  border-top:1px solid #e7ebf1 !important;
+  background:#fafbfc !important;
+  color:#8a94a4 !important;
+  font-size:10px !important;
+}
+.precision-app-shell :is(.mce-path,.mce-wordcount,.tox-statusbar__wordcount,.tox-statusbar__path-item) { color:#8a94a4 !important; }
+.precision-app-shell :is(.mce-menu,.tox-menu,.cke_panel) {
+  overflow:hidden !important;
+  border:1px solid #dfe5ec !important;
+  border-radius:11px !important;
+  background:#fff !important;
+  box-shadow:0 18px 45px rgba(15,23,42,.16) !important;
+}
+.precision-app-shell :is(.mce-menu-item,.tox-collection__item,.cke_menuitem a) { border-radius:7px !important; }
+.precision-app-shell :is(.mce-menu-item,.tox-collection__item,.cke_menuitem a):hover,
+.precision-app-shell .tox-collection__item--active { background:#fff0f1 !important; color:#d91820 !important; }
+.precision-app-shell label + :is(.mce-tinymce,.tox-tinymce,.cke) { margin-top:6px !important; }
+.precision-app-shell .modal :is(.mce-tinymce,.tox-tinymce,.cke) { max-width:100% !important; }
+@media (max-width:767.98px) {
+  .precision-app-shell :is(.mce-tinymce,.tox-tinymce,.cke) { border-radius:12px !important; }
+  .precision-app-shell :is(.mce-menubar,.tox-menubar,.cke_top) { overflow-x:auto !important; white-space:nowrap; }
+  .precision-app-shell :is(.mce-toolbar-grp,.tox-toolbar-overlord,.cke_toolbox) { overflow-x:auto !important; }
+  .precision-app-shell :is(.mce-edit-area iframe,.tox-edit-area iframe,.cke_wysiwyg_frame) { min-height:220px; }
+}
+/* TinyMCE 4 icon-font recovery and compact single-row toolbar. */
+@font-face {
+  font-family:'tinymce';
+  src:url('../plugins/tinymce/skins/lightgray/fonts/tinymce.eot');
+  src:url('../plugins/tinymce/skins/lightgray/fonts/tinymce.eot?#iefix') format('embedded-opentype'),
+      url('../plugins/tinymce/skins/lightgray/fonts/tinymce.woff') format('woff'),
+      url('../plugins/tinymce/skins/lightgray/fonts/tinymce.ttf') format('truetype');
+  font-weight:normal;
+  font-style:normal;
+  font-display:block;
+}
+.precision-app-shell .mce-ico,
+.precision-app-shell .mce-ico::before {
+  font-family:'tinymce' !important;
+  font-style:normal !important;
+  font-weight:normal !important;
+  font-variant:normal !important;
+  text-transform:none !important;
+  speak:none;
+}
+.precision-app-shell .mce-toolbar-grp { padding:5px 7px !important; }
+.precision-app-shell .mce-toolbar { display:block !important; white-space:normal !important; }
+.precision-app-shell .mce-toolbar .mce-btn-group {
+  display:inline-block !important;
+  margin:1px 3px 1px 0 !important;
+  padding-right:3px !important;
+  white-space:nowrap !important;
+}
+.precision-app-shell .mce-toolbar .mce-btn {
+  min-width:30px !important;
+  min-height:30px !important;
+  margin:0 !important;
+  border-radius:7px !important;
+}
+.precision-app-shell .mce-toolbar .mce-btn button {
+  min-width:28px !important;
+  min-height:28px !important;
+  padding:3px 5px !important;
+}
+.precision-app-shell .mce-toolbar .mce-btn .mce-ico {
+  width:18px !important;
+  height:18px !important;
+  padding:0 !important;
+  font-size:18px !important;
+  line-height:18px !important;
+}
+.precision-app-shell .mce-toolbar .mce-listbox button { min-width:auto !important; padding-right:20px !important; }
+
+/* Premium Dropify upload surface — shared by every frontend form. */
+@font-face {
+  font-family:'dropify';
+  src:url('../plugins/dropify/dist/fonts/dropify.eot');
+  src:url('../plugins/dropify/dist/fonts/dropify.eot?#iefix') format('embedded-opentype'),
+      url('../plugins/dropify/dist/fonts/dropify.woff') format('woff'),
+      url('../plugins/dropify/dist/fonts/dropify.ttf') format('truetype');
+  font-weight:normal;
+  font-style:normal;
+  font-display:block;
+}
+.precision-app-shell .dropify-wrapper {
+  min-height:176px;
+  height:176px;
+  padding:14px;
+  border:1.5px dashed #cbd5e1;
+  border-radius:16px;
+  background:linear-gradient(145deg,#fff 0%,#f8fafc 100%);
+  color:#475569;
+  box-shadow:0 8px 24px rgba(15,23,42,.055),inset 0 0 0 1px rgba(255,255,255,.8);
+  transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.precision-app-shell .dropify-wrapper:hover,
+.precision-app-shell .dropify-wrapper.drag-over {
+  border-color:#ef233c;
+  background:linear-gradient(145deg,#fff 0%,#fff1f2 100%);
+  background-image:none !important;
+  box-shadow:0 12px 30px rgba(239,35,60,.12),inset 0 0 0 1px rgba(239,35,60,.06);
+  animation:none !important;
+  transform:translateY(-1px);
+}
+.precision-app-shell .dropify-wrapper .dropify-message {
+  top:50%;
+  transform:translateY(-50%);
+  padding:8px;
+  text-align:center;
+}
+.precision-app-shell .dropify-wrapper .dropify-message span.file-icon {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:58px;
+  height:58px;
+  margin:0 0 8px;
+  border:1px solid #fecdd3;
+  border-radius:18px;
+  background:#fff1f2;
+  color:#ef233c;
+  font-size:27px;
+  box-shadow:0 8px 18px rgba(239,35,60,.12);
+}
+.precision-app-shell .dropify-wrapper .dropify-message span.file-icon::before {
+  margin:0;
+  font-family:'dropify' !important;
+}
+.precision-app-shell .dropify-wrapper .dropify-message p {
+  margin:3px 0 0;
+  color:#64748b;
+  font-size:13px;
+  line-height:1.55;
+}
+.precision-app-shell .dropify-wrapper .dropify-message p:first-of-type {
+  color:#172033;
+  font-weight:700;
+}
+.precision-app-shell .dropify-wrapper .dropify-preview {
+  inset:0;
+  width:100%;
+  height:100%;
+  padding:12px;
+  border-radius:14px;
+  background:#fff;
+}
+.precision-app-shell .dropify-wrapper .dropify-preview .dropify-render img {
+  max-width:calc(100% - 16px);
+  max-height:calc(100% - 16px);
+  border-radius:10px;
+  background:transparent;
+  object-fit:contain;
+}
+.precision-app-shell .dropify-wrapper .dropify-preview .dropify-render i { color:#ef233c; }
+.precision-app-shell .dropify-wrapper .dropify-preview .dropify-infos {
+  inset:8px;
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(15,23,42,.55),rgba(15,23,42,.88));
+  backdrop-filter:blur(3px);
+}
+.precision-app-shell .dropify-wrapper .dropify-preview .dropify-infos .dropify-infos-inner p.dropify-filename {
+  font-size:14px;
+  font-weight:700;
+}
+.precision-app-shell .dropify-wrapper .dropify-clear {
+  top:12px;
+  right:12px;
+  min-width:72px;
+  min-height:34px;
+  padding:7px 12px;
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:999px;
+  background:rgba(239,35,60,.92);
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  box-shadow:0 8px 18px rgba(239,35,60,.22);
+}
+.precision-app-shell .dropify-wrapper .dropify-clear:hover {
+  border-color:#fff;
+  background:#d90429;
+  transform:translateY(-1px);
+}
+.precision-app-shell .dropify-wrapper.has-error {
+  border-color:#ef233c;
+  background:#fff1f2;
+  box-shadow:0 0 0 3px rgba(239,35,60,.1);
+}
+.precision-app-shell .dropify-wrapper .dropify-message p.dropify-error { color:#d90429; }
+.precision-app-shell .dropify-wrapper .dropify-errors-container {
+  z-index:9;
+  padding:10px 14px;
+  border-radius:0 0 14px 14px;
+  background:#d90429;
+  color:#fff;
+  font-size:12px;
+}
+.precision-app-shell .dropify-wrapper .dropify-loader { background-color:#ef233c; }
+.precision-app-shell .dropify-wrapper.disabled {
+  border-color:#e2e8f0;
+  background:#f1f5f9;
+  box-shadow:none;
+  transform:none;
+}
+.precision-app-shell .dropify-wrapper:has(input.dropify_icon),
+.precision-app-shell .dropify-wrapper:has(input.dropify_icon_modal) {
+  min-height:142px;
+  height:142px;
+}
+@media (max-width:767px) {
+  .precision-app-shell .dropify-wrapper { min-height:150px;height:150px;border-radius:14px; }
+  .precision-app-shell .dropify-wrapper .dropify-message span.file-icon { width:50px;height:50px;border-radius:15px;font-size:23px; }
+  .precision-app-shell .dropify-wrapper:has(input.dropify_icon),
+  .precision-app-shell .dropify-wrapper:has(input.dropify_icon_modal) { min-height:128px;height:128px; }
+}
+
+/* Semantic footer navigation icons. */
+.precision-app-shell .precision-footer-links { width:100%; }
+.precision-app-shell .precision-footer-links h5 > a {
+  display:flex !important;
+  align-items:center;
+  gap:10px !important;
+  min-height:38px !important;
+  padding:5px 8px !important;
+  border-radius:10px !important;
+}
+.precision-app-shell .precision-footer-links h5 > a > i {
+  flex:0 0 32px;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  width:32px !important;
+  height:32px !important;
+  margin:0 !important;
+  border:1px solid #ffe0e3;
+  border-radius:10px !important;
+  background:#fff1f2 !important;
+  color:#ed1c24 !important;
+  font-size:17px !important;
+  line-height:1 !important;
+  transition:background-color .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+}
+.precision-app-shell .precision-footer-links h5 > a:hover > i {
+  border-color:#ed1c24;
+  background:#ed1c24 !important;
+  color:#fff !important;
+  transform:translateX(2px);
+}
+
+/* ================================================================
+   Premium SweetAlert2 theme (v7 compatible)
+   ================================================================ */
+.swal2-container.swal2-shown {
+  padding:20px !important;
+  background:rgba(15,23,42,.48) !important;
+  -webkit-backdrop-filter:blur(7px);
+  backdrop-filter:blur(7px);
+}
+.swal2-popup {
+  width:min(456px,calc(100vw - 32px)) !important;
+  padding:36px 36px 30px !important;
+  overflow:hidden !important;
+  border:1px solid rgba(255,255,255,.82) !important;
+  border-radius:22px !important;
+  background:linear-gradient(180deg,#fff 0%,#fff 72%,#f8fafc 100%) !important;
+  box-shadow:0 32px 90px rgba(15,23,42,.26),0 5px 18px rgba(15,23,42,.08) !important;
+  font-family:inherit !important;
+}
+.swal2-popup::before {
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:5px;
+  background:linear-gradient(90deg,#ed1c24 0 38%,#ff7b80 38% 46%,#151d2b 46% 100%);
+}
+.swal2-popup::after {
+  content:"";
+  position:absolute;
+  z-index:0;
+  top:-90px;
+  right:-80px;
+  width:230px;
+  height:230px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(237,28,36,.105) 0,rgba(237,28,36,.035) 43%,transparent 70%);
+  pointer-events:none;
+}
+.swal2-popup .swal2-header,
+.swal2-popup .swal2-content,
+.swal2-popup .swal2-actions,
+.swal2-popup .swal2-input,
+.swal2-popup .swal2-textarea,
+.swal2-popup .swal2-select { position:relative; z-index:1; }
+.swal2-popup .swal2-header { padding:0 !important; }
+.swal2-popup .swal2-title {
+  margin:0 0 10px !important;
+  color:#111827 !important;
+  font-size:24px !important;
+  font-weight:800 !important;
+  line-height:1.3 !important;
+  letter-spacing:-.025em !important;
+}
+.swal2-popup .swal2-content,
+.swal2-popup #swal2-content {
+  color:#667085 !important;
+  font-size:14px !important;
+  font-weight:400 !important;
+  line-height:1.65 !important;
+}
+.swal2-popup .swal2-actions {
+  display:flex !important;
+  width:100%;
+  margin:26px 0 0 !important;
+  padding-top:18px;
+  border-top:1px solid #edf1f5;
+  gap:10px;
+}
+.swal2-popup .swal2-styled {
+  min-width:126px;
+  min-height:46px;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  margin:0 !important;
+  padding:10px 20px !important;
+  border:1px solid transparent !important;
+  border-radius:13px !important;
+  font-family:inherit !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1.2 !important;
+  transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease !important;
+}
+.swal2-popup .swal2-styled.swal2-confirm,
+.swal2-popup .swal2-confirm.btn,
+.swal2-popup .swal2-confirm.btn-primary,
+.swal2-popup .swal2-confirm.btn-success {
+  border-color:#ed1c24 !important;
+  background:linear-gradient(135deg,#f3262e,#df1018) !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(237,28,36,.22) !important;
+}
+.swal2-popup .swal2-styled.swal2-cancel,
+.swal2-popup .swal2-cancel.btn {
+  border-color:#dce3ec !important;
+  background:#fff !important;
+  color:#475467 !important;
+  box-shadow:0 5px 14px rgba(15,23,42,.06) !important;
+}
+.swal2-popup .swal2-styled:not([disabled]):hover {
+  transform:translateY(-2px);
+  background-image:none !important;
+}
+.swal2-popup .swal2-styled.swal2-confirm:not([disabled]):hover {
+  background:#c9141b !important;
+  box-shadow:0 14px 28px rgba(237,28,36,.29) !important;
+}
+.swal2-popup .swal2-styled.swal2-cancel:not([disabled]):hover {
+  border-color:#ffb7bb !important;
+  background:#fff4f5 !important;
+  color:#c9141b !important;
+}
+.swal2-popup .swal2-styled:focus {
+  outline:0 !important;
+  box-shadow:0 0 0 4px rgba(237,28,36,.12) !important;
+}
+.swal2-popup .swal2-close {
+  top:14px !important;
+  right:14px !important;
+  width:36px !important;
+  height:36px !important;
+  display:grid !important;
+  place-items:center;
+  border:1px solid #e1e7ee !important;
+  border-radius:11px !important;
+  background:#f8fafc !important;
+  color:#667085 !important;
+  font-family:inherit !important;
+  font-size:24px !important;
+  line-height:1 !important;
+}
+.swal2-popup .swal2-close:hover { background:#fff0f1 !important; color:#ed1c24 !important; }
+.swal2-popup .swal2-icon {
+  width:72px !important;
+  height:72px !important;
+  margin:4px auto 22px !important;
+  border-width:3px !important;
+  font-size:13.6px !important;
+  line-height:72px !important;
+  box-shadow:0 0 0 10px rgba(148,163,184,.09);
+}
+.swal2-popup .swal2-icon-text { font-size:46px !important; }
+.swal2-popup .swal2-icon.swal2-success { border-color:#20b86a !important; background:#ecfdf3 !important; box-shadow:0 0 0 10px rgba(32,184,106,.1); }
+.swal2-popup .swal2-icon.swal2-success [class^="swal2-success-line"] { background-color:#20b86a !important; }
+.swal2-popup .swal2-icon.swal2-success .swal2-success-ring { border-color:rgba(32,184,106,.25) !important; }
+.swal2-popup .swal2-icon.swal2-error { border-color:#ed1c24 !important; background:#fff1f2 !important; box-shadow:0 0 0 10px rgba(237,28,36,.09); }
+.swal2-popup .swal2-icon.swal2-error [class^="swal2-x-mark-line"] { background-color:#ed1c24 !important; }
+.swal2-popup .swal2-icon.swal2-warning { border-color:#f59e0b !important; background:#fffaeb !important; color:#d97706 !important; box-shadow:0 0 0 10px rgba(245,158,11,.1); }
+.swal2-popup .swal2-icon.swal2-info,
+.swal2-popup .swal2-icon.swal2-question { border-color:#3b82f6 !important; background:#eff6ff !important; color:#2563eb !important; box-shadow:0 0 0 10px rgba(59,130,246,.09); }
+.swal2-popup .swal2-icon.swal2-info { background:#eff6ff !important; }
+.swal2-popup .swal2-input,
+.swal2-popup .swal2-textarea,
+.swal2-popup .swal2-select {
+  width:100% !important;
+  margin:18px 0 0 !important;
+  border:1px solid #d7dfe9 !important;
+  border-radius:12px !important;
+  background:#fbfcfe !important;
+  color:#111827 !important;
+  font-family:inherit !important;
+  font-size:14px !important;
+  box-shadow:none !important;
+}
+.swal2-popup .swal2-input { height:46px !important; padding:0 14px !important; }
+.swal2-popup .swal2-textarea { min-height:110px !important; padding:12px 14px !important; }
+.swal2-popup .swal2-input:focus,
+.swal2-popup .swal2-textarea:focus,
+.swal2-popup .swal2-select:focus { border-color:#ff747a !important; background:#fff !important; box-shadow:0 0 0 4px rgba(237,28,36,.09) !important; outline:0 !important; }
+.swal2-popup .swal2-validationerror {
+  margin:16px -34px -8px;
+  padding:11px 20px !important;
+  background:#fff1f2 !important;
+  color:#b4232b !important;
+  font-size:12px !important;
+  font-weight:600 !important;
+}
+.swal2-popup.swal2-toast {
+  width:auto !important;
+  max-width:390px !important;
+  padding:14px 18px !important;
+  border-radius:16px !important;
+  box-shadow:0 18px 48px rgba(15,23,42,.18) !important;
+}
+@media (max-width:575.98px) {
+  .swal2-container.swal2-shown { padding:14px !important; }
+  .swal2-popup { padding:28px 20px 22px !important; border-radius:18px !important; }
+  .swal2-popup .swal2-title { font-size:21px !important; }
+  .swal2-popup .swal2-actions { flex-direction:column-reverse; }
+  .swal2-popup .swal2-styled { width:100%; }
+  .swal2-popup .swal2-validationerror { margin-inline:-20px; }
 }

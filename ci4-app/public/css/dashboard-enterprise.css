@@ -674,7 +674,7 @@ button.side-sublink {
 .course-card,
 .table-card {
   background: var(--brand-white);
-  border: 1px solid var(--border-color);
+  border: 0px solid var(--border-color);
   border-radius: var(--radius-md);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }

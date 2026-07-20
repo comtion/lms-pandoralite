@@ -5,6 +5,7 @@
     <link href="<?php echo REAL_PATH;?>/assets/css/footers.css" rel="stylesheet">
     <link href="<?php echo REAL_PATH;?>/assets/plugins/aos/dist/aos.css" rel="stylesheet">
     <link href="<?php echo REAL_PATH;?>/assets/plugins/prism/prism.css" rel="stylesheet">
+    <link href="<?php echo REAL_PATH;?>/assets/css/privacy-policy.css?v=20260720-1" rel="stylesheet">
   </head>
   <body class="fix-header fix-sidebar">
 
@@ -24,26 +25,39 @@
     <!-- ============================================================== -->
     <div id="main-wrapper">
       <?php $this->load->view('frontend/inc/inc-header.php'); ?>
-        <div class="page-wrapper">
-          <div class="container-fluid">
-                <div class="row col-12 page-titles">
-                    <div class="col-md-5 align-self-center">
-                        <b><?php echo label('privacy_policy'); ?></b>
-                    </div>
-                    <div class="col-md-7 align-self-right">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="<?php echo REAL_PATH;?>/home"><?php echo label('home'); ?></a></li>
-                            <li class="breadcrumb-item active"><?php echo label('privacy_policy'); ?></li>
-                        </ol>
-                    </div>
-                </div>
-                 <div class="row">
-                  <div class="col-md-12 card">
-                    <div class="card-body">
-                      <?php if($lang=="thai"){echo $foote[0]['da_privacy_policy_th'];}else if($lang=="english"){echo $foote[0]['da_privacy_policy_en'];}else{echo $foote[0]['da_privacy_policy_jp'];} ?>
-                    </div>
-                  </div>
-                </div>
+        <?php if (!empty($user)) { $this->load->view('frontend/inc/inc-sidemenu.php'); } ?>
+        <div class="page-wrapper privacy-page">
+          <div class="container-fluid privacy-container">
+            <div class="privacy-breadcrumb-row">
+              <ol class="breadcrumb" aria-label="Breadcrumb">
+                <li class="breadcrumb-item"><a href="<?php echo REAL_PATH;?>/home"><?php echo label('home'); ?></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><?php echo label('privacy_policy'); ?></li>
+              </ol>
+            </div>
+
+            <header class="privacy-hero">
+              <div class="privacy-icon" aria-hidden="true"><i class="mdi mdi-shield-outline"></i></div>
+              <div>
+                <span class="privacy-eyebrow">ISUZU E-LEARNING</span>
+                <h1><?php echo label('privacy_policy'); ?></h1>
+                <p><?php
+                  if ($lang == "thai") {
+                    echo "รายละเอียดการเก็บรวบรวม ใช้ และคุ้มครองข้อมูลส่วนบุคคลของผู้ใช้งาน";
+                  } else if ($lang == "english") {
+                    echo "How we collect, use, and protect your personal information";
+                  } else {
+                    echo "個人情報の収集、利用および保護について";
+                  }
+                ?></p>
+              </div>
+            </header>
+
+            <main class="privacy-document" id="privacy-document">
+              <div class="privacy-document-accent" aria-hidden="true"></div>
+              <article class="privacy-content">
+                <?php if($lang=="thai"){echo $foote[0]['da_privacy_policy_th'];}else if($lang=="english"){echo $foote[0]['da_privacy_policy_en'];}else{echo $foote[0]['da_privacy_policy_jp'];} ?>
+              </article>
+            </main>
           </div>
 
         </div>

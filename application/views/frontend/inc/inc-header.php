@@ -2,13 +2,49 @@
 if ($lang == "") {
 	$lang = "thai";
 }
+$precision_swal_locale = array(
+	'thai' => array('code' => 'th', 'confirm' => 'ตกลง', 'cancel' => 'ยกเลิก', 'close' => 'ปิดหน้าต่าง'),
+	'english' => array('code' => 'en', 'confirm' => 'OK', 'cancel' => 'Cancel', 'close' => 'Close dialog'),
+	'japan' => array('code' => 'ja', 'confirm' => '確認', 'cancel' => 'キャンセル', 'close' => '閉じる')
+);
+$precision_swal_text = isset($precision_swal_locale[$lang]) ? $precision_swal_locale[$lang] : $precision_swal_locale['english'];
 ?>
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-premium.css?v=20260720-2">
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-20">
-<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-17">
-<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260720-15">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-18">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260720-35">
 <script>
 document.body.classList.add('lms-premium-dashboard','precision-app-shell');
+(function (locale) {
+  document.documentElement.lang = locale.code;
+  window.PRECISION_UI_LOCALE = locale;
+
+  function applySweetAlertLocale() {
+    if (window.swal && typeof window.swal.setDefaults === 'function') {
+      window.swal.setDefaults({
+        confirmButtonText: locale.confirm,
+        cancelButtonText: locale.cancel
+      });
+    }
+  }
+
+  function localizeOpenDialogs() {
+    var closeButtons = document.querySelectorAll('.swal2-close');
+    for (var i = 0; i < closeButtons.length; i++) {
+      closeButtons[i].setAttribute('aria-label', locale.close);
+      closeButtons[i].setAttribute('title', locale.close);
+    }
+  }
+
+  applySweetAlertLocale();
+  document.addEventListener('DOMContentLoaded', function () {
+    applySweetAlertLocale();
+    localizeOpenDialogs();
+    if (window.MutationObserver) {
+      new MutationObserver(localizeOpenDialogs).observe(document.body, { childList: true, subtree: true });
+    }
+  });
+})(<?php echo json_encode($precision_swal_text, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>);
 (function () {
   var loader = document.querySelector('.preloader .loader');
   if (!loader) return;

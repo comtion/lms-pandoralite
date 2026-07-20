@@ -1,6 +1,15 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+// Some pages load the shared navigation without building every optional menu
+// collection. Keep the renderer type-safe on PHP 8+ in those cases.
+$lang = isset($lang) && is_string($lang) ? $lang : 'english';
+$page = isset($page) && is_string($page) ? $page : '';
+$main_menu = isset($main_menu) && is_array($main_menu) ? $main_menu : [];
+$submenu = isset($submenu) && is_array($submenu) ? $submenu : [];
+$submenu_b = isset($submenu_b) && is_array($submenu_b) ? $submenu_b : [];
+$arr_permission = isset($arr_permission) && is_array($arr_permission) ? $arr_permission : [];
+
 $precisionMenuName = static function (array $item) use ($lang): string {
     if ($lang === 'thai') {
         return (string) ($item['mu_name_th'] ?? $item['mu_name_en'] ?? '');

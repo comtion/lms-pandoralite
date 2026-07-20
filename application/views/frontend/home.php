@@ -2,6 +2,7 @@
 <?php $this->load->view('frontend/inc/inc-meta.php'); ?>
 
     <link href="<?php echo HTTP_CSS_PATH; ?>home.css" rel="stylesheet">
+    <link href="<?php echo REAL_PATH; ?>/assets/css/home-auth-premium.css?v=20260720-7" rel="stylesheet">
 
     <style>
       @media screen and (max-height: 600px) {
@@ -31,7 +32,7 @@
       }
     </style>
   </head>
-  <body class="fix-header fix-sidebar card-no-border">
+  <body class="fix-header fix-sidebar card-no-border<?php echo empty($emp_c) ? ' premium-auth-page' : ''; ?>">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css  class="fix-header card-no-border fix-sidebar" -->
     <!-- ============================================================== -->
@@ -67,32 +68,48 @@
         
       <div class="page-wrapper"> 
           <div class="container-fluid"> 
-             <div class="row banner-text">
-                <div class="col-lg-4 col-md-12" style="<?php if (!empty($emp_c)){ ?>display:none;<?php } ?>">
-                  <div class="card">
+             <div class="row banner-text premium-auth-layout">
+                <div class="col-lg-4 col-md-12 premium-auth-form-column" style="<?php if (!empty($emp_c)){ ?>display:none;<?php } ?>">
+                  <div class="card premium-auth-card">
                     <div class="card-body">
                       
                           <form class="form-horizontal form-material" autocomplete="off" id="loginform" method="POST">
-                              <h3 class="box-title m-b-20">
-                                  <?php echo label('login'); ?>
-                              </h3>
+                              <div class="premium-auth-heading">
+                                <span class="premium-auth-eyebrow">ISUZU E-LEARNING</span>
+                                <h3 class="box-title"><?php echo label('login'); ?></h3>
+                                <p><?php echo $lang === 'thai' ? 'เข้าสู่ระบบเพื่อเริ่มต้นการเรียนรู้ของคุณ' : 'Sign in to continue your learning journey'; ?></p>
+                              </div>
                               <div class="form-group ">
                                   <div class="col-md-12">
-                                      <input class="form-control" onkeyup="return forceLower(this);" id="inpUname" name="inpUname" type="text" required="" autofocus placeholder="<?php echo label('username') ?>"> </div>
+                                      <label for="inpUname"><?php echo label('username') ?></label>
+                                      <div class="premium-input-wrap">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0"/></svg>
+                                        <input class="form-control" onkeyup="return forceLower(this);" id="inpUname" name="inpUname" type="text" required="" autofocus autocomplete="username" placeholder="<?php echo label('username') ?>">
+                                      </div>
+                                  </div>
                               </div>
                               <div class="form-group">
                                   <div class="col-md-12">
-                                      <input class="form-control" id="inpPwd" name="inpPwd" type="text" required="" placeholder="<?php echo label('password') ?>"> 
-                                      <span toggle="#inpPwd" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                      <label for="inpPwd"><?php echo label('password') ?></label>
+                                      <div class="premium-input-wrap premium-password-wrap">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                                        <input class="form-control" id="inpPwd" name="inpPwd" type="password" required="" autocomplete="current-password" placeholder="<?php echo label('password') ?>">
+                                        <button type="button" toggle="#inpPwd" class="premium-password-toggle toggle-password" aria-label="Show or hide password">
+                                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+                                        </button>
+                                      </div>
                                   </div>
                               </div>
                               <input type="hidden" id="dest" name="dest" value="<?php echo $dest; ?>">
                               <div class="form-group ">
-                                    <a href="javascript:void(0)" id="to-recover" class="text-muted float-right"><i class="fa fa-lock"></i> <?php echo label('forgot_pass'); ?></a> 
+                                    <a href="javascript:void(0)" id="to-recover" class="premium-forgot-link"><?php echo label('forgot_pass'); ?></a>
                               </div>
                               <div class="form-group text-center">
                                   <div class="col-md-12  p-b-20">
-                                      <button class="btn btn-block btn-outline-success" id="btnlogin" type="submit"><i class="icon-login"></i> <?php echo label('login') ?></button>
+                                      <button class="btn btn-block premium-login-button" id="btnlogin" type="submit">
+                                        <span><?php echo label('login') ?></span>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M14 7l5 5-5 5"/></svg>
+                                      </button>
                                   </div>
                               </div>
                           </form>
@@ -119,9 +136,9 @@
                   </div>
                 </div>
 
-                <div class="<?php if (empty($emp_c)){ ?>col-lg-8 col-md-12<?php }else{ ?>col-lg-12<?php } ?>">
+                <div class="premium-auth-visual-column <?php if (empty($emp_c)){ ?>col-lg-8 col-md-12<?php }else{ ?>col-lg-12<?php } ?>">
 
-                    <div class="card">
+                    <div class="card premium-auth-visual-card">
                       <div id="carouselExampleIndicators3" class="carousel slide" data-ride="carousel">
                         <ol class="carousel-indicators">
                           <?php if(isset($pic)&&countArray($pic)>0){
@@ -141,14 +158,16 @@
                                   if($pic != null&&$page=='home'){?>
                                       <?php $n=1;foreach ($pic as $row) {
                                         if($n==1){ ?>
-                                        <div class="carousel-item active" style="width: 100%; text-align: center; max-height:350px;"> <img class="img-fluid" width="100%" style="max-height:350px;" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" alt="">
+                                        <div class="carousel-item active premium-auth-banner-item" style="width: 100%; text-align: center; max-height:350px;"> <img class="img-fluid" width="100%" style="max-height:350px;" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" onerror="this.style.display='none';this.parentNode.classList.add('premium-auth-image-missing');" alt="">
+                                          <div class="premium-auth-banner-copy"><span>ISUZU E-LEARNING</span><strong><?php echo $lang === 'thai' ? 'ก้าวสู่การเรียนรู้ที่เหนือกว่า' : 'Learning that moves you forward'; ?></strong></div>
                                           <!--<div class="carousel-caption d-none d-md-block">
                                             <h3 class="text-white">First title goes here</h3>
                                             <p>this is the subcontent you can use this</p>
                                           </div>-->
                                         </div>
                                         <?php }else{?>
-                                        <div class="carousel-item" style="width: 100%; text-align: center; max-height:350px;"> <img class="img-fluid" width="100%" style="max-height:350px;" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" alt="">
+                                        <div class="carousel-item premium-auth-banner-item" style="width: 100%; text-align: center; max-height:350px;"> <img class="img-fluid" width="100%" style="max-height:350px;" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" onerror="this.style.display='none';this.parentNode.classList.add('premium-auth-image-missing');" alt="">
+                                          <div class="premium-auth-banner-copy"><span>ISUZU E-LEARNING</span><strong><?php echo $lang === 'thai' ? 'ก้าวสู่การเรียนรู้ที่เหนือกว่า' : 'Learning that moves you forward'; ?></strong></div>
                                           <!--<div class="carousel-caption d-none d-md-block">
                                             <h3 class="text-white">Second title goes here</h3>
                                             <p>this is the subcontent you can use this</p>
@@ -156,7 +175,16 @@
                                         </div>
                                       <?php }$n++;}?>
                             <?php }
-                                } ?>
+                                } else { ?>
+                                  <div class="carousel-item active premium-auth-fallback">
+                                    <div class="premium-auth-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+                                    <div class="premium-auth-visual-copy">
+                                      <span><?php echo $lang === 'thai' ? 'พื้นที่แห่งการเรียนรู้' : 'LEARNING WORKSPACE'; ?></span>
+                                      <h2><?php echo $lang === 'thai' ? 'ขับเคลื่อนความรู้ สู่มาตรฐานมืออาชีพ' : 'Drive your knowledge forward'; ?></h2>
+                                      <p><?php echo $lang === 'thai' ? 'พัฒนาทักษะ เรียนรู้ได้ทุกที่ และเติบโตไปพร้อมกัน' : 'Build skills, learn anywhere, and grow together.'; ?></p>
+                                    </div>
+                                  </div>
+                                <?php } ?>
                         </div>
                         <a class="carousel-control-prev" href="#carouselExampleIndicators3" role="button" data-slide="prev"> <span class="carousel-control-prev-icon" aria-hidden="true"></span> <span class="sr-only">Previous</span> </a> <a class="carousel-control-next" href="#carouselExampleIndicators3" role="button" data-slide="next"> <span class="carousel-control-next-icon" aria-hidden="true"></span> <span class="sr-only">Next</span> </a> 
                       </div>

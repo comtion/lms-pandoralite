@@ -21,48 +21,118 @@
 		overflow-wrap: anywhere;
 	}
 
-	.circle {
-		width: 200px;
-		margin: 6px 20px 20px;
-		display: inline-block;
-		position: relative;
-		text-align: center;
-		vertical-align: top;
-
-		strong {
-			position: absolute;
-			top: 70px;
-			left: 0;
-			width: 100%;
-			text-align: center;
-			line-height: 45px;
-			font-size: 43px;
-		}
-	}
-
 	#myModal_process.modal.show .modal-dialog {
 		position: fixed;
 		top: 50%;
 		left: 50%;
-		/* bring your own prefixes */
 		transform: translate(-50%, -50%);
 		margin: 0;
+		width: calc(100% - 32px);
+		max-width: 360px;
 	}
 
-	#myModal_process .circle strong {
+	#myModal_process .modal-content {
+		overflow: hidden;
+		border: 1px solid rgba(255, 255, 255, .72);
+		border-radius: 24px;
+		background: rgba(255, 255, 255, .96);
+		box-shadow: 0 28px 80px rgba(15, 23, 42, .24), 0 8px 24px rgba(185, 28, 28, .08);
+	}
+
+	#myModal_process .modal-body {
+		padding: 36px 32px 32px;
+	}
+
+	#myModal_process .loading-progress {
+		position: relative;
+		width: 164px;
+		height: 164px;
+		margin: 0 auto 22px;
+	}
+
+	#myModal_process .loading-progress::before {
+		content: '';
 		position: absolute;
 		top: 50%;
 		left: 50%;
+		width: 112px;
+		height: 112px;
 		transform: translate(-50%, -50%);
-		font-size: 1.8em;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(185, 28, 28, .10), rgba(185, 28, 28, 0) 70%);
+		animation: loadingPulse 1.8s ease-in-out infinite;
 	}
 
-	#myModal_process .circle canvas {
-		visibility: hidden;
+	#myModal_process .loading-ring {
+		width: 100%;
+		height: 100%;
+		transform: rotate(-90deg);
+		filter: drop-shadow(0 6px 12px rgba(185, 28, 28, .16));
 	}
 
-	#myModal_process #circle-b {
+	#myModal_process .loading-ring__track,
+	#myModal_process .loading-ring__value {
+		fill: none;
+		stroke-width: 8;
+	}
+
+	#myModal_process .loading-ring__track { stroke: #f1f3f5; }
+	#myModal_process .loading-ring__value {
+		stroke: url(#loadingGradient);
+		stroke-linecap: round;
+		stroke-dasharray: 439.82;
+		stroke-dashoffset: 439.82;
+		transition: stroke-dashoffset .35s ease-out;
+	}
+
+	#myModal_process .loading-percent {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 36px;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: -1.5px;
+		color: #171b25;
+	}
+
+	#myModal_process .loading-percent small {
+		margin: 8px 0 0 2px;
+		font-size: 16px;
+		font-weight: 600;
+		color: #9b1c1f;
+	}
+
+	#myModal_process .loading-title {
+		margin: 0 0 6px;
+		font-size: 18px;
+		font-weight: 700;
+		color: #171b25;
+	}
+
+	#myModal_process .loading-caption {
 		margin: 0;
+		font-size: 14px;
+		color: #7a8190;
+	}
+
+	#myModal_process + .modal-backdrop,
+	.modal-backdrop.show {
+		opacity: .58;
+		background: #111827;
+		backdrop-filter: blur(3px);
+	}
+
+	@keyframes loadingPulse {
+		0%, 100% { opacity: .55; transform: translate(-50%, -50%) scale(.92); }
+		50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		#myModal_process .loading-progress::before { animation: none; }
+		#myModal_process .loading-ring__value { transition: none; }
 	}
 </style>
 </head>
@@ -386,15 +456,17 @@
 		<div class="modal-dialog">
 			<!-- Modal content-->
 			<div class="modal-content">
-				<div class="modal-body" align="center" style="max-height:300px;">
-
-					<div class="circle" id="circle-b">
-						<strong></strong>
+				<div class="modal-body text-center">
+					<div class="loading-progress" role="progressbar" aria-label="Upload progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+						<svg class="loading-ring" viewBox="0 0 160 160" aria-hidden="true">
+							<defs><linearGradient id="loadingGradient"><stop offset="0%" stop-color="#8e1519"/><stop offset="100%" stop-color="#e23338"/></linearGradient></defs>
+							<circle class="loading-ring__track" cx="80" cy="80" r="70"></circle>
+							<circle class="loading-ring__value" cx="80" cy="80" r="70"></circle>
+						</svg>
+						<div class="loading-percent"><span>0</span><small>%</small></div>
 					</div>
-
-					<!-- <img src="<?php echo REAL_PATH; ?>/assets/images/01-progress.gif" style="width: 50%">
-                <br>
-                <h3 style="color: black;"><?php echo label('please_wait'); ?></h3> -->
+					<h4 class="loading-title"><?php echo $lang == 'thai' ? 'กำลังบันทึกข้อมูล' : 'Saving your changes'; ?></h4>
+					<p class="loading-caption"><?php echo $lang == 'thai' ? 'โปรดรอสักครู่ อย่าปิดหน้าต่างนี้' : 'Please wait and keep this window open'; ?></p>
 				</div>
 			</div>
 		</div>
@@ -1593,6 +1665,7 @@
 
 			$(document).on('submit', '#about_form', function(event) {
 				event.preventDefault();
+				updateSaveProgress(0);
 				$("#myModal_process").modal('show');
 				$(document.body).css('pointer-events', 'none');
 				$.ajax({
@@ -1623,26 +1696,7 @@
 
 							if (evt.lengthComputable) {
 								var percentComplete = (evt.loaded / evt.total) * 100;
-								var progressBarOptions = {
-									startAngle: -1.55,
-									size: 200,
-									value: percentComplete.toFixed(0),
-									fill: {
-										color: '#ffa500'
-									}
-								}
-								console.log(percentComplete.toFixed(0));
-								$('.circle').circleProgress(progressBarOptions).on('circle-animation-progress',
-									function(event, progress, stepValue) {
-										$(this).find('strong').html("LOADING...<br/>" + percentComplete.toFixed(0) + "%");
-									});
-
-								$('#circle-b').circleProgress({
-									value: percentComplete.toFixed(0),
-									fill: {
-										color: '#FF0000'
-									}
-								});
+								updateSaveProgress(percentComplete);
 							}
 						}, false);
 						return xhr;
@@ -1690,6 +1744,15 @@
 					}
 				});
 			});
+
+			function updateSaveProgress(value) {
+				var percent = Math.max(0, Math.min(100, Math.round(value)));
+				var circumference = 2 * Math.PI * 70;
+				var offset = circumference * (1 - percent / 100);
+				$('#myModal_process .loading-ring__value').css('stroke-dashoffset', offset);
+				$('#myModal_process .loading-percent span').text(percent);
+				$('#myModal_process .loading-progress').attr('aria-valuenow', percent);
+			}
 		});
 	</script>
 </body>

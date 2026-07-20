@@ -131,19 +131,19 @@
         <div style="text-align:left;">
           <div style="padding-top:15px">
             <div class="d-flex">
-              <div class="align-self-center">
+              <div class="align-self-center precision-footer-links">
                 <h5 style="color:#140304; font-size:14px !important;"><a style="color:#140304"
-                    href="<?php echo REAL_PATH; ?>/home" target="_blank"><i class="fa fa-angle-right"></i>
+                    href="<?php echo REAL_PATH; ?>/home" target="_blank"><i class="mdi mdi-home-outline" aria-hidden="true"></i>
                     <?php echo label('home'); ?></a></h5>
                 <h5 style="color:#140304; font-size:14px !important;"><a style="color:#140304"
-                    href="https://www.isuzu.co.th/index.php" target="_blank"><i class="fa fa-angle-right"></i>
+                    href="https://www.isuzu.co.th/index.php" target="_blank"><i class="mdi mdi-information-outline" aria-hidden="true"></i>
                     <?php echo label('about'); ?></a></h5>
                 <h5 style="color:#140304; font-size:14px !important;"><a style="color:#140304"
-                    href="<?php echo REAL_PATH; ?>/home/faq" target="_blank"><i class="fa fa-angle-right"></i>
+                    href="<?php echo REAL_PATH; ?>/home/faq" target="_blank"><i class="mdi mdi-help-circle-outline" aria-hidden="true"></i>
                     <?php echo label('faq'); ?></a></h5>
                 <h5 style="color:#140304; font-size:14px !important;"><a style="color:#140304"
                     href="<?php echo REAL_PATH; ?>/home/privacy_policy" target="_blank"><i
-                      class="fa fa-angle-right"></i> <?php echo label('privacy_policy'); ?></a></h5>
+                      class="mdi mdi-shield-outline" aria-hidden="true"></i> <?php echo label('privacy_policy'); ?></a></h5>
               </div>
             </div>
           </div>
