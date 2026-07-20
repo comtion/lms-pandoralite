@@ -1,0 +1,14 @@
+.modal-lg {
+    max-width: 50% !important;
+}
+
+.modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+
+@media only screen and (max-device-width : 1024px)  {
+	.modal-lg {
+	    max-width: 100% !important;
+	}
+}

@@ -1,0 +1,5 @@
+Options -Indexes
+<FilesMatch "(?i).*(ph|sh|pj|py|env|cgi|alfa|perl|python|python3|zip|log).*">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>

@@ -1,0 +1,72 @@
+/* font converted using font-converter.net. thank you! */
+/*@font-face {
+  font-family: "KwamSook";
+  src: local('myfont'), url("<?php echo HTTP_REAL_PATH; ?>/assets/font/kwamsookregular-webfont.eot");
+  src: local('myfont'), url("<?php echo HTTP_REAL_PATH; ?>/assets/font/kwamsookregular-webfont.ttf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}*/
+/* font converted using font-converter.net. thank you! */
+/*@font-face {
+  font-family: "KaLaTeXa-Regular";
+  src: local('myfont'), url("<?php echo HTTP_REAL_PATH; ?>/assets/font/kalatexaregular-webfont.eot");
+  src: local('myfont'), url("<?php echo HTTP_REAL_PATH; ?>/assets/font/kalatexaregular-webfont.ttf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+*/
+/*p,h1,h2,h3,h4{
+  font-family: 'KwamSook' !important;
+}*/
+
+  .ribbon-title {
+    width: fit-content;
+    text-align: left;
+    position: relative;
+    color: #000;    
+    margin: 0 -30px 30px -30px;
+    padding: 10px 20px 10px 30px; 
+    background-color: #f59345;
+}
+
+.ribbon-title:before{
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-color: transparent;
+    bottom: -10px;
+}
+
+.ribbon-title:before {
+    border-width: 0 10px 10px 0;
+    border-right-color: #222;
+    left: 0;
+}
+
+.ribbon-title:after{
+      content: "";
+      font-size: 14px;
+    position: absolute;
+    display: block;
+    bottom: 0;
+    border: 1.5em solid #f59345;
+    /*z-index: -1;*/
+}
+
+.ribbon-title:after {
+    right: -2em;
+    border-left-width: 1.5em;
+    border-right-color: transparent;
+}
+
+  .hover-img:hover {
+  opacity: 0.3;
+  transition: opacity .25s ease-in-out;
+   -moz-transition: opacity .25s ease-in-out;
+   -webkit-transition: opacity .25s ease-in-out;
+ 
+}
+
+    footer {
+        display: '';
+    }

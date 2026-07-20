@@ -1,0 +1,236 @@
+.btn.btn-outline-danger{
+  min-width: 100px !important;
+}
+
+.btn.btn-outline-success{
+  min-width: 100px !important;
+}
+
+a[href^="#previous"] {
+  min-width: 100px !important;
+  text-align: center;
+}
+
+a[href^="#next"] {
+  min-width: 100px !important;
+  text-align: center;
+}
+
+a[href^="#finish"] {
+  min-width: 100px !important;
+  text-align: center;
+}
+
+/* iPad 1, 2 */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+  .modal-dialog {
+    max-width: 95% !important;
+  }
+}
+
+/* iPad 3,4 */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait)
+and (-webkit-min-device-pixel-ratio: 2) {
+  .modal-dialog {
+    max-width: 95% !important;
+  }
+}
+
+/* ----------- iPad Pro ----------- */
+/* Portrait */
+@media only screen 
+  and (min-width: 1024px) 
+  and (max-height: 1366px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1.5) {
+  .modal-dialog {
+    max-width: 95% !important;
+  }
+}
+
+
+#navbar{
+	transition: top 0.3s;
+}
+
+.mdi-btn{
+	padding: 2px 6px !important;
+}
+
+/*.table-1-line{
+	display: block;
+	vertical-align: middle !important;
+	max-width: 350px;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}*/
+
+
+.table.table-ellipsis-350px tbody td {
+  max-width: 2vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+
+.knob-text{
+	display: block;
+	position:relative;
+	top: -65px;
+}
+
+.carousel-caption {
+    top: 40px !important;
+    text-align: left !important;
+}
+
+.col-container {
+    display: table; /* Make the container element behave like a table */
+    width: 100%; /* Set full-width to expand the whole page */
+}
+
+.col {
+    display: table-cell; /* Make elements inside the container behave like table cells */
+}
+
+.imat-red-bg{
+	background-color: #ec2029 !important;
+}
+
+.imat-total-text{
+	color: #ec2029;
+}
+
+.imat-ongoing-text{
+	color: #81f880;
+}
+
+.imat-incoming-text{
+	color: #f9ef01;
+}
+
+.imat-completed-text{
+	color: #9c9fa4;
+}
+
+.imat-incompleted-text{
+	color: #fe0000;
+}
+
+.bg-white{
+	background-color: white;
+}
+
+.bg-checked{
+	background-color: #e3e5e7;
+}
+
+.h4-two-line-ellipsis {
+  display: block;
+  display: -webkit-box;
+  max-width: 100%;
+  height: 38px;
+  margin: 0 auto;
+  line-height: 1;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alias {cursor: alias;}
+.all-scroll {cursor: all-scroll;}
+.auto {cursor: auto;}
+.cell {cursor: cell;}
+.context-menu {cursor: context-menu;}
+.col-resize {cursor: col-resize;}
+.copy {cursor: copy;}
+.crosshair {cursor: crosshair;}
+.default {cursor: default;}
+.e-resize {cursor: e-resize;}
+.ew-resize {cursor: ew-resize;}
+.grab {cursor: -webkit-grab; cursor: grab;}
+.grabbing {cursor: -webkit-grabbing; cursor: grabbing;}
+.help {cursor: help;}
+.move {cursor: move;}
+.n-resize {cursor: n-resize;}
+.ne-resize {cursor: ne-resize;}
+.nesw-resize {cursor: nesw-resize;}
+.ns-resize {cursor: ns-resize;}
+.nw-resize {cursor: nw-resize;}
+.nwse-resize {cursor: nwse-resize;}
+.no-drop {cursor: no-drop;}
+.none {cursor: none;}
+.not-allowed {cursor: not-allowed;}
+.pointer {cursor: pointer;}
+.progress {cursor: progress;}
+.row-resize {cursor: row-resize;}
+.s-resize {cursor: s-resize;}
+.se-resize {cursor: se-resize;}
+.sw-resize {cursor: sw-resize;}
+.text {cursor: text;}
+.url {cursor: url(myBall.cur),auto;}
+.w-resize {cursor: w-resize;}
+.wait {cursor: wait;}
+.zoom-in {cursor: zoom-in;}
+.zoom-out {cursor: zoom-out;}
+
+
+a[aria-expanded=true] .fa-chevron-right {
+   display: none;
+}
+a[aria-expanded=false] .fa-chevron-down {
+   display: none;
+}
+
+.vtabs-lesson {
+	width: 250px !important;
+    max-width: 250px !important;
+}
+
+.vtabs-quiz {
+	width: 120px !important;
+    max-width: 120px !important;
+}
+
+.dropdown-item.active {
+	color: #ffffff !important;
+}
+
+.customvtab .tabs-vertical li .nav-link.active, .customvtab .tabs-vertical li .nav-link:hover, .customvtab .tabs-vertical li .nav-link:focus {
+    border-right: 6px solid #000000;
+    color: #fe0000;
+}
+
+.list-group-item.active {
+	color: #687384;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+    border-right: 3px solid #fe0000;
+}
+
+.vtabs .tabs-vertical li .nav-link {
+    border-radius: 0;
+}
+
+.header-tab{
+    display: block;
+    padding: .5rem 1rem;
+    background-color: gainsboro;
+    color: #929292;
+    font-weight: bold;
+}
+
+@media (max-width: 767px) {
+	.carousel-caption {
+	    text-align: center !important;
+	}
+}

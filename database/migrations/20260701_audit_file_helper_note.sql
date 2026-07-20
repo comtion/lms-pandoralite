@@ -1,0 +1,3 @@
+-- File operations that do not change database rows should call:
+-- audit_file_action('upload'|'delete'|'move', $path, $oldValues, $newValues, $extra)
+-- The helper writes into lms_audit_logs with audit_table = 'filesystem'.
