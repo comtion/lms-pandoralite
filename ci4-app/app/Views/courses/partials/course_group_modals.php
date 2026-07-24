@@ -2,7 +2,7 @@
 $groupForm = static function (array $group, array $companies, string $action, string $buttonLabel): void {
     $isEdit = ! empty($group['cg_id']);
     ?>
-    <form method="post" action="<?= esc($action) ?>">
+    <form method="post" action="<?= esc($action) ?>"><?= csrf_field() ?>
         <div class="modal-body">
             <div class="row g-3">
                 <div class="col-md-6">
@@ -102,7 +102,7 @@ $groupForm = static function (array $group, array $companies, string $action, st
     <div class="modal fade" id="courseGroupRejectModal<?= (int) $group['cg_id'] ?>" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form method="post" action="<?= site_url('managecourse/course_groups/' . $group['cg_id'] . '/approval') ?>">
+                <form method="post" action="<?= site_url('managecourse/course_groups/' . $group['cg_id'] . '/approval') ?>"><?= csrf_field() ?>
                     <input type="hidden" name="approval" value="0">
                     <div class="modal-header">
                         <h5 class="modal-title">Reject Course Group</h5>

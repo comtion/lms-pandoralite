@@ -3,10 +3,86 @@
 namespace App\Controllers;
 
 use App\Models\DashboardModel;
+use App\Models\ApprovalModel;
 use App\Models\PermissionModel;
 
 class Dashboard extends BaseController
 {
+    public function decideCourseApproval($courseId)
+    {
+        return $this->approvalDecision('course', (int) $courseId);
+    }
+
+    public function decideSurveyApproval($surveyId)
+    {
+        return $this->approvalDecision('survey', (int) $surveyId);
+    }
+
+    public function decideCourseGroupApproval($groupId)
+    {
+        return $this->approvalDecision('course_group', (int) $groupId);
+    }
+
+    public function decideBulkApprovals()
+    {
+        $user = $this->session->get('user');
+        if (! is_array($user)) {
+            return redirect()->to(site_url('login'));
+        }
+
+        $type = strtolower(trim((string) $this->request->getPost('type')));
+        $decision = strtolower(trim((string) $this->request->getPost('decision')));
+        $note = trim((string) $this->request->getPost('note'));
+        $ids = $this->request->getPost('ids');
+        $ids = is_array($ids) ? $ids : [];
+        if (! $this->canDecideApproval($user, $type)) {
+            return redirect()->to(site_url('dashboard') . '#approval-queue')->with('approval_error', 'No permission for this approval action.');
+        }
+
+        $result = (new ApprovalModel())->decideMany($type, $ids, $decision, $note, $user);
+        $success = $result['ok'] || ($result['partial'] ?? false);
+        return redirect()->to(site_url('dashboard') . '#approval-queue')
+            ->with($success ? 'approval_notice' : 'approval_error', $result['message']);
+    }
+
+    private function approvalDecision(string $type, int $id)
+    {
+        $user = $this->session->get('user');
+        if (! is_array($user)) {
+            return redirect()->to(site_url('login'));
+        }
+
+        $decision = strtolower(trim((string) $this->request->getPost('decision')));
+        $note = trim((string) $this->request->getPost('note'));
+        if (! $this->canDecideApproval($user, $type)) {
+            return redirect()->to(site_url('dashboard') . '#approval-queue')->with('approval_error', 'No permission for this approval action.');
+        }
+        if (mb_strlen($note) > 2000) {
+            return redirect()->to(site_url('dashboard'))->with('approval_error', 'The approval note must not exceed 2,000 characters.');
+        }
+
+        $model = new ApprovalModel();
+        $result = $model->decide($type, $id, $decision, $note, $user);
+
+        return redirect()->to(site_url('dashboard') . '#approval-queue')
+            ->with($result['ok'] ? 'approval_notice' : 'approval_error', $result['message']);
+    }
+
+    private function canDecideApproval(array $user, string $type): bool
+    {
+        $path = match ($type) {
+            'course' => 'managecourse/courses_all',
+            'survey' => 'survey/list_survey',
+            'course_group' => 'managecourse/course_groups',
+            default => '',
+        };
+        if ($path === '') {
+            return false;
+        }
+
+        return (new PermissionModel())->can($user, $path, 'ru_edit');
+    }
+
     public function index()
     {
         $user = $this->session->get('user');
@@ -14,6 +90,7 @@ class Dashboard extends BaseController
         $permissions = new PermissionModel();
         $lang = $this->session->get('lang') ?? 'english';
         $summary = is_array($user) ? $dashboard->summaryForUser($user, $lang) : [];
+        $approvalHistory = is_array($user) ? (new ApprovalModel())->history($user, 50) : [];
         $menus = is_array($user) ? $permissions->menuTree($user, $lang) : [];
 
         if ($this->hasNoSurveyItems($summary)) {
@@ -25,6 +102,7 @@ class Dashboard extends BaseController
             'name' => $this->session->get('name'),
             'lang' => $lang,
             'summary' => $summary,
+            'approvalHistory' => $approvalHistory,
             'permissions' => is_array($user) ? $permissions->allowedPagePaths($user) : [],
             'menus' => $menus,
             'title' => $permissions->menuTitle('dashboard', $lang),

@@ -39,7 +39,7 @@ $typeLabel = static function (string $type): string {
     <section class="panel">
         <div class="kicker"><?= esc($title_main ?: 'Manage Course') ?></div>
         <h1><?= esc($title) ?></h1>
-        <form method="post" enctype="multipart/form-data" action="<?= $isEdit ? site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/update') : site_url('managecourse/quizzes/create') ?>">
+        <form method="post" enctype="multipart/form-data" action="<?= $isEdit ? site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/update') : site_url('managecourse/quizzes/create') ?>"><?= csrf_field() ?>
             <div class="grid">
                 <div class="field two"><label>Course</label><select name="cos_id" required><option value="">Select course</option><?php foreach (($courses ?? []) as $course): ?><option value="<?= esc($course['cos_id']) ?>" <?= $selectedCourseId === (int) $course['cos_id'] ? 'selected' : '' ?>><?= esc(($course['ccode'] ?: '-') . ' - ' . $course['title']) ?></option><?php endforeach; ?></select></div>
                 <div class="field"><label>Status</label><select name="quiz_status"><option value="1" <?= (string)($quiz['quiz_status'] ?? '1') === '1' ? 'selected' : '' ?>>Active</option><option value="0" <?= (string)($quiz['quiz_status'] ?? '') === '0' ? 'selected' : '' ?>>Inactive</option></select></div>
@@ -63,7 +63,7 @@ $typeLabel = static function (string $type): string {
     <?php if ($isEdit): ?>
         <section class="panel">
             <h2>Questions</h2>
-            <form method="post" action="<?= site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/questions/create') ?>" class="grid">
+            <form method="post" action="<?= site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/questions/create') ?>" class="grid"><?= csrf_field() ?>
                 <div class="field"><label>Question Type</label><select name="ques_type" id="questionType" class="question-type"><option value="multi">Multiple choice</option><option value="text">Text answer</option><option value="fill_blank">Fill in the blank</option><option value="sort_order">Sort order</option></select></div>
                 <div class="field"><label>Score</label><input type="number" step="0.01" min="0" name="ques_score" value="1"></div>
                 <div class="field"><label>Status</label><select name="ques_status"><option value="1">Active</option><option value="0">Inactive</option></select></div>
@@ -73,7 +73,7 @@ $typeLabel = static function (string $type): string {
                 <div class="field blank-mode"><label>Fill Blank Scoring</label><select name="ques_blank_score_mode"><option value="all_or_nothing">All blanks must be correct</option><option value="partial">Partial score per correct blank</option></select></div>
                 <div class="field full actions"><button class="btn primary" type="submit">Add Question</button></div>
             </form>
-            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/questions/import') ?>" class="grid" style="border-top:1px solid var(--line);margin-top:18px;padding-top:18px">
+            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/questions/import') ?>" class="grid" style="border-top:1px solid var(--line);margin-top:18px;padding-top:18px"><?= csrf_field() ?>
                 <div class="field two"><label>Import Questions XLSX/CSV</label><input type="file" name="question_file" accept=".xlsx,.xls,.csv" required></div>
                 <div class="field"><label>Template</label><a class="btn" href="<?= site_url('managecourse/quizzes/import-template') ?>">Download Template</a></div>
                 <div class="field full actions"><button class="btn primary" type="submit">Import Questions</button></div>
@@ -84,12 +84,12 @@ $typeLabel = static function (string $type): string {
                     $choiceRow = $question['choices'] ?? [];
                     $correctAnswer = (string) ($choiceRow['mul_answer'] ?? 'mul_c1');
                     ?>
-                    <tr><td><strong><?= esc($question['title']) ?></strong><br><span class="small">#<?= esc($question['ques_id']) ?></span></td><td><?= esc($typeLabel((string) $question['ques_type'])) ?></td><td><?= esc($question['ques_score']) ?></td><td><?= (string) $question['ques_status'] === '1' ? 'Active' : 'Inactive' ?></td><td><form method="post" action="<?= site_url('managecourse/quiz-questions/' . $question['ques_id'] . '/status') ?>"><input type="hidden" name="archive" value="1"><button class="btn" type="submit">Archive</button></form></td></tr>
+                    <tr><td><strong><?= esc($question['title']) ?></strong><br><span class="small">#<?= esc($question['ques_id']) ?></span></td><td><?= esc($typeLabel((string) $question['ques_type'])) ?></td><td><?= esc($question['ques_score']) ?></td><td><?= (string) $question['ques_status'] === '1' ? 'Active' : 'Inactive' ?></td><td><form method="post" action="<?= site_url('managecourse/quiz-questions/' . $question['ques_id'] . '/status') ?>"><?= csrf_field() ?><input type="hidden" name="archive" value="1"><button class="btn" type="submit">Archive</button></form></td></tr>
                     <tr>
                         <td colspan="5">
                             <details>
                                 <summary>Edit question</summary>
-                                <form method="post" action="<?= site_url('managecourse/quiz-questions/' . $question['ques_id'] . '/update') ?>" class="grid edit-question">
+                                <form method="post" action="<?= site_url('managecourse/quiz-questions/' . $question['ques_id'] . '/update') ?>" class="grid edit-question"><?= csrf_field() ?>
                                     <div class="field"><label>Question Type</label><select name="ques_type" class="question-type"><option value="multi" <?= (string) $question['ques_type'] === 'multi' ? 'selected' : '' ?>>Multiple choice</option><option value="text" <?= (string) $question['ques_type'] === 'text' ? 'selected' : '' ?>>Text answer</option><option value="fill_blank" <?= (string) $question['ques_type'] === 'fill_blank' ? 'selected' : '' ?>>Fill in the blank</option><option value="sort_order" <?= (string) $question['ques_type'] === 'sort_order' ? 'selected' : '' ?>>Sort order</option></select></div>
                                     <div class="field"><label>Score</label><input type="number" step="0.01" min="0" name="ques_score" value="<?= esc($question['ques_score']) ?>"></div>
                                     <div class="field"><label>Status</label><select name="ques_status"><option value="1" <?= (string) $question['ques_status'] === '1' ? 'selected' : '' ?>>Active</option><option value="0" <?= (string) $question['ques_status'] === '0' ? 'selected' : '' ?>>Inactive</option></select></div>

@@ -101,7 +101,7 @@
                             <td>
                                 <?php if (! empty($certificate['file_exists'])): ?><a class="btn primary" href="<?= site_url('certificate/download/' . $certificate['cert_id']) ?>">Download</a><?php endif; ?>
                                 <?php if (! empty($canSeeAll)): ?>
-                                    <form method="post" action="<?= site_url('certificate/regenerate/' . $certificate['cert_id']) ?>" style="display:inline">
+                                    <form method="post" action="<?= site_url('certificate/regenerate/' . $certificate['cert_id']) ?>" style="display:inline"><?= csrf_field() ?>
                                         <button class="btn" type="submit">Regenerate</button>
                                     </form>
                                 <?php endif; ?>

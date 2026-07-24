@@ -22,7 +22,7 @@
         <h1>เปลี่ยนรหัสผ่าน</h1>
         <?php if (! empty($message)): ?><div class="alert alert-success"><?= esc($message) ?></div><?php endif; ?>
         <?php if (! empty($error)): ?><div class="alert alert-danger"><?= esc($error) ?></div><?php endif; ?>
-        <form method="post" action="<?= site_url('dashboard/change_pass') ?>">
+        <form method="post" action="<?= site_url('dashboard/change_pass') ?>"><?= csrf_field() ?>
             <div class="mb-3">
                 <label class="form-label">รหัสผ่านเดิม</label>
                 <input class="form-control" type="password" name="current_password" required>

@@ -19,6 +19,12 @@ class Auth extends BaseController
 
     public function attempt()
     {
+        $username = trim((string) $this->request->getPost('username'));
+        $throttleKey = 'login-' . hash('sha256', $this->request->getIPAddress() . '|' . mb_strtolower($username));
+        if (! service('throttler')->check($throttleKey, 10, 300)) {
+            return redirect()->back()->withInput()->with('auth_error', 'Too many sign-in attempts. Please wait five minutes and try again.');
+        }
+
         $rules = [
             'username' => 'required|min_length[3]',
             'password' => 'required|min_length[1]',
@@ -30,7 +36,7 @@ class Auth extends BaseController
 
         $auth = new AuthService();
 
-        if (! $auth->attempt((string) $this->request->getPost('username'), (string) $this->request->getPost('password'))) {
+        if (! $auth->attempt($username, (string) $this->request->getPost('password'))) {
             return redirect()->back()->withInput()->with('auth_error', $this->session->getFlashdata('auth_error') ?: 'Invalid username or password.');
         }
 

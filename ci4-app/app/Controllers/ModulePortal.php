@@ -2,10 +2,12 @@
 
 namespace App\Controllers;
 
+use App\Models\BulkAdminModel;
 use App\Models\ModuleModel;
 use App\Models\OrganizationModel;
 use App\Models\PermissionModel;
 use App\Models\UserAdminModel;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ModulePortal extends BaseController
 {
@@ -79,7 +81,77 @@ class ModulePortal extends BaseController
             'user' => $user,
             'name' => $this->session->get('name'),
             'records' => (new UserAdminModel())->users(),
+            'courses' => (new BulkAdminModel())->coursesForActor($user),
         ]);
+    }
+
+    public function bulkUserTemplate()
+    {
+        $context = $this->bulkContext('ru_add');
+        if (! is_array($context)) {
+            return $context;
+        }
+
+        ob_start();
+        (new Xlsx((new BulkAdminModel())->userTemplate()))->save('php://output');
+        $content = (string) ob_get_clean();
+        return $this->response->download('bulk_user_template.xlsx', $content);
+    }
+
+    public function bulkUserImport()
+    {
+        $context = $this->bulkContext('ru_add');
+        if (! is_array($context)) {
+            return $context;
+        }
+
+        $file = $this->request->getFile('user_file');
+        if (! $file || ! $file->isValid() || ! in_array(strtolower($file->getExtension()), ['xlsx', 'xls', 'csv'], true)) {
+            return redirect()->to(site_url('manage/userdata'))->with('module_error', 'Upload a valid XLSX, XLS, or CSV file.');
+        }
+
+        $commit = (string) $this->request->getPost('commit') === '1';
+        $result = (new BulkAdminModel())->importUsers($file->getTempName(), $commit, $context['user']);
+        $message = $result['message'];
+        if (! empty($result['errors'])) {
+            $message .= ' ' . implode(' | ', array_slice($result['errors'], 0, 10));
+        }
+
+        return redirect()->to(site_url('manage/userdata'))
+            ->with($result['ok'] ? 'module_notice' : 'module_error', $message);
+    }
+
+    public function bulkEnrollment()
+    {
+        $context = $this->bulkContext('ru_edit');
+        if (! is_array($context)) {
+            return $context;
+        }
+
+        $codes = preg_split('/[\r\n,;]+/', (string) $this->request->getPost('employee_codes')) ?: [];
+        $result = (new BulkAdminModel())->bulkEnrollment(
+            (int) $this->request->getPost('course_id'),
+            $codes,
+            (string) $this->request->getPost('enrollment_action'),
+            (string) $this->request->getPost('cancel_note'),
+            $context['user']
+        );
+        $message = $result['message'] . (! empty($result['errors']) ? ' ' . implode(' | ', array_slice($result['errors'], 0, 10)) : '');
+
+        return redirect()->to(site_url('manage/userdata'))
+            ->with($result['ok'] ? 'module_notice' : 'module_error', $message);
+    }
+
+    private function bulkContext(string $field)
+    {
+        $user = $this->session->get('user');
+        if (! is_array($user)) {
+            return redirect()->to(site_url('login'));
+        }
+        if (! (new PermissionModel())->can($user, 'manage/userdata', $field)) {
+            return redirect()->to(site_url('manage/userdata'))->with('module_error', 'No permission for this bulk action.');
+        }
+        return ['user' => $user];
     }
 
     public function storeUser()

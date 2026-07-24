@@ -125,7 +125,7 @@ $columns = $module['columns'] ?? [];
     <?php if (($module['mode'] ?? '') === 'company'): ?>
         <section class="panel form-panel">
             <div class="toolbar-title" style="margin-bottom:14px">Create Company</div>
-            <form method="post" action="<?= site_url('manage/companydata/create') ?>" class="form-grid">
+            <form method="post" action="<?= site_url('manage/companydata/create') ?>" class="form-grid"><?= csrf_field() ?>
                 <div class="field"><label>Code</label><input name="com_code" maxlength="5" required></div>
                 <div class="field"><label>English Name</label><input name="com_name_eng" required></div>
                 <div class="field"><label>Thai Name</label><input name="com_name_th"></div>
@@ -139,7 +139,7 @@ $columns = $module['columns'] ?? [];
     <?php elseif (($module['mode'] ?? '') === 'department'): ?>
         <section class="panel form-panel">
             <div class="toolbar-title" style="margin-bottom:14px">Create Department</div>
-            <form method="post" action="<?= site_url('manage/departmentdata/create') ?>" class="form-grid">
+            <form method="post" action="<?= site_url('manage/departmentdata/create') ?>" class="form-grid"><?= csrf_field() ?>
                 <div class="field">
                     <label>Company</label>
                     <select name="com_id" required>
@@ -188,20 +188,20 @@ $columns = $module['columns'] ?? [];
                             <?php endforeach; ?>
                             <?php if (($module['mode'] ?? '') === 'unlock'): ?>
                                 <td>
-                                    <form class="inline-form" method="post" action="<?= site_url('dashboard/unlockAcc/' . $record['u_id']) ?>">
+                                    <form class="inline-form" method="post" action="<?= site_url('dashboard/unlockAcc/' . $record['u_id']) ?>"><?= csrf_field() ?>
                                         <button class="small-action" type="submit">Unlock</button>
                                     </form>
                                 </td>
                             <?php elseif (($module['mode'] ?? '') === 'reset_password'): ?>
                                 <td>
-                                    <form class="inline-form" method="post" action="<?= site_url('dashboard/resetPass/' . $record['u_id']) ?>" onsubmit="return confirm('Reset password for <?= esc($record['title']) ?>?')">
+                                    <form class="inline-form" method="post" action="<?= site_url('dashboard/resetPass/' . $record['u_id']) ?>" onsubmit="return confirm('Reset password for <?= esc($record['title']) ?>?')"><?= csrf_field() ?>
                                         <button class="small-action" type="submit">Reset</button>
                                     </form>
                                 </td>
                             <?php elseif (($module['mode'] ?? '') === 'company'): ?>
                                 <td>
                                     <a class="small-action secondary" href="<?= site_url('manage/companydata/' . $record['com_id'] . '/edit') ?>">Edit</a>
-                                    <form class="inline-form" method="post" action="<?= site_url('manage/companydata/' . $record['com_id'] . '/status') ?>">
+                                    <form class="inline-form" method="post" action="<?= site_url('manage/companydata/' . $record['com_id'] . '/status') ?>"><?= csrf_field() ?>
                                         <input type="hidden" name="status" value="<?= (string) ($record['com_status'] ?? '') === '1' ? '0' : '1' ?>">
                                         <button class="small-action <?= (string) ($record['com_status'] ?? '') === '1' ? 'secondary' : '' ?>" type="submit"><?= (string) ($record['com_status'] ?? '') === '1' ? 'Deactivate' : 'Activate' ?></button>
                                     </form>
@@ -209,7 +209,7 @@ $columns = $module['columns'] ?? [];
                             <?php elseif (($module['mode'] ?? '') === 'department'): ?>
                                 <td>
                                     <a class="small-action secondary" href="<?= site_url('manage/departmentdata/' . $record['dep_id'] . '/edit') ?>">Edit</a>
-                                    <form class="inline-form" method="post" action="<?= site_url('manage/departmentdata/' . $record['dep_id'] . '/status') ?>">
+                                    <form class="inline-form" method="post" action="<?= site_url('manage/departmentdata/' . $record['dep_id'] . '/status') ?>"><?= csrf_field() ?>
                                         <input type="hidden" name="status" value="<?= (string) ($record['dep_status'] ?? '') === '1' ? '0' : '1' ?>">
                                         <button class="small-action <?= (string) ($record['dep_status'] ?? '') === '1' ? 'secondary' : '' ?>" type="submit"><?= (string) ($record['dep_status'] ?? '') === '1' ? 'Deactivate' : 'Activate' ?></button>
                                     </form>
@@ -217,7 +217,7 @@ $columns = $module['columns'] ?? [];
                             <?php elseif (($module['mode'] ?? '') === 'user'): ?>
                                 <td>
                                     <a class="small-action secondary" href="<?= site_url('manage/userdata/' . $record['emp_id'] . '/edit') ?>">Edit</a>
-                                    <form class="inline-form" method="post" action="<?= site_url('manage/userdata/' . $record['emp_id'] . '/status') ?>">
+                                    <form class="inline-form" method="post" action="<?= site_url('manage/userdata/' . $record['emp_id'] . '/status') ?>"><?= csrf_field() ?>
                                         <input type="hidden" name="status" value="<?= (string) ($record['status'] ?? '') === '1' ? '0' : '1' ?>">
                                         <button class="small-action <?= (string) ($record['status'] ?? '') === '1' ? 'secondary' : '' ?>" type="submit"><?= (string) ($record['status'] ?? '') === '1' ? 'Deactivate' : 'Activate' ?></button>
                                     </form>

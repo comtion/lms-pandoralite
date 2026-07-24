@@ -76,7 +76,7 @@ $dateValue = static function ($value): string {
     <section class="panel">
         <div class="kicker"><?= esc($course['ccode'] ?? 'Course') ?></div>
         <h1><?= esc($title) ?></h1>
-        <form method="post" action="<?= $isEdit ? site_url('managecourse/lessons/' . $lesson['les_id'] . '/update') : site_url('managecourse/courses_all/' . $course['cos_id'] . '/lessons/create') ?>">
+        <form method="post" action="<?= $isEdit ? site_url('managecourse/lessons/' . $lesson['les_id'] . '/update') : site_url('managecourse/courses_all/' . $course['cos_id'] . '/lessons/create') ?>"><?= csrf_field() ?>
             <div class="form-grid">
                 <div class="field"><label>Sequence</label><input name="les_sequences" type="number" min="0" value="<?= esc($lesson['les_sequences'] ?? '0') ?>"></div>
                 <div class="field"><label>Type</label><select name="les_type"><option value="1" <?= (string) ($lesson['les_type'] ?? '1') === '1' ? 'selected' : '' ?>>Media</option><option value="2" <?= (string) ($lesson['les_type'] ?? '') === '2' ? 'selected' : '' ?>>SCORM</option></select></div>
@@ -107,7 +107,7 @@ $dateValue = static function ($value): string {
             <?php if (empty($mediaItems)): ?><div class="empty">No media in this lesson.</div><?php endif; ?>
             <div class="asset-list">
                 <?php foreach ($mediaItems as $item): ?>
-                    <form class="asset-item" method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/media/' . $item['id'] . '/update') ?>">
+                    <form class="asset-item" method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/media/' . $item['id'] . '/update') ?>"><?= csrf_field() ?>
                         <div class="asset-title"><span><?= esc($item['title'] ?: 'Media #' . $item['id']) ?></span><?php if (! empty($item['url'])): ?><a href="<?= esc($item['url']) ?>" target="_blank" rel="noopener">Open</a><?php endif; ?></div>
                         <div class="form-grid">
                             <div class="field"><label>English Name</label><input name="med_name_eng" required value="<?= esc($item['med_name_eng'] ?? '') ?>"></div>
@@ -123,7 +123,7 @@ $dateValue = static function ($value): string {
                     </form>
                 <?php endforeach; ?>
             </div>
-            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/media/create') ?>">
+            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/media/create') ?>"><?= csrf_field() ?>
                 <div class="form-grid">
                     <div class="field"><label>English Name</label><input name="med_name_eng" required></div>
                     <div class="field"><label>Thai Name</label><input name="med_name_th"></div>
@@ -145,7 +145,7 @@ $dateValue = static function ($value): string {
             <?php if (empty($documentItems)): ?><div class="empty">No documents in this lesson.</div><?php endif; ?>
             <div class="asset-list">
                 <?php foreach ($documentItems as $item): ?>
-                    <form class="asset-item" method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/documents/' . $item['id'] . '/update') ?>">
+                    <form class="asset-item" method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/documents/' . $item['id'] . '/update') ?>"><?= csrf_field() ?>
                         <div class="asset-title"><span><?= esc($item['title'] ?: 'Document #' . $item['id']) ?></span><?php if (! empty($item['url'])): ?><a href="<?= esc($item['url']) ?>" target="_blank" rel="noopener">Open</a><?php endif; ?></div>
                         <div class="form-grid">
                             <div class="field"><label>English Name</label><input name="name_file_eng" required value="<?= esc($item['name_file_eng'] ?? '') ?>"></div>
@@ -158,7 +158,7 @@ $dateValue = static function ($value): string {
                     </form>
                 <?php endforeach; ?>
             </div>
-            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/documents/create') ?>">
+            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/documents/create') ?>"><?= csrf_field() ?>
                 <div class="form-grid">
                     <div class="field"><label>English Name</label><input name="name_file_eng" required></div>
                     <div class="field"><label>Thai Name</label><input name="name_file_th"></div>
@@ -174,7 +174,7 @@ $dateValue = static function ($value): string {
             <div class="section-head">
                 <div><h2>SCORM</h2><div class="section-note">Use the package folder/path under uploads/scorm.</div></div>
             </div>
-            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/scorm/save') ?>">
+            <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/scorm/save') ?>"><?= csrf_field() ?>
                 <div class="form-grid">
                     <div class="field two"><label>SCORM Path</label><input name="path" value="<?= esc($scormItem['path'] ?? '') ?>"></div>
                     <div class="field"><label>SCORM ZIP File</label><input name="scorm_file" type="file" accept=".zip"></div>

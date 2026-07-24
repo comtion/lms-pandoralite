@@ -78,7 +78,7 @@ if (! empty($notification['send_at']) && ! str_starts_with((string) $notificatio
     <section class="panel">
         <div class="kicker"><?= esc($title_main ?: 'Manage Course') ?></div>
         <h1><?= esc($title) ?></h1>
-        <form method="post" action="<?= $isEdit ? site_url('managecourse/courses_all/' . $course['cos_id'] . '/update') : site_url('managecourse/courses_all/create') ?>">
+        <form method="post" action="<?= $isEdit ? site_url('managecourse/courses_all/' . $course['cos_id'] . '/update') : site_url('managecourse/courses_all/create') ?>"><?= csrf_field() ?>
             <div class="form-grid">
                 <div class="field"><label>Course Code</label><input name="ccode" maxlength="15" required value="<?= esc($course['ccode'] ?? '') ?>"></div>
                 <div class="field"><label>Company</label><select id="courseCompanySelect" name="com_id" required>
@@ -163,7 +163,7 @@ if (! empty($notification['send_at']) && ! str_starts_with((string) $notificatio
                     </div>
                     <button class="btn primary" form="course-groups-form" type="submit">Save Groups</button>
                 </div>
-                <form id="course-groups-form" method="post" action="<?= site_url('managecourse/courses_all/' . $course['cos_id'] . '/groups/update') ?>">
+                <form id="course-groups-form" method="post" action="<?= site_url('managecourse/courses_all/' . $course['cos_id'] . '/groups/update') ?>"><?= csrf_field() ?>
                     <div class="group-picker">
                         <?php foreach (($courseGroups ?? []) as $group): ?>
                             <?php $checked = in_array((int) $group['cg_id'], array_map('intval', $selectedCourseGroups ?? []), true); ?>
@@ -193,7 +193,7 @@ if (! empty($notification['send_at']) && ! str_starts_with((string) $notificatio
                             <td><?= (string) $lesson['les_status'] === '1' ? 'Active' : 'Inactive' ?></td>
                             <td>
                                 <a class="small-action" href="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/edit') ?>">Edit</a>
-                                <form method="post" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/status') ?>" style="display:inline">
+                                <form method="post" action="<?= site_url('managecourse/lessons/' . $lesson['les_id'] . '/status') ?>" style="display:inline"><?= csrf_field() ?>
                                     <input type="hidden" name="status" value="<?= (string) $lesson['les_status'] === '1' ? '0' : '1' ?>">
                                     <button class="small-action" type="submit"><?= (string) $lesson['les_status'] === '1' ? 'Deactivate' : 'Activate' ?></button>
                                 </form>

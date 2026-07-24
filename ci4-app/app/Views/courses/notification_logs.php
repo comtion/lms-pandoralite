@@ -132,7 +132,7 @@ $queryUrl = static function (array $params): string {
                     <td>
                         <a class="btn" href="<?= site_url('managecourse/course_notifications?schedule_id=' . (int) $schedule['cn_id']) ?>">View</a>
                         <?php if ((int) ($schedule['failed_count'] ?? 0) > 0): ?>
-                            <form method="post" action="<?= site_url('managecourse/course_notifications/' . (int) $schedule['cn_id'] . '/retry') ?>" style="display:inline">
+                            <form method="post" action="<?= site_url('managecourse/course_notifications/' . (int) $schedule['cn_id'] . '/retry') ?>" style="display:inline"><?= csrf_field() ?>
                                 <button class="btn primary" type="submit">Retry Failed</button>
                             </form>
                         <?php endif; ?>

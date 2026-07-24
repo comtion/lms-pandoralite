@@ -86,7 +86,7 @@ $tracking = $lesson['tracking'] ?? null;
                 <h2>Progress</h2>
                 <p><span class="chip <?= ($tracking['learn_status'] ?? '') === '2' ? 'good' : '' ?>"><?= ($tracking['learn_status'] ?? '') === '2' ? 'Completed' : 'In progress' ?></span></p>
                 <p class="muted">Enrollment ID: <?= esc($enrollment['cosen_id'] ?? '-') ?></p>
-                <form method="post" action="<?= site_url('coursemain/lesson/' . $lesson['les_id'] . '/complete') ?>">
+                <form method="post" action="<?= site_url('coursemain/lesson/' . $lesson['les_id'] . '/complete') ?>"><?= csrf_field() ?>
                     <button class="btn" type="submit">Mark Lesson Complete</button>
                 </form>
             </section>

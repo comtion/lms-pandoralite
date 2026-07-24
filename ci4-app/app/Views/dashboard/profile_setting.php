@@ -46,7 +46,7 @@ $isModal = (string) service('request')->getGet('modal') === '1';
             <div class="alert alert-danger"><?= esc($error) ?></div>
         <?php endif; ?>
 
-        <form method="post" action="<?= site_url('dashboard/profile/setting') ?><?= $isModal ? '?modal=1' : '' ?>">
+        <form method="post" action="<?= site_url('dashboard/profile/setting') ?><?= $isModal ? '?modal=1' : '' ?>"><?= csrf_field() ?>
             <h2 class="section-title">ข้อมูลภาษาไทย</h2>
             <div class="row g-3">
                 <div class="col-md-2">

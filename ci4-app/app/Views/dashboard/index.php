@@ -10,6 +10,8 @@ $device = $summary['device_usage'] ?? ['pc' => 0, 'mobile' => 0, 'tablet' => 0];
 $companyAnalytics = $summary['company_analytics'] ?? [];
 $approvalCourses = $summary['approval_courses'] ?? [];
 $approvalSurveys = $summary['approval_surveys'] ?? [];
+$approvalCourseGroups = $summary['approval_course_groups'] ?? [];
+$approvalHistory = $approvalHistory ?? [];
 $publicSurveys = $summary['public_surveys'] ?? [];
 $notifications = $summary['notifications'] ?? ['unread' => 0, 'items' => []];
 $notificationItems = $notifications['items'] ?? [];
@@ -153,6 +155,35 @@ $translations = [
     ],
 ];
 $copy = $translations[$isThai ? 'th' : 'en'];
+$approvalText = $isThai ? [
+    'queue' => 'รายการรออนุมัติ',
+    'subtitle' => 'ตรวจสอบและตัดสินใจรายการที่คุณได้รับมอบหมาย',
+    'course' => 'หลักสูตร',
+    'survey' => 'แบบสำรวจ',
+    'course_group' => 'กลุ่มหลักสูตร',
+    'owner' => 'ผู้สร้าง',
+    'note' => 'หมายเหตุ / เหตุผลที่ไม่อนุมัติ',
+    'approve' => 'อนุมัติ',
+    'reject' => 'ไม่อนุมัติ',
+    'empty' => 'ไม่มีรายการรออนุมัติ',
+    'history' => 'ประวัติการอนุมัติล่าสุด',
+    'bulk_note' => 'หมายเหตุสำหรับรายการที่เลือก',
+    'apply_selected' => 'ดำเนินการกับรายการที่เลือก',
+] : [
+    'queue' => 'Approval Queue',
+    'subtitle' => 'Review and decide items assigned to you',
+    'course' => 'Course',
+    'survey' => 'Survey',
+    'course_group' => 'Course group',
+    'owner' => 'Owner',
+    'note' => 'Note / rejection reason',
+    'approve' => 'Approve',
+    'reject' => 'Reject',
+    'empty' => 'There are no items waiting for your approval.',
+    'history' => 'Recent approval history',
+    'bulk_note' => 'Note for selected items',
+    'apply_selected' => 'Apply to selected',
+];
 $menuIcon = static function (string $icon): string {
     $key = trim(str_replace(['mdi mdi-', 'mdi-', 'mdi '], '', $icon));
 
@@ -407,7 +438,7 @@ $mobileItems = array_slice($menus ?? [], 0, 4);
                         <div class="notification-panel-head">
                             <span><?= esc($copy['notifications']) ?></span>
                             <?php if ($unreadNotifications > 0): ?>
-                                <form method="post" action="<?= site_url('dashboard/notifications/read-all') ?>">
+                                <form method="post" action="<?= site_url('dashboard/notifications/read-all') ?>"><?= csrf_field() ?>
                                     <button type="submit">Mark all read</button>
                                 </form>
                             <?php endif; ?>
@@ -534,6 +565,116 @@ $mobileItems = array_slice($menus ?? [], 0, 4);
                             </div>
                         </article>
                     </div>
+
+                    <div class="section table-card" id="approval-queue">
+                        <div class="section-header">
+                            <div>
+                                <h3 class="section-title"><?= esc($approvalText['queue']) ?></h3>
+                                <p class="section-subtitle"><?= esc($approvalText['subtitle']) ?></p>
+                            </div>
+                            <span class="chart-chip"><i class="bi bi-check2-square"></i> <?= number_format(count($approvalCourses) + count($approvalSurveys) + count($approvalCourseGroups)) ?></span>
+                        </div>
+                        <?php if (session()->getFlashdata('approval_notice')): ?>
+                            <div class="approval-alert approval-alert-success"><?= esc(session()->getFlashdata('approval_notice')) ?></div>
+                        <?php endif; ?>
+                        <?php if (session()->getFlashdata('approval_error')): ?>
+                            <div class="approval-alert approval-alert-error"><?= esc(session()->getFlashdata('approval_error')) ?></div>
+                        <?php endif; ?>
+                        <?php if ($approvalCourses === [] && $approvalSurveys === [] && $approvalCourseGroups === []): ?>
+                            <div class="approval-empty"><i class="bi bi-check-circle"></i> <?= esc($approvalText['empty']) ?></div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <?php foreach (['course' => $approvalCourses, 'survey' => $approvalSurveys, 'course_group' => $approvalCourseGroups] as $bulkType => $bulkItems): ?>
+                                    <?php if ($bulkItems !== []): ?>
+                                        <form id="bulk-<?= esc($bulkType) ?>" class="approval-bulk" method="post" action="<?= site_url('dashboard/approvals/bulk') ?>"><?= csrf_field() ?>
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="type" value="<?= esc($bulkType) ?>">
+                                            <strong><?= esc($approvalText[$bulkType]) ?>:</strong>
+                                            <input name="note" maxlength="2000" placeholder="<?= esc($approvalText['bulk_note']) ?>">
+                                            <button class="approval-btn approve" name="decision" value="approve" type="submit"><?= esc($approvalText['approve']) ?></button>
+                                            <button class="approval-btn reject" name="decision" value="reject" type="submit"><?= esc($approvalText['reject']) ?></button>
+                                        </form>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <table class="enterprise-table approval-table">
+                                    <thead><tr><th><span class="visually-hidden">Select</span></th><th>Type</th><th>Title</th><th><?= esc($approvalText['owner']) ?></th><th>Decision</th></tr></thead>
+                                    <tbody>
+                                    <?php foreach ($approvalCourses as $item): ?>
+                                        <tr>
+                                            <td><input type="checkbox" name="ids[]" value="<?= (int) $item['cos_id'] ?>" form="bulk-course" aria-label="Select course"></td>
+                                            <td><span class="approval-kind"><i class="bi bi-book"></i> <?= esc($approvalText['course']) ?></span></td>
+                                            <td><a href="<?= site_url('coursemain/detail/' . (int) $item['cos_id']) ?>"><?= esc($item['display_name'] ?? '') ?></a></td>
+                                            <td><?= esc($item['user_creator'] ?? '-') ?></td>
+                                            <td>
+                                                <form class="approval-form" method="post" action="<?= site_url('dashboard/approvals/courses/' . (int) $item['cos_id']) ?>"><?= csrf_field() ?>
+                                                    <?= csrf_field() ?>
+                                                    <input name="note" type="text" maxlength="2000" placeholder="<?= esc($approvalText['note']) ?>">
+                                                    <button class="approval-btn approve" name="decision" value="approve" type="submit"><i class="bi bi-check-lg"></i> <?= esc($approvalText['approve']) ?></button>
+                                                    <button class="approval-btn reject" name="decision" value="reject" type="submit"><i class="bi bi-x-lg"></i> <?= esc($approvalText['reject']) ?></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php foreach ($approvalSurveys as $item): ?>
+                                        <tr>
+                                            <td><input type="checkbox" name="ids[]" value="<?= (int) $item['sv_id'] ?>" form="bulk-survey" aria-label="Select survey"></td>
+                                            <td><span class="approval-kind survey"><i class="bi bi-ui-checks"></i> <?= esc($approvalText['survey']) ?></span></td>
+                                            <td><?= esc($item['display_title'] ?? '') ?></td>
+                                            <td><?= esc($item['user_creator'] ?? '-') ?></td>
+                                            <td>
+                                                <form class="approval-form" method="post" action="<?= site_url('dashboard/approvals/surveys/' . (int) $item['sv_id']) ?>"><?= csrf_field() ?>
+                                                    <?= csrf_field() ?>
+                                                    <input name="note" type="text" maxlength="2000" placeholder="<?= esc($approvalText['note']) ?>">
+                                                    <button class="approval-btn approve" name="decision" value="approve" type="submit"><i class="bi bi-check-lg"></i> <?= esc($approvalText['approve']) ?></button>
+                                                    <button class="approval-btn reject" name="decision" value="reject" type="submit"><i class="bi bi-x-lg"></i> <?= esc($approvalText['reject']) ?></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php foreach ($approvalCourseGroups as $item): ?>
+                                        <tr>
+                                            <td><input type="checkbox" name="ids[]" value="<?= (int) $item['cg_id'] ?>" form="bulk-course_group" aria-label="Select course group"></td>
+                                            <td><span class="approval-kind group"><i class="bi bi-collection"></i> <?= esc($approvalText['course_group']) ?></span></td>
+                                            <td><?= esc($isThai ? ($item['cgtitle_th'] ?: $item['cgtitle_en']) : ($item['cgtitle_en'] ?: $item['cgtitle_th'])) ?></td>
+                                            <td><?= esc($item['c_by'] ?? '-') ?></td>
+                                            <td>
+                                                <form class="approval-form" method="post" action="<?= site_url('dashboard/approvals/course-groups/' . (int) $item['cg_id']) ?>"><?= csrf_field() ?>
+                                                    <?= csrf_field() ?>
+                                                    <input name="note" type="text" maxlength="2000" placeholder="<?= esc($approvalText['note']) ?>">
+                                                    <button class="approval-btn approve" name="decision" value="approve" type="submit"><i class="bi bi-check-lg"></i> <?= esc($approvalText['approve']) ?></button>
+                                                    <button class="approval-btn reject" name="decision" value="reject" type="submit"><i class="bi bi-x-lg"></i> <?= esc($approvalText['reject']) ?></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($approvalHistory !== []): ?>
+                        <div class="section table-card">
+                            <div class="section-header"><div><h3 class="section-title"><?= esc($approvalText['history']) ?></h3></div></div>
+                            <div class="table-responsive">
+                                <table class="enterprise-table">
+                                    <thead><tr><th>Type</th><th>Title</th><th>Decision</th><th><?= esc($approvalText['owner']) ?></th><th>Note</th><th>Date</th></tr></thead>
+                                    <tbody>
+                                    <?php foreach ($approvalHistory as $history): ?>
+                                        <tr>
+                                            <td><?= esc($approvalText[$history['type']] ?? $history['type']) ?></td>
+                                            <td><?= esc($history['title']) ?></td>
+                                            <td><span class="history-state <?= (int) $history['approval_state'] === 1 ? 'approved' : 'rejected' ?>"><?= (int) $history['approval_state'] === 1 ? esc($approvalText['approve']) : esc($approvalText['reject']) ?></span></td>
+                                            <td><?= esc($history['approver']) ?></td>
+                                            <td><?= esc($history['approval_note'] ?: '-') ?></td>
+                                            <td><?= esc($history['approved_at']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
                     <div class="section content-grid">
                         <div class="table-card">
@@ -809,6 +950,35 @@ $mobileItems = array_slice($menus ?? [], 0, 4);
     </section>
 </div>
 
+<style>
+.approval-alert{margin:16px 20px 0;padding:12px 14px;border-radius:10px;font-weight:700}
+.approval-alert-success{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
+.approval-alert-error{background:#fff1f2;color:#9f1239;border:1px solid #fecdd3}
+.approval-empty{margin:18px 20px 22px;padding:24px;border:1px dashed #d8dee8;border-radius:12px;color:#64748b;text-align:center}
+.approval-empty i{margin-right:8px;color:#16a34a}
+.approval-kind{display:inline-flex;align-items:center;gap:7px;padding:6px 9px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:800;white-space:nowrap}
+.approval-kind.survey{background:#f5f3ff;color:#6d28d9}
+.approval-kind.group{background:#fff7ed;color:#c2410c}
+.approval-bulk{display:grid;grid-template-columns:auto minmax(220px,1fr) auto auto;gap:8px;align-items:center;margin:12px 20px;padding:10px 12px;border:1px solid #e5eaf1;border-radius:10px;background:#f8fafc}
+.approval-bulk input{min-height:38px;border:1px solid #d8dee8;border-radius:9px;padding:8px 10px}
+.history-state{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.history-state.approved{background:#dcfce7;color:#166534}.history-state.rejected{background:#ffe4e6;color:#9f1239}
+.approval-table td{vertical-align:middle}
+.approval-table td:nth-child(2){min-width:220px;font-weight:700}
+.approval-form{display:grid;grid-template-columns:minmax(180px,1fr) auto auto;gap:8px;align-items:center;min-width:500px}
+.approval-form input{width:100%;min-height:38px;border:1px solid #d8dee8;border-radius:9px;padding:8px 10px;background:#fff}
+.approval-form input:focus{outline:2px solid rgba(37,99,235,.2);border-color:#2563eb}
+.approval-btn{min-height:38px;border:0;border-radius:9px;padding:8px 12px;color:#fff;font-weight:800;cursor:pointer;white-space:nowrap}
+.approval-btn.approve{background:#15803d}
+.approval-btn.reject{background:#be123c}
+.approval-btn:hover{filter:brightness(.94)}
+@media(max-width:767px){
+    .approval-bulk{grid-template-columns:1fr 1fr}.approval-bulk strong,.approval-bulk input{grid-column:1/-1}
+    .approval-form{grid-template-columns:1fr 1fr;min-width:360px}
+    .approval-form input{grid-column:1/-1}
+}
+</style>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -828,6 +998,30 @@ const actionModalMessage = document.getElementById('actionModalMessage');
 const actionModalCta = document.getElementById('actionModalCta');
 const profileModal = document.getElementById('dashboardProfileModal');
 let activeFilter = 'all';
+
+document.querySelectorAll('.approval-form,.approval-bulk').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+        const submitter = event.submitter;
+        if (form.classList.contains('approval-bulk') && !document.querySelector(`input[form="${form.id}"]:checked`)) {
+            event.preventDefault();
+            window.alert(<?= json_encode($isThai ? 'กรุณาเลือกรายการอย่างน้อยหนึ่งรายการ' : 'Please select at least one item.', JSON_UNESCAPED_UNICODE) ?>);
+            return;
+        }
+        if (!submitter || submitter.value !== 'reject') {
+            return;
+        }
+
+        const note = form.querySelector('input[name="note"]');
+        if (!note || note.value.trim() !== '') {
+            return;
+        }
+
+        event.preventDefault();
+        note.setCustomValidity(<?= json_encode($isThai ? 'กรุณาระบุเหตุผลที่ไม่อนุมัติ' : 'Please provide a rejection reason.', JSON_UNESCAPED_UNICODE) ?>);
+        note.reportValidity();
+        note.addEventListener('input', () => note.setCustomValidity(''), { once: true });
+    });
+});
 
 function setMode(mode) {
     modePills.forEach((button) => button.classList.toggle('active', button.dataset.modeOption === mode));

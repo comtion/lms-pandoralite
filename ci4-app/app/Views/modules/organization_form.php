@@ -54,7 +54,7 @@
         <h1><?= esc($title) ?></h1>
 
         <?php if ($type === 'company'): ?>
-            <form method="post" action="<?= site_url('manage/companydata/' . $record['com_id'] . '/update') ?>">
+            <form method="post" action="<?= site_url('manage/companydata/' . $record['com_id'] . '/update') ?>"><?= csrf_field() ?>
                 <div class="form-grid">
                     <div class="field"><label>Code</label><input name="com_code" maxlength="5" required value="<?= esc($record['com_code']) ?>"></div>
                     <div class="field"><label>English Name</label><input name="com_name_eng" required value="<?= esc($record['com_name_eng']) ?>"></div>
@@ -69,7 +69,7 @@
                 <div class="actions"><a class="btn" href="<?= site_url('manage/companydata') ?>">Cancel</a><button class="btn primary" type="submit">Save Company</button></div>
             </form>
         <?php else: ?>
-            <form method="post" action="<?= site_url('manage/departmentdata/' . $record['dep_id'] . '/update') ?>">
+            <form method="post" action="<?= site_url('manage/departmentdata/' . $record['dep_id'] . '/update') ?>"><?= csrf_field() ?>
                 <div class="form-grid">
                     <div class="field full">
                         <label>Company</label>

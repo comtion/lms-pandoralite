@@ -36,7 +36,10 @@
   - Pending survey approvals now read from `lms_sv` and `lms_svde`.
   - Pending course group approvals now read from `lms_cog`.
   - Public surveys now read from `lms_sv`, `lms_sv_tc`, and `lms_sv_pm`.
-  - These widgets are read-only in CI4 for now; approve/reject actions are not migrated yet.
+  - Dashboard approvers can now approve or reject pending courses, public surveys, and course groups individually or in bulk.
+  - Rejection reasons are mandatory; decisions use row locks and transactions, write legacy-compatible approval history, enforce edit permission plus assigned-approver/company scope, and notify owners in-app and by configured email template.
+  - Approval history is visible on the dashboard, future course/survey notification jobs are scheduled without duplicates, and course notification schedules resume after approval.
+  - Global CSRF, invalid-character filtering, and secure response headers are enabled; all CI4 POST forms now emit CSRF tokens (the SCORM data-model endpoint remains explicitly exempt for package compatibility).
 - Feature coverage fallback has been added in CI4:
   - `ci4-app/app/Controllers/Feature.php`
   - `ci4-app/app/Views/feature/pending.php`
@@ -55,6 +58,8 @@
   - `dashboard/unlockAcc/{userId}` can unlock a locked account by setting `login=1` and clearing `u_lockdate`.
   - `dashboard/resetPass/{userId}` can reset a password, set `firsttime=1`, extend `expiredate`, and show a temporary password to the admin.
   - `dashboard/resetPass/{userId}` now attempts reset-password email delivery through `lms_setting_mail` and the active `lms_sendmail_form` template type `2`, and records delivery results in `lms_lg_email`.
+  - `manage/userdata` now provides a downloadable XLSX bulk-user template, dry-run validation, and all-or-nothing import for up to 1,000 new users with duplicate, company, department, group, and password checks.
+  - Admins can bulk enroll up to 1,000 employee codes into a company-scoped course. Safe unenrollment is limited to learners who have not started and uses soft deletion with a cancellation reason.
 - Organization master data actions have been started in CI4:
   - `ci4-app/app/Models/OrganizationModel.php`
   - `manage/companydata/create` can create a company and seed default course types.
@@ -178,7 +183,7 @@ CodeIgniter 3 cannot be upgraded in place by only changing Composer packages. Co
 
 ## Current Local URLs
 
-- CI4 LMS: `http://localhost:8083/login`
+- CI4 LMS: `http://localhost:8184/lms-pandoralite/ci4-app/public/login`
 - Existing project on port 8081 remains untouched: `http://localhost:8081/`
 
 ## Next Migration Step

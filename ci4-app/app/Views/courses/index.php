@@ -453,11 +453,11 @@ $isApprovedLocked = static function (array $item) use ($isSuperAdmin): bool {
                                             <button class="legacy-action locked" type="button" title="<?= esc($lockedTitle) ?>" disabled><i class="bi bi-x-lg"></i></button>
                                         <?php else: ?>
                                             <button class="legacy-action edit" type="button" title="<?= esc($isThai ? 'แก้ไข' : 'Edit') ?>" data-bs-toggle="modal" data-bs-target="#courseGroupEditModal<?= (int) $item['cg_id'] ?>"><i class="bi bi-pencil-fill"></i></button>
-                                            <form class="legacy-inline-form" method="post" action="<?= site_url('managecourse/course_groups/' . $item['cg_id'] . '/archive') ?>" onsubmit="return confirm('<?= esc($isThai ? 'ต้องการลบกลุ่มหลักสูตรนี้?' : 'Delete this course group?') ?>');">
+                                            <form class="legacy-inline-form" method="post" action="<?= site_url('managecourse/course_groups/' . $item['cg_id'] . '/archive') ?>" onsubmit="return confirm('<?= esc($isThai ? 'ต้องการลบกลุ่มหลักสูตรนี้?' : 'Delete this course group?') ?>');"><?= csrf_field() ?>
                                                 <button class="legacy-action delete" type="submit" title="<?= esc($isThai ? 'ลบ' : 'Delete') ?>"><i class="bi bi-x-lg"></i></button>
                                             </form>
                                         <?php endif; ?>
-                                        <form class="legacy-inline-form" method="post" action="<?= site_url('managecourse/course_groups/' . $item['cg_id'] . '/approval') ?>">
+                                        <form class="legacy-inline-form" method="post" action="<?= site_url('managecourse/course_groups/' . $item['cg_id'] . '/approval') ?>"><?= csrf_field() ?>
                                             <input type="hidden" name="approval" value="1">
                                             <button class="legacy-action approve" type="submit" title="<?= esc($isThai ? 'อนุมัติ' : 'Approve') ?>"><i class="bi bi-check2"></i></button>
                                         </form>
@@ -528,7 +528,7 @@ $isApprovedLocked = static function (array $item) use ($isSuperAdmin): bool {
                                     <div class="meta-row"><span>Survey</span><a class="badge" href="<?= site_url('managecourse/surveys?cos_id=' . $item['cos_id']) ?>">Manage</a></div>
                                     <div class="meta-row">
                                         <span>Status</span>
-                                        <form method="post" action="<?= site_url('managecourse/courses_all/' . $item['cos_id'] . '/status') ?>">
+                                        <form method="post" action="<?= site_url('managecourse/courses_all/' . $item['cos_id'] . '/status') ?>"><?= csrf_field() ?>
                                             <input type="hidden" name="status" value="<?= (string) ($item['cos_status'] ?? '') === '1' ? '0' : '1' ?>">
                                             <button class="badge" type="submit" style="border:0;cursor:pointer"><?= (string) ($item['cos_status'] ?? '') === '1' ? 'Deactivate' : 'Activate' ?></button>
                                         </form>

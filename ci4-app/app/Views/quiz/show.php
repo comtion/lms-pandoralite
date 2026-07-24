@@ -78,7 +78,7 @@
         <?php endif; ?>
     </section>
 
-    <form method="post" action="<?= site_url('coursemain/quiz/' . $quiz['qiz_id'] . '/submit') ?>">
+    <form method="post" action="<?= site_url('coursemain/quiz/' . $quiz['qiz_id'] . '/submit') ?>"><?= csrf_field() ?>
         <?php foreach (($quiz['questions'] ?? []) as $index => $question): ?>
             <section class="question">
                 <div class="question-head">

@@ -32,7 +32,7 @@ $dateValue = static function ($value): string {
     <?php if (session()->getFlashdata('course_error')): ?><div class="error"><?= esc(session()->getFlashdata('course_error')) ?></div><?php endif; ?>
     <section class="panel">
         <div class="kicker"><?= esc($title_main ?: 'Manage Course') ?></div><h1><?= esc($title) ?></h1>
-        <form method="post" action="<?= $isEdit ? site_url('managecourse/surveys/' . $survey['sv_id'] . '/update') : site_url('managecourse/surveys/create') ?>">
+        <form method="post" action="<?= $isEdit ? site_url('managecourse/surveys/' . $survey['sv_id'] . '/update') : site_url('managecourse/surveys/create') ?>"><?= csrf_field() ?>
             <div class="grid">
                 <div class="field two"><label>Course</label><select name="cos_id" required><option value="">Select course</option><?php foreach (($courses ?? []) as $course): ?><option value="<?= esc($course['cos_id']) ?>" <?= $selectedCourseId === (int) $course['cos_id'] ? 'selected' : '' ?>><?= esc(($course['ccode'] ?: '-') . ' - ' . $course['title']) ?></option><?php endforeach; ?></select></div>
                 <div class="field"><label>Status</label><select name="sv_status"><option value="1" <?= (string) ($survey['sv_status'] ?? '1') === '1' ? 'selected' : '' ?>>Active</option><option value="0" <?= (string) ($survey['sv_status'] ?? '') === '0' ? 'selected' : '' ?>>Inactive</option></select></div>
@@ -51,7 +51,7 @@ $dateValue = static function ($value): string {
     <?php if ($isEdit): ?>
         <section class="panel">
             <h2>Questions</h2>
-            <form method="post" action="<?= site_url('managecourse/surveys/' . $survey['sv_id'] . '/questions/create') ?>" class="grid">
+            <form method="post" action="<?= site_url('managecourse/surveys/' . $survey['sv_id'] . '/questions/create') ?>" class="grid"><?= csrf_field() ?>
                 <div class="field"><label>English Heading</label><input name="svde_heading_eng" required></div>
                 <div class="field"><label>Thai Heading</label><input name="svde_heading_th"></div>
                 <div class="field"><label>Status</label><select name="svde_status"><option value="1">Active</option><option value="0">Inactive</option></select></div>
@@ -66,13 +66,13 @@ $dateValue = static function ($value): string {
                         <td><strong><?= esc($question['heading']) ?></strong><br><span class="small">#<?= esc($question['svde_id']) ?> <?= esc($question['detail']) ?></span></td>
                         <td><?= (string) $question['svde_status'] === '1' ? 'Active' : 'Inactive' ?></td>
                         <td>
-                            <form class="inline-form" method="post" action="<?= site_url('managecourse/survey-questions/' . $question['svde_id'] . '/update') ?>">
+                            <form class="inline-form" method="post" action="<?= site_url('managecourse/survey-questions/' . $question['svde_id'] . '/update') ?>"><?= csrf_field() ?>
                                 <input name="svde_heading_eng" value="<?= esc($question['svde_heading_eng']) ?>" required>
                                 <input name="svde_heading_th" value="<?= esc($question['svde_heading_th']) ?>">
                                 <select name="svde_status"><option value="1" <?= (string) $question['svde_status'] === '1' ? 'selected' : '' ?>>Active</option><option value="0" <?= (string) $question['svde_status'] === '0' ? 'selected' : '' ?>>Inactive</option></select>
                                 <button class="btn" type="submit">Save</button>
                             </form>
-                            <form method="post" action="<?= site_url('managecourse/survey-questions/' . $question['svde_id'] . '/status') ?>" style="display:inline-block;margin-top:8px">
+                            <form method="post" action="<?= site_url('managecourse/survey-questions/' . $question['svde_id'] . '/status') ?>" style="display:inline-block;margin-top:8px"><?= csrf_field() ?>
                                 <input type="hidden" name="archive" value="1"><button class="btn" type="submit">Archive</button>
                             </form>
                         </td>

@@ -51,7 +51,7 @@ $value = static fn (string $key, string $default = '') => old($key, (string) ($r
         <h1><?= esc($title) ?></h1>
     </section>
 
-    <form method="post" action="<?= $isEdit ? site_url('manage/userdata/' . $record['u_id'] . '/update') : site_url('manage/userdata/create') ?>">
+    <form method="post" action="<?= $isEdit ? site_url('manage/userdata/' . $record['u_id'] . '/update') : site_url('manage/userdata/create') ?>"><?= csrf_field() ?>
         <section class="panel">
             <h2>Account</h2>
             <div class="grid">

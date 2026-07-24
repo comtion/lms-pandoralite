@@ -107,9 +107,9 @@ $enrollment = $course['enrollment'] ?? null;
             </div>
             <div class="action-row">
                 <?php if (empty($enrollment)): ?>
-                    <form method="post" action="<?= site_url('coursemain/enroll/' . $course['cos_id']) ?>"><button class="btn primary" type="submit">Enroll Course</button></form>
+                    <form method="post" action="<?= site_url('coursemain/enroll/' . $course['cos_id']) ?>"><?= csrf_field() ?><button class="btn primary" type="submit">Enroll Course</button></form>
                 <?php else: ?>
-                    <form method="post" action="<?= site_url('coursemain/start/' . $course['cos_id']) ?>"><button class="btn primary" type="submit">Start Learning</button></form>
+                    <form method="post" action="<?= site_url('coursemain/start/' . $course['cos_id']) ?>"><?= csrf_field() ?><button class="btn primary" type="submit">Start Learning</button></form>
                     <a class="btn" href="<?= site_url('coursemain/my_course') ?>">My Course</a>
                 <?php endif; ?>
             </div>

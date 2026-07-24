@@ -62,7 +62,7 @@
         <?php endif; ?>
     </section>
 
-    <form method="post" action="<?= site_url('coursemain/survey/' . $survey['sv_id'] . '/submit') ?>">
+    <form method="post" action="<?= site_url('coursemain/survey/' . $survey['sv_id'] . '/submit') ?>"><?= csrf_field() ?>
         <?php foreach (($survey['questions'] ?? []) as $index => $question): ?>
             <?php $last = $survey['last_submission']['details'][(int) $question['svde_id']] ?? []; ?>
             <section class="question">
