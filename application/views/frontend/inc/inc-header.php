@@ -12,7 +12,7 @@ $precision_swal_text = isset($precision_swal_locale[$lang]) ? $precision_swal_lo
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-premium.css?v=20260720-2">
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-20">
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-18">
-<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260720-35">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260721-36">
 <script>
 document.body.classList.add('lms-premium-dashboard','precision-app-shell');
 (function (locale) {
@@ -22,8 +22,7 @@ document.body.classList.add('lms-premium-dashboard','precision-app-shell');
   function applySweetAlertLocale() {
     if (window.swal && typeof window.swal.setDefaults === 'function') {
       window.swal.setDefaults({
-        confirmButtonText: locale.confirm,
-        cancelButtonText: locale.cancel
+        confirmButtonText: locale.confirm
       });
     }
   }
@@ -33,6 +32,12 @@ document.body.classList.add('lms-premium-dashboard','precision-app-shell');
     for (var i = 0; i < closeButtons.length; i++) {
       closeButtons[i].setAttribute('aria-label', locale.close);
       closeButtons[i].setAttribute('title', locale.close);
+    }
+    var cancelButtons = document.querySelectorAll('.swal2-cancel');
+    for (var j = 0; j < cancelButtons.length; j++) {
+      if (cancelButtons[j].textContent !== locale.cancel) {
+        cancelButtons[j].textContent = locale.cancel;
+      }
     }
   }
 

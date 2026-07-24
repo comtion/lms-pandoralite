@@ -1,407 +1,244 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-<?php $this->load->view('frontend/inc/inc-meta-dashboard.php'); 
-  
-                      $array_pathext = explode('.', $path);
-                      $extension = end($array_pathext);
+<?php
+$this->load->view('frontend/inc/inc-meta-dashboard.php');
+
+$extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+$documentUrl = base_url().'uploads/document/'.str_replace('%2F', '/', rawurlencode($path));
+$pdfViewerUrl = base_url().'viewdoc/PDF/'.rawurlencode($id).'/'.rawurlencode($type);
+$safeTitle = $filname !== '' ? $filname : basename($path);
+$isImage = in_array($extension, array('jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'), true);
+$isVideo = in_array($extension, array('mp4', 'webm', 'ogg', 'wmv'), true);
+$isPdf = $extension === 'pdf';
+
+$viewerText = array(
+  'thai' => array(
+    'eyebrow' => 'ศูนย์เอกสารการเรียนรู้',
+    'back' => 'กลับไปหน้าหลักสูตร',
+    'preview' => 'ตัวอย่างเอกสาร',
+    'secure' => 'โหมดแสดงผลแบบปลอดภัย',
+    'download' => 'ดาวน์โหลดไฟล์',
+    'open' => 'เปิดไฟล์ต้นฉบับ',
+    'loading' => 'กำลังเตรียมเอกสาร',
+    'loading_detail' => 'ระบบกำลังตรวจสอบและจัดเตรียมไฟล์สำหรับการแสดงผล',
+    'failed' => 'ไม่สามารถแสดงตัวอย่างไฟล์ได้',
+    'failed_detail' => 'ไฟล์อาจถูกย้าย สูญหาย หรือเซิร์ฟเวอร์ส่งข้อมูลที่ไม่ใช่เอกสารกลับมา',
+    'retry' => 'ลองใหม่',
+    'hint' => 'หากยังเปิดไม่ได้ กรุณาดาวน์โหลดไฟล์เพื่อตรวจสอบจากอุปกรณ์ของคุณ',
+    'type' => 'ประเภทไฟล์'
+  ),
+  'english' => array(
+    'eyebrow' => 'Learning document center',
+    'back' => 'Back to course',
+    'preview' => 'Document preview',
+    'secure' => 'Secure viewing mode',
+    'download' => 'Download file',
+    'open' => 'Open original file',
+    'loading' => 'Preparing your document',
+    'loading_detail' => 'The file is being verified and prepared for viewing.',
+    'failed' => 'The document preview is unavailable',
+    'failed_detail' => 'The file may have moved, be missing, or the server returned an invalid document response.',
+    'retry' => 'Try again',
+    'hint' => 'If the preview still fails, download the file and open it on your device.',
+    'type' => 'File type'
+  ),
+  'japan' => array(
+    'eyebrow' => '学習ドキュメントセンター',
+    'back' => 'コースに戻る',
+    'preview' => 'ドキュメントプレビュー',
+    'secure' => 'セキュア表示モード',
+    'download' => 'ファイルをダウンロード',
+    'open' => '元のファイルを開く',
+    'loading' => 'ドキュメントを準備しています',
+    'loading_detail' => '表示用ファイルを確認して準備しています。',
+    'failed' => 'プレビューを表示できません',
+    'failed_detail' => 'ファイルが移動・削除されたか、無効な応答が返されました。',
+    'retry' => '再試行',
+    'hint' => '表示できない場合は、ファイルをダウンロードしてご確認ください。',
+    'type' => 'ファイル形式'
+  )
+);
+$copy = isset($viewerText[$lang]) ? $viewerText[$lang] : $viewerText['english'];
 ?>
-    <style type="text/css">
-      #one {
-       /* margin: 50px auto;*/
-        /*width: 100%;*/
-        height: auto;
-      }
-    </style>
-    <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/plugins/datatables/media/css/dataTables.bootstrap4.css">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/document-viewer-premium.css?v=20260721-2">
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
-    <!-- ============================================================== -->
-    <!-- Preloader - style you can find in spinners.css -->
-    <!-- ============================================================== -->
-    <div class="preloader">
-        <div class="loader">
-            <div class="loader__figure"></div>
-            <p class="loader__label"><?php if($lang=="thai"){echo $foote[0]['da_title_th'];}else{echo $foote[0]['da_title_en'];} ?></p>
-        </div>
+<body class="fix-header fix-sidebar card-no-border precision-document-page">
+  <div class="preloader">
+    <div class="loader">
+      <div class="loader__figure"></div>
+      <p class="loader__label"><?php echo $lang === 'thai' ? $foote[0]['da_title_th'] : $foote[0]['da_title_en']; ?></p>
     </div>
-    <!-- ============================================================== -->
-    <!-- Main wrapper - style you can find in pages.scss -->
-    <!-- ============================================================== -->
-    <div id="main-wrapper">
-        <?php $this->load->view('frontend/inc/inc-header.php'); ?>
-        <?php $this->load->view('frontend/inc/inc-sidemenu.php'); ?>
-        <!-- Page wrapper  -->
-        <!-- ============================================================== -->
-        <div class="page-wrapper">
-            <div class="container-fluid">
+  </div>
 
-                <div class="row col-12 page-titles">
-                  <div class="col-md-12 card">
-                    <div class="card-body text-right">
-                      <?php 
+  <div id="main-wrapper">
+    <?php $this->load->view('frontend/inc/inc-header.php'); ?>
+    <?php $this->load->view('frontend/inc/inc-sidemenu.php'); ?>
 
-                      if(in_array($extension, array('jpg','jpeg','png','gif'))){ ?>
-                        <img src="<?php echo base_url().'/uploads/document/'.$path; ?>" style="width: 100%;pointer-events:none;">
-                      <?php }else if(in_array($extension, array('mp4','wmv'))){ ?>
-                        <video id="video_upload" controls="controls" style="width: 100%" src="<?php echo base_url().'/uploads/document/'.$path; ?>"></video>
-                      <?php }else{ ?>
-                        <a href="<?php echo base_url().'/uploads/document/'.$path; ?>" class="btn waves-effect waves-light btn-warning" download="<?php echo $filname; ?>"><i class="mdi mdi-download"></i> <?php echo label('download_file'); ?></a>
-                        <hr/>
-                          <div class="loading_div" align="center" style="float: center;">
-                            <img src="<?php echo REAL_PATH; ?>/assets/images/01-progress.gif" style="width: 40%">
-                          </div>
-                        <iframe id="iframe_document" onload="setFrameLoaded(this)" onerror="runloop();"  style="width:100%; height: 97vh;" frameborder="0">
-                        </iframe>
-                        <iframe id="one" src="<?php echo base_url().'/viewdoc/PDF/'.$id.'/'.$type; ?>" style="display: none; width:100%; height: 97vh;" onload="resizeIframe(this)" frameborder="0"></iframe>
-                        <!-- <div id="one" class="pdf-pro-plugin" data-mode="normal" style="display: none;" data-pdf-url="<?php echo base_url().'/uploads/document/'.$path; ?>"></div> -->
-                        <!--  src="https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true"-->
-                      <?php }  ?>
-                    </div>
-                  </div>
+    <div class="page-wrapper document-page-wrapper">
+      <main class="document-workspace">
+        <section class="document-hero" aria-labelledby="document-title">
+          <div class="document-hero__identity">
+            <a class="document-back" href="<?php echo base_url().htmlspecialchars($page, ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="mdi mdi-arrow-left"></i>
+              <span><?php echo $copy['back']; ?></span>
+            </a>
+            <div class="document-heading">
+              <span class="document-type-icon"><i class="mdi <?php echo $isPdf ? 'mdi-file-pdf-box' : ($isImage ? 'mdi-image-outline' : ($isVideo ? 'mdi-play-circle-outline' : 'mdi-file-document-outline')); ?>"></i></span>
+              <div>
+                <span class="document-eyebrow"><?php echo $copy['eyebrow']; ?></span>
+                <h1 id="document-title"><?php echo htmlspecialchars($safeTitle, ENT_QUOTES, 'UTF-8'); ?></h1>
+                <div class="document-meta">
+                  <span><i class="mdi mdi-file-outline"></i><?php echo $copy['type']; ?>: <?php echo strtoupper(htmlspecialchars($extension, ENT_QUOTES, 'UTF-8')); ?></span>
+                  <span><i class="mdi mdi-shield-check-outline"></i><?php echo $copy['secure']; ?></span>
                 </div>
+              </div>
             </div>
-        </div>
-    </div>
-    <?php $this->load->view('frontend/inc/inc-footer.php'); ?>
+          </div>
+          <div class="document-hero__actions">
+            <a class="document-action document-action--ghost" href="<?php echo htmlspecialchars($documentUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener">
+              <i class="mdi mdi-open-in-new"></i><span><?php echo $copy['open']; ?></span>
+            </a>
+            <a class="document-action document-action--primary" href="<?php echo htmlspecialchars($documentUrl, ENT_QUOTES, 'UTF-8'); ?>" download="<?php echo htmlspecialchars($safeTitle, ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="mdi mdi-download-outline"></i><span><?php echo $copy['download']; ?></span>
+            </a>
+          </div>
+        </section>
 
-    <script type="text/javascript">var base_url = "<?php echo REAL_PATH; ?>";</script>
-    
-    <script src="<?php echo REAL_PATH; ?>/assets/plugins/tinymce/tinymce.min.js"></script>
-    <!-- This is data table -->
-    <script src="<?php echo REAL_PATH; ?>/assets/plugins/datatables/datatables.min.js"></script>
-    <link href="<?php echo REAL_PATH; ?>/assets/pdfviewer/pdf-viewer.css" rel="stylesheet" type="text/css" />
-    <script src="<?php echo REAL_PATH; ?>/assets/pdfviewer/pdfjs/pdf.js"></script>
-    <script src="<?php echo REAL_PATH; ?>/assets/pdfviewer/pdf-viewer.min.js"></script>
-    <script type="text/javascript">
-      
-      document.addEventListener('contextmenu', event => event.preventDefault());
-      $(document).keydown(function(event){
-          if(event.keyCode==123){
-              return false;
-          }
-          else if (event.ctrlKey && event.shiftKey && event.keyCode==73){        
-                   return false;
-          }
-      });
-        function resizeIframe(obj) {
-          obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-        }
-        topFunction();
-        <?php 
-        function user_agent(){
-            $iPod = strpos($_SERVER['HTTP_USER_AGENT'],"iPod");
-            $iPhone = strpos($_SERVER['HTTP_USER_AGENT'],"iPhone");
-            $iPad = strpos($_SERVER['HTTP_USER_AGENT'],"iPad");
-            $mac = strpos($_SERVER['HTTP_USER_AGENT'],"Macintosh");
-            $android = strpos($_SERVER['HTTP_USER_AGENT'],"Android");
-            if($iPad||$iPhone||$iPod||$mac){
-                return 'ios';
-            }else if($android){
-                return 'android';
-            }else{
-                return 'pc';
-            }
-        }
-        ?>
-        var frame_loaded = 0;
-        $('.loading_div').show();
-        function setFrameLoaded(val)
-        {
-        <?php
-        if(user_agent()!="ios"){
-          ?>
-           frame_loaded = 1;
-            $('.loading_div').hide();
+        <section class="document-viewer-card">
+          <header class="document-viewer-toolbar">
+            <div>
+              <span class="document-live-dot"></span>
+              <strong><?php echo $copy['preview']; ?></strong>
+            </div>
+            <span class="document-format-pill"><?php echo strtoupper(htmlspecialchars($extension, ENT_QUOTES, 'UTF-8')); ?></span>
+          </header>
 
-          <?php }else{ ?>
-            var iframe_document_length = $("#iframe_document").contents().find("body").length;
-            /*var iframe = document.getElementById('iframe_document');
-            var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-            var test = innerDoc.getElementsByTagName('span');
+          <div class="document-stage <?php echo $isImage ? 'is-image' : ($isVideo ? 'is-video' : 'is-document'); ?>" id="documentStage">
+            <div class="document-loader" id="documentLoader">
+              <span class="document-loader__mark"><i class="mdi mdi-file-eye-outline"></i></span>
+              <span class="document-loader__ring"></span>
+              <strong><?php echo $copy['loading']; ?></strong>
+              <p><?php echo $copy['loading_detail']; ?></p>
+            </div>
 
-            if(test != undefined) {
+            <div class="document-error" id="documentError" hidden>
+              <div class="document-error__panel">
+                <span class="document-error__icon"><i class="mdi mdi-file-alert-outline"></i></span>
+                <span class="document-error__eyebrow">ISUZU E-LEARNING</span>
+                <h2><?php echo $copy['failed']; ?></h2>
+                <p><?php echo $copy['failed_detail']; ?></p>
+                <div class="document-error__actions">
+                  <button type="button" class="document-action document-action--primary" id="retryViewer"><i class="mdi mdi-refresh"></i><?php echo $copy['retry']; ?></button>
+                  <a class="document-action document-action--ghost" href="<?php echo htmlspecialchars($documentUrl, ENT_QUOTES, 'UTF-8'); ?>" download><i class="mdi mdi-download-outline"></i><?php echo $copy['download']; ?></a>
+                </div>
+                <small><i class="mdi mdi-information-outline"></i><?php echo $copy['hint']; ?></small>
+              </div>
+            </div>
 
-                alert('Exists');
-
-            }else{
-
-                alert('Do no Exists');
-            }*/
-            if(iframe_document_length==1){
-              <?php if(in_array($extension, array('pdf'))){ ?>
-                  $('#iframe_document').attr('src', 'https://docs.google.com/viewerng/viewer?url=<?php echo base_url().'uploads/document/'.$path; ?>&embedded=true');  
-                <?php }else{ ?>
-                  $('#iframe_document').attr('src', 'https://view.officeapps.live.com/op/embed.aspx?src=<?php echo base_url().'uploads/document/'.$path; ?>');  
-                <?php } ?>
-                  /*var iframe_document_length = $("#iframe_document").contents().find("body").length;
-                  if(iframe_document_length==0){
-                        $('#iframe_document').attr('src', 'https://view.officeapps.live.com/op/embed.aspx?src=<?php echo base_url().'uploads/document/'.$path; ?>'); 
-                  }else{
-                  frame_loaded = 1;
-                  $('.loading_div').hide();
-                  }*/
-            }else{
-                  frame_loaded = 1;
-                  $('.loading_div').hide();
-                  var iframe_document_length = $("#iframe_document").contents().find("span").length;
-                  if(iframe_document_length==1){
-              /*<?php if(in_array($extension, array('pdf'))){ ?>
-                  $('#iframe_document').attr('src', 'https://docs.google.com/viewerng/viewer?url=<?php echo base_url().'uploads/document/'.$path; ?>&embedded=true');  
-                <?php }else{ ?>*/
-                  $('#iframe_document').attr('src', 'https://view.officeapps.live.com/op/embed.aspx?src=<?php echo base_url().'uploads/document/'.$path; ?>');  
-                /*<?php } ?>  */
-                    frame_loaded = 0;
-                    $('.loading_div').show();
-                  }
-            }
-               /* if(!$("#iframe_document").contents().find("body").length) {
-        $('#iframe_document').attr('src', 'https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true');   
-                }else{ */
-               // }
-          <?php
-        }
-        ?>
-           // $('#iframe_document').attr('src', 'https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true');   
-        }
-        <?php if(user_agent()=="ios"){ ?>
-        (function(){
-          // Only apply settimeout workaround for iOS 6 - for all others, we map to native Timers
-          //if (!navigator.userAgent.match(/OS 6(_\d)+/i)) return;
-
-          // Prevent multiple applications
-          if(window.getTimeouts !== undefined) return;
-
-          var TIMERID = 'rafTimer',
-          
-              touchTimeouts   = {},
-              touchIntervals  = {},
-              
-              /* Reference to original timers */
-              _st = window.setTimeout, 
-              _si = window.setInterval, 
-              _ct = window.clearTimeout, 
-              _ci = window.clearInterval,
-              
-              /* Request animation timers */
-              _clearTouchTimer = function(uid, isInterval){
-                var interval = isInterval || false,
-                    timer = interval ? touchIntervals :  touchTimeouts;
-                if(timer[uid]) {
-                  timer[uid].callback = undefined;
-                  timer[uid].loop = false;
-                  return true;
-                } else {
-                  return false;
-                }
-              },
-              _touchTimer = function(callback, wait, isInterval){
-                var uid,
-                    name = callback.name || TIMERID + Math.floor(Math.random() * 1000),
-                    delta = new Date().getTime()+ wait,
-                    interval = isInterval || false,
-                    timer = interval ? touchIntervals :  touchTimeouts;
-            
-                uid = name + "" + delta;
-            
-                timer[uid] = {};
-                timer[uid].loop = true;
-                timer[uid].callback = callback;
-            
-                function _loop() {
-                  var now = new Date().getTime();
-                  if (timer[uid].loop !== false) {
-                      timer[uid].requestededFrame = webkitRequestAnimationFrame(_loop);
-                      timer[uid].loop = now <= delta;
-                  } else {
-                    if(timer[uid].callback) timer[uid].callback();
-                    if(interval){
-                      delta = new Date().getTime() + wait;
-                      timer[uid].loop = now <= delta;
-                      timer[uid].requestedFrame = webkitRequestAnimationFrame(_loop);
-                    } else {
-                      delete timer[uid];
-                    }
-                  }
-                };
-                
-                _loop();
-                return uid;
-              },
-              _timer = function(callback, wait, touch, isInterval){
-                if(touch){
-                  return _touchTimer(callback, wait, isInterval);
-                } else {
-                  return isInterval ? _si(callback, wait) : _st(callback, wait);
-                }
-              },
-              _clear = function(uid, isInterval){
-                if(uid.indexOf && uid.indexOf(TIMERID) > -1){
-                  return _clearTouchTimer(uid, isInterval);
-                } else {
-                  return isInterval ? _ci(uid) : _ct(uid);
-                }
-              };
-          
-          /* Returns raf-based timers; For debugging purposes */
-          window.getTimeouts = function(){
-            return { timeouts: touchTimeouts , intervals : touchIntervals }
-          };
-
-          /* Exposed globally */
-          window.setTimeout = function(callback, wait, touch){
-            return _timer(callback, wait, touch);
-          };
-          window.setInterval = function(callback, wait, touch){
-            return _timer(callback, wait, touch, true);
-          };
-          window.clearTimeout = function(uid){
-            return _clear(uid);
-          };
-          window.clearInterval = function(uid){
-            return _clear(uid, true);
-          };
-        })();
-      <?php } ?>
-      <?php if(in_array($extension, array('pdf'))){ ?>
-            $('#one').show();
-            $('.pdf-pro-download').hide();
-            $('#iframe_document').hide();
-            $('.loading_div').hide();
-       <?php 
-            }else{ 
-              if(!in_array($extension, array('jpg','jpeg','png','gif','mp4','wmv'))){
-              ?>
-            $('#one').hide();
-            $('#iframe_document').show();
-              <?php
-              if(user_agent()!="ios"){
-                ?>
-              $('#iframe_document').attr('src', 'https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true');   
-            <?php } else{ ?>/*
-              <?php if(in_array($extension, array('pdf'))){ ?>
-                        $('#iframe_document').attr('src', 'https://docs.google.com/viewerng/viewer?url=<?php echo base_url().'uploads/document/'.$path; ?>&embedded=true');  
-                      <?php }else{ ?>*/
-                        $('#iframe_document').attr('src', 'https://view.officeapps.live.com/op/embed.aspx?src=<?php echo base_url().'uploads/document/'.$path; ?>');  /*
-                      <?php } ?>*/
+            <?php if ($isImage) { ?>
+              <img class="document-media" id="documentMedia" src="<?php echo htmlspecialchars($documentUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($safeTitle, ENT_QUOTES, 'UTF-8'); ?>">
+            <?php } elseif ($isVideo) { ?>
+              <video class="document-media document-video" id="documentMedia" controls preload="metadata" src="<?php echo htmlspecialchars($documentUrl, ENT_QUOTES, 'UTF-8'); ?>"></video>
+            <?php } elseif ($isPdf) { ?>
+              <iframe class="document-frame" id="pdfDocumentFrame" title="<?php echo htmlspecialchars($safeTitle, ENT_QUOTES, 'UTF-8'); ?>" src="<?php echo htmlspecialchars($pdfViewerUrl, ENT_QUOTES, 'UTF-8'); ?>" allowfullscreen></iframe>
+            <?php } else { ?>
+              <iframe class="document-frame" id="officeDocumentFrame" title="<?php echo htmlspecialchars($safeTitle, ENT_QUOTES, 'UTF-8'); ?>"></iframe>
             <?php } ?>
-        
-        //document.getElementById('iframe_document').contentWindow.location.reload(true);
-        function runloop(){
-          var interval = setInterval(function(){ 
-           if(frame_loaded != 1){
-            //console.log(frame_loaded);
-            //alert('84');
-            $('#iframe_document').attr('src', 'https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true');   
-           }else{
-              $('.loading_div').hide();
-           }
-          }, 3000);
-          if(frame_loaded == 1){
-            clearInterval(interval);
-          }
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <?php $this->load->view('frontend/inc/inc-footer.php'); ?>
+
+  <script>
+  (function () {
+    'use strict';
+    var loader = document.getElementById('documentLoader');
+    var error = document.getElementById('documentError');
+    var stage = document.getElementById('documentStage');
+    var retry = document.getElementById('retryViewer');
+    var pdfFrame = document.getElementById('pdfDocumentFrame');
+    var officeFrame = document.getElementById('officeDocumentFrame');
+    var media = document.getElementById('documentMedia');
+    var documentUrl = <?php echo json_encode($documentUrl); ?>;
+    var extension = <?php echo json_encode($extension); ?>;
+
+    function ready() {
+      if (loader) loader.classList.add('is-hidden');
+      if (stage) stage.classList.add('is-ready');
+    }
+
+    function failed() {
+      if (loader) loader.classList.add('is-hidden');
+      if (error) error.hidden = false;
+      if (stage) stage.classList.add('has-error');
+      if (pdfFrame) pdfFrame.classList.add('is-hidden');
+      if (officeFrame) officeFrame.classList.add('is-hidden');
+    }
+
+    function inspectPdfFrame() {
+      try {
+        var child = pdfFrame.contentDocument || pdfFrame.contentWindow.document;
+        var bodyText = child && child.body ? child.body.innerText : '';
+        var errorWrapper = child && child.querySelector ? child.querySelector('#errorWrapper:not(.hidden)') : null;
+        if (errorWrapper || /Unexpected server response|An error occurred while loading the PDF/i.test(bodyText)) {
+          failed();
+          return;
         }
-        <?php if(user_agent()!="ios"){ ?>
-          runloop();
-        <?php } ?>
-        function iframeLoaded(args) {
-          alert(args);
+      } catch (e) {
+        // The viewer can still be used when its document is isolated by the browser.
+      }
+      ready();
+    }
 
-          var iframe_document = document.querySelector('#iframe_document');
-          if(iframe_document.search("apis.google.com")<0){
-            $('#iframe_document').attr('src', 'https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true');
-          }/*
-            if (args.readyState == "complete" && isClickedForDialog) {
+    if (media) {
+      media.addEventListener(extension === 'mp4' || extension === 'webm' || extension === 'ogg' || extension === 'wmv' ? 'loadedmetadata' : 'load', ready);
+      media.addEventListener('error', failed);
+      if (media.complete) ready();
+    }
 
-                waitDialog.hide();
+    if (pdfFrame) {
+      pdfFrame.addEventListener('load', function () {
+        window.setTimeout(inspectPdfFrame, 900);
+      });
+      pdfFrame.addEventListener('error', failed);
+      window.setTimeout(inspectPdfFrame, 5000);
+    }
 
-                isClickedForDialog = false;
-            }*/
+    if (officeFrame) {
+      var encoded = encodeURIComponent(documentUrl);
+      var viewerUrl = /iPad|iPhone|iPod/.test(navigator.userAgent)
+        ? 'https://docs.google.com/gview?embedded=true&url=' + encoded
+        : 'https://view.officeapps.live.com/op/embed.aspx?src=' + encoded;
+      officeFrame.src = viewerUrl;
+      officeFrame.addEventListener('load', ready);
+      officeFrame.addEventListener('error', failed);
+      window.setTimeout(ready, 3500);
+    }
+
+    if (retry) {
+      retry.addEventListener('click', function () {
+        error.hidden = true;
+        stage.classList.remove('has-error');
+        loader.classList.remove('is-hidden');
+        if (pdfFrame) {
+          pdfFrame.classList.remove('is-hidden');
+          pdfFrame.src = pdfFrame.src.split('?')[0] + '?retry=' + Date.now();
+        } else if (officeFrame) {
+          officeFrame.classList.remove('is-hidden');
+          officeFrame.src = officeFrame.src;
+        } else if (media) {
+          media.src = documentUrl + '?retry=' + Date.now();
         }
-      <?php }
-        } ?>
-          /*for (;;) {
-            $('#iframe_document').attr('src', 'https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true');
-            if(frame_loaded == 1){
-              break;
-            }
-          }  */
-        /*setInterval(ajaxCall, 3000);
+      });
+    }
 
-        function ajaxCall() {
-          alert('84');
-           if(frame_loaded != 1){
-            //console.log(frame_loaded);
-              $('#iframe_document').attr('src', 'https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true');   
-           }else{
-              $('.loading_div').hide();
-           }
-        }*/
-        /*$(function() {
-            $.ajax({
-                url: "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true",
-                dataType: "jsonp",
-                timeout: 3000,
-
-                success: function () {
-                    $('.loading_div').hide();
-                    break;
-                },
-                error: function (parsedjson) {
-                  //alert(parsedjson.status);
-                    $("#iframe_document").attr("src", "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true");
-                }
-            });
-        });
-        setTimeout("alert('Hello')", 1000);*/
-        /*let script = document.createElement('iframe');
-          script.src = "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true"; // no such script
-          document.head.append(script);
-
-          script.onerror = function() {
-            $("#iframe_document").attr("src", "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true");
-          };*/
-      /*$(function() {
-        function manipIframe() {
-            $.ajax({
-                url: "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true",
-                dataType: "jsonp",
-                //timeout: 5000,
-
-                success: function () {
-                    $('.loading_div').hide();
-                    $("#iframe_document").attr("src", "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true");
-                    break;
-                },
-                error: function (parsedjson) {
-                   //manipIframe();
-                  //alert(parsedjson.status);
-                   // $("#iframe_document").attr("src", "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true");
-                }
-            });
-        }
-        manipIframe();
-      });*/
-      //document.getElementById("iframe_document").src = "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true";
-        /*function manipIframe() {
-            $.ajax({
-                url: "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true",
-                dataType: "jsonp",
-                //timeout: 5000,
-
-                success: function () {
-                    $('.loading_div').hide();
-                    $("#iframe_document").attr("src", "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true");
-                    break;
-                },
-                error: function (parsedjson) {
-                    $('.loading_div').hide();
-                   //manipIframe();
-                  alert(parsedjson.status);
-                   // $("#iframe_document").attr("src", "https://docs.google.com/gview?url=<?php echo base_url().'uploads/document/'.$path; ?>&a=bi&embedded=true");
-                }
-            });
-        }*/
-    </script>
+    document.addEventListener('contextmenu', function (event) {
+      if (stage && stage.contains(event.target)) event.preventDefault();
+    });
+  }());
+  </script>
 </body>
-
 </html>

@@ -1,362 +1,286 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php
+$isThai = $lang === 'thai';
+$isJapanese = $lang === 'japan';
+$copy = array(
+    'title' => $isThai ? 'หลักสูตรทั้งหมด' : ($isJapanese ? 'すべてのコース' : 'All courses'),
+    'subtitle' => $isThai ? 'ยกระดับทักษะ ความรู้ เพื่อก้าวสู่มาตรฐานอีซูซุ' : ($isJapanese ? '知識とスキルを磨き、次のステップへ' : 'Build the knowledge and skills to move forward'),
+    'search' => $isThai ? 'ค้นหาหลักสูตร' : ($isJapanese ? 'コースを検索' : 'Search courses'),
+    'all' => $isThai ? 'ทั้งหมด' : ($isJapanese ? 'すべて' : 'All'),
+    'recommended' => $isThai ? 'แนะนำสำหรับคุณ' : ($isJapanese ? 'あなたへのおすすめ' : 'Recommended for you'),
+    'view_all' => $isThai ? 'ดูทั้งหมด' : ($isJapanese ? 'すべて見る' : 'View all'),
+    'learning_path' => $isThai ? 'เส้นทางการเรียนรู้' : ($isJapanese ? 'ラーニングパス' : 'Learning path'),
+    'continue' => $isThai ? 'เรียนต่อ' : ($isJapanese ? '続ける' : 'Continue'),
+    'start' => $isThai ? 'เริ่มเรียน' : ($isJapanese ? '開始' : 'Start course'),
+    'register' => $isThai ? 'ลงทะเบียน' : ($isJapanese ? '登録' : 'Enroll'),
+    'students' => $isThai ? 'ผู้เรียน' : ($isJapanese ? '受講者' : 'learners'),
+    'period' => $isThai ? 'ระยะเวลาเปิดเรียน' : ($isJapanese ? '受講期間' : 'Course period'),
+    'empty' => $isThai ? 'ไม่พบหลักสูตรที่ตรงกับการค้นหา' : ($isJapanese ? '該当するコースがありません' : 'No matching courses found'),
+    'clear' => $isThai ? 'ล้างตัวกรอง' : ($isJapanese ? 'フィルターを解除' : 'Clear filters')
+);
+
+$uniqueCourses = array();
+foreach ($list_course as $course) {
+    $uniqueCourses[(string)$course['cos_id']] = $course;
+}
+$courses = array_values($uniqueCourses);
+$featured = count($courses) ? $courses[0] : null;
+$courseGroupNames = array();
+foreach ($list_coursegroup as $group) {
+    $courseGroupNames[(string)$group['cg_id']] = $group['cgname'];
+}
+$featuredDescription = '';
+if ($featured) {
+    $descriptionKeys = $isThai
+        ? array('sub_description_th', 'cdesc_th', 'sub_description_eng', 'cdesc_eng')
+        : ($isJapanese
+            ? array('sub_description_jp', 'cdesc_jp', 'sub_description_eng', 'cdesc_eng')
+            : array('sub_description_eng', 'cdesc_eng', 'sub_description_th', 'cdesc_th'));
+    foreach ($descriptionKeys as $descriptionKey) {
+        if (!empty($featured[$descriptionKey])) {
+            $featuredDescription = trim(preg_replace('/\s+/u', ' ', strip_tags($featured[$descriptionKey])));
+            break;
+        }
+    }
+    if ($featuredDescription !== '') $featuredDescription = mb_substr($featuredDescription, 0, 170, 'UTF-8');
+}
+
+$heroImage = REAL_PATH.'/assets/images/course-catalog/hero-technician-engine.png';
+
+function premium_course_image($course) {
+    if (!empty($course['cos_pic']) && is_file(ROOT_DIR.'uploads/course/'.$course['cos_pic'])) {
+        return REAL_PATH.'/uploads/course/'.$course['cos_pic'];
+    }
+    return REAL_PATH.'/images/cover_course.jpg';
+}
+
+function premium_course_groups($course) {
+    return isset($course['cg_arr']) && is_array($course['cg_arr']) ? implode(',', $course['cg_arr']) : '';
+}
+?>
 <?php $this->load->view('frontend/inc/inc-meta-dashboard.php'); ?>
-    <link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">
+<link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">
+<link href="<?php echo REAL_PATH; ?>/assets/css/course-catalog-premium.css?v=20260721-14" rel="stylesheet">
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
-    <!-- ============================================================== -->
-    <!-- Preloader - style you can find in spinners.css -->
-    <!-- ============================================================== -->
-    <div class="preloader">
-        <div class="loader">
-            <div class="loader__figure"></div>
-            <p class="loader__label"><?php if($lang=="thai"){echo $foote[0]['da_title_th'];}else{echo $foote[0]['da_title_en'];} ?></p>
-        </div>
-    </div>
-    <!-- ============================================================== -->
-    <!-- Main wrapper - style you can find in pages.scss -->
-    <!-- ============================================================== -->
-    <div id="main-wrapper">
-        <?php $this->load->view('frontend/inc/inc-header.php'); ?>
-        <?php $this->load->view('frontend/inc/inc-sidemenu.php'); ?>
-        <!-- Page wrapper  -->
-        <!-- ============================================================== -->
-        <div class="page-wrapper">
-            <?php   if(countArray($banner)>0){ ?>
-            <div id="carouselExampleIndicators2" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                  <?php $numban = 0;
-                        foreach ($banner as $key_ban => $value_ban) { ?>
-                    <li data-target="#carouselExampleIndicators2" data-slide-to="<?php echo $numban; ?>" <?php if($numban==0){ ?>class="active"<?php }$numban++; ?>></li>
-                  <?php } ?>
-                </ol>
-                <div class="carousel-inner" role="listbox" style="height: 200px;">
-                  <?php $numban = 0;
-                        foreach ($banner as $key_ban => $value_ban) { ?>
-                    <div class="carousel-item <?php if($numban==0){ ?>active<?php }$numban++; ?>">
-                      <img class="carousel-course" style="background-image:url(<?php echo REAL_PATH; ?>/uploads/banner_course/<?php echo $value_ban['bc_image']; ?>); overflow: hidden; background-size: cover; background-position: center; width: 100%; height: 200px;" alt="">
-                        <div class="carousel-caption d-md-block">
-                        <h1 class="container-fluid text-white"><?php if($lang=="thai"){echo $value_ban['bc_name_th'];}else if($lang=="english"){echo $value_ban['bc_name_eng'];}else{echo $value_ban['bc_name_jp'];} ?></h1>
-                      </div>
-                    </div>
-                  <?php } ?>
-                </div>
+<body class="fix-header fix-sidebar card-no-border premium-course-page">
+<div class="preloader"><div class="loader"><div class="loader__figure"></div><p class="loader__label"><?php echo $isThai ? $foote[0]['da_title_th'] : $foote[0]['da_title_en']; ?></p></div></div>
+<div id="main-wrapper">
+    <?php $this->load->view('frontend/inc/inc-header.php'); ?>
+    <?php $this->load->view('frontend/inc/inc-sidemenu.php'); ?>
 
-
-                <a class="carousel-control-prev" href="#carouselExampleIndicators2" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only"><?php echo label('lrn_btn_previous'); ?></span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators2" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only"><?php echo label('lrn_btn_next'); ?></span>
-                </a>
+    <main class="page-wrapper course-catalog-shell">
+        <section class="course-hero<?php echo $heroImage ? ' has-image' : ''; ?>"<?php if ($heroImage) { ?> style="--course-hero-image:url('<?php echo htmlspecialchars($heroImage, ENT_QUOTES, 'UTF-8'); ?>')"<?php } ?>>
+            <div class="course-hero__content">
+                <h1><?php echo $copy['title']; ?></h1>
+                <p><?php echo $copy['subtitle']; ?></p>
+                <label class="course-search" for="courseSearchInput">
+                    <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                    <input id="courseSearchInput" type="search" autocomplete="off" placeholder="<?php echo $copy['search']; ?>" aria-label="<?php echo $copy['search']; ?>">
+                    <button type="button" id="courseSearchClear" aria-label="<?php echo $copy['clear']; ?>" disabled><i class="mdi mdi-close"></i></button>
+                </label>
             </div>
-            <?php   } ?>
-            <div class="container-fluid">
-                <div class="row col-12 page-titles">
-                    <div class="col-md-5 align-self-center">
-                        <b><?php echo ucwords(strtolower($title)); ?></b>
-                    </div>
-                    <div class="col-md-7 align-self-right">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="<?php echo REAL_PATH;?>/dashboard"><?php echo ucwords(label('dashboard')); ?></a></li>
-                            <?php if($title_main!=""){ ?>
-                            <li class="breadcrumb-item active"><?php echo ucwords(strtolower($title_main)); ?></li>
-                            <?php } ?>
-                            <li class="breadcrumb-item active"><?php echo ucwords(strtolower($title)); ?></li>
-                        </ol>
-                    </div>
-                </div>
-              <div class="card card-body row">
-                <div class="col-12 text-right mb-3">
-                    <form class="form-search justify-content-end">
-                      <button>
-                          <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
-                              <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
-                          </svg>
-                      </button>
-                      <input  class="input-search" placeholder="<?php echo label('search'); ?>..." required="" type="text"
-                              id="courseSearchInput"
-                              onkeyup="filterCoursesByName()">
-                      <button class="reset-search" type="reset">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                          </svg>
-                      </button>
-                  </form>
-                </div>
-                <div class="col-md-12">
-                  <?php if(countArray($list_course)>0){ ?>
-                  <div class="row">
-                  <?php if(countArray($list_coursegroup)>0){ ?>
-                    <div class="col-auto col-md-12 col-lg-3 card card-body">
+            <div class="course-hero__visual" aria-hidden="true"></div>
 
-                      <div class="stickyside">
-
-                        <label align="left"><?php echo label('lrn_b_course_type'); ?></label>
-                        <?php foreach ($list_coursegroup as $key_cg => $value_cg) { ?>
-                        <div class="checkbox checkbox-success">
-                          <input type="checkbox" id="chk_cg_<?php echo $value_cg['cg_id'] ?>" onclick="clickdiv_cg('<?php echo $value_cg['cg_id']; ?>')" name="chk_cg_<?php echo $value_cg['cg_id'] ?>" checked>
-                          <label for="chk_cg_<?php echo $value_cg['cg_id'] ?>"><?php echo $value_cg['cgname']; ?></label>
-                        </div>
-                        <?php } ?>
-                      </div>
-                    </div>
-                    <div class="col-md-12 col-lg-9 card card-body">
-                      <?php   $numgroup = 1;
-                              foreach ($list_coursegroup as $key_cg => $value_cg) { ?>
-                          <div class="card-header mb-4 div_cgheader<?php echo $value_cg['cg_id']; ?>" align="left"><?php echo $value_cg['cgname']; ?></div>
-                          <div class="card-group div_cgheader<?php echo $value_cg['cg_id']; ?>">
-                            <div class="col-md-12 row">
-                          <?php   if(countArray($list_course)>0){
-                                      $numloop = 1;
-                                      foreach ($list_course as $key_list => $value_list) {
-                                          if(in_array($value_cg['cg_id'], $value_list['cg_arr'])){
-                          ?>
-                            <div class="col-md-4 course-item" data-name="<?php echo strtolower($value_list['cname']); ?>" data-group="<?php echo $value_cg['cg_id']; ?>">
-                              <div class="card">
-                              <div class="card-img-top img-responsive <?php if($value_list['isCondition']=="1"){ ?>onCondition<?php } ?> <?php if($value_list['isRegister']=="1"){ ?>pointer<?php } ?>" msg="<?php echo str_replace('_coursename_', $value_list['msgCondition'], label('condition_msg')); ?>" alt="" <?php if($value_list['isRegister']=="1"&&$value_list['isCondition']=="0"){ ?>onclick="location.href='<?php echo REAL_PATH;?>/coursemain/detail/<?php echo $value_list['cos_id']; ?>';"<?php } ?> style="background-image:<?php if($value_list['cos_pic']!=""&&is_file(ROOT_DIR."uploads/course/".$value_list['cos_pic'])){ ?>url(<?php echo REAL_PATH;?>/uploads/course/<?php echo $value_list['cos_pic']; ?>) <?php }else{ ?>url(<?php echo REAL_PATH;?>/images/cover_course.jpg)<?php } ?>; overflow: hidden; background-size: contain; background-position: center; background-repeat: no-repeat; width: 100%; height: 215px;"></div>
-                              <div class="card-body <?php if($value_list['isCondition']=="1"){ ?>onCondition<?php } ?>" msg="<?php echo str_replace('_coursename_', $value_list['msgCondition'], label('condition_msg')); ?>">
-                                <h4 class="card-title h4-two-line-ellipsis <?php if($value_list['isRegister']=="1"){ ?>pointer<?php } ?>" <?php if($value_list['isRegister']=="1"&&$value_list['isCondition']=="0"){ ?>onclick="location.href='<?php echo REAL_PATH;?>/coursemain/detail/<?php echo $value_list['cos_id']; ?>';"<?php } ?> title="<?php echo $value_list['cname']; ?>"><?php echo $value_list['cname']; ?></h4>
-                                <p class="card-text mt-3"><?php echo label('lrn_b_course_period').': '; ?>
-                                  <br>
-                            <?php echo isset($value_list['txt_period_course']) ? $value_list['txt_period_course'] : lms_format_period_range($value_list['date_start'], $value_list['date_end'], $lang); ?>
-                                </p>
-                                <?php if($value_list['status']==label('lrn_btn_done')){ ?>
-                              
-                                <p class="card-text imat-completed-text"><?php echo label('lrn_btn_status').': '.$value_list['status']; ?></p>
-                                <?php }else if($value_list['status']==label('lrn_b_in_progress')){ ?>
-                                <p class="card-text imat-incoming-text"><?php echo label('lrn_btn_status').': '.$value_list['status']; ?></p>
-                                <?php }else if($value_list['status']==label('lrn_b_no_progress')){ ?>
-                                <p class="card-text imat-ongoing-text"><?php echo label('lrn_btn_status').': '.$value_list['status']; ?></p>
-                                <?php }else{ ?>
-                                <p class="card-text imat-incompleted-text"><?php echo label('lrn_btn_status').': '.$value_list['status']; ?></p>
-                                <?php } ?>
-                                <div class="row" title="<?php echo label('lrn_b_total_student'); ?>">
-                                  <div class="col-4 align-self-center">
-                                  <i class="mdi mdi-account-multiple-outline"></i> <?php echo number_format($value_list['seat']); ?>
-                                  </div>
-                                  <?php if($value_list['isRegister']=="0"){ ?>
-                                  <div class="col-8">
-                                    <?php if($value_list['isseatFull']=="0"){ ?>
-                                    <?php     if($value_list['isCondition']=="0"){ ?>
-
-                                    <button id="<?php echo $value_list['cos_id']; ?>" title="<?php echo label('lrn_btn_register'); ?>" class="btn btn-block btn_register waves-effect waves-light btn-outline-danger btn-danger-hover float-right"><i class="mdi mdi-file-document-box"></i><?php echo ' '.label('lrn_btn_register'); ?></button>
-                                    <?php     }
-                                          }else{ ?>
-                                      <span><?php echo label('full'); ?></span>
-                                    <?php } ?>
-                                  </div>
-                                  <?php } ?>
-                                </div>
-                              </div>
-                              </div>
-                            </div>
-                          <?php
-                                      }
-                                  }
-                              }
-                          ?>
-                          </div>
-                          <?php if($numgroup<countArray($list_coursegroup)){ ?>
-                          <hr class="mb-4">
-                          <?php } ?>
-                        </div>
-                      <?php   $numgroup++;
-                              } ?>
-                    </div>
-                <?php } ?>
-                  </div>
-                    <?php }else{ ?>
-                      <h4 align="center"><i class="mdi mdi-alert-box"></i> <?php echo label('lrn_b_course_notfound'); ?></h4>
+            <div class="course-categories" role="tablist" aria-label="<?php echo label('lrn_b_course_type'); ?>">
+                <button class="course-category is-active" type="button" data-group="all" role="tab" aria-selected="true">
+                    <i class="mdi mdi-school"></i><span><?php echo $copy['all']; ?></span>
+                </button>
+                <?php
+                $categoryIcons = array('mdi-account','mdi-truck','mdi-book-open-page-variant','mdi-wrench','mdi-laptop','mdi-shield','mdi-chart-line');
+                $categoryIndex = 0;
+                foreach ($list_coursegroup as $group) {
+                    $icon = $categoryIcons[$categoryIndex % count($categoryIcons)];
+                    $uploadedIcon = isset($group['cg_icon']) ? basename($group['cg_icon']) : '';
+                    $uploadedIconPath = $uploadedIcon !== '' ? ROOT_DIR . 'uploads/course_group/icons/' . $uploadedIcon : '';
+                    $categoryIndex++;
+                ?>
+                <button class="course-category" type="button" data-group="<?php echo $group['cg_id']; ?>" role="tab" aria-selected="false">
+                    <?php if ($uploadedIcon !== '' && is_file($uploadedIconPath)) { ?>
+                    <img class="course-category__icon" src="<?php echo REAL_PATH; ?>/uploads/course_group/icons/<?php echo rawurlencode($uploadedIcon); ?>" alt="">
+                    <?php } else { ?>
+                    <i class="mdi <?php echo $icon; ?>"></i>
                     <?php } ?>
-                  </div>
+                    <span><?php echo htmlspecialchars($group['cgname'], ENT_QUOTES, 'UTF-8'); ?></span>
+                </button>
+                <?php } ?>
+            </div>
+        </section>
+
+        <section class="course-discovery" aria-labelledby="recommendedTitle">
+            <header class="course-discovery__header">
+                <h2 id="recommendedTitle"><?php echo $copy['recommended']; ?></h2>
+            </header>
+
+            <?php if ($featured) { ?>
+            <div class="course-layout<?php echo count($courses) <= 1 ? ' is-feature-only' : ''; ?>" id="courseResults">
+                <article class="course-feature course-item" data-feature-mode="hero" data-name="<?php echo htmlspecialchars(mb_strtolower($featured['cname'], 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?>" data-groups="<?php echo premium_course_groups($featured); ?>">
+                    <div class="course-feature__image" style="background-image:url('<?php echo REAL_PATH; ?>/assets/images/course-catalog/featured-technician.png')"></div>
+                    <div class="course-feature__shade"></div>
+                    <div class="course-feature__content">
+                        <div class="course-feature__topline"><span class="course-feature__badge"><?php echo $copy['learning_path']; ?></span><?php if (!empty($featured['ccode'])) { ?><span class="course-feature__code"><?php echo htmlspecialchars($featured['ccode'], ENT_QUOTES, 'UTF-8'); ?></span><?php } ?></div>
+                        <h3><?php echo htmlspecialchars($featured['cname'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <?php if ($featuredDescription !== '') { ?><p class="course-feature__description"><?php echo htmlspecialchars($featuredDescription, ENT_QUOTES, 'UTF-8'); ?></p><?php } ?>
+                        <p class="course-feature__period"><i class="mdi mdi-calendar-clock"></i><span><?php echo $copy['period']; ?><strong><?php echo htmlspecialchars($featured['txt_period_course'], ENT_QUOTES, 'UTF-8'); ?></strong></span></p>
+                        <div class="course-feature__meta"><span><i class="mdi mdi-account-multiple-outline"></i><?php echo number_format($featured['seat']); ?> <?php echo $copy['students']; ?></span><span><?php echo htmlspecialchars($featured['status'], ENT_QUOTES, 'UTF-8'); ?></span></div>
+                        <div class="course-progress" aria-hidden="true"><span style="width:<?php echo $featured['isRegister'] === '1' ? '60' : '8'; ?>%"></span></div>
+                        <?php if ($featured['isRegister'] === '1' && $featured['isCondition'] === '0') { ?>
+                        <a class="course-primary" href="<?php echo REAL_PATH; ?>/coursemain/detail/<?php echo $featured['cos_id']; ?>"><?php echo $copy['continue']; ?><i class="mdi mdi-arrow-right"></i></a>
+                        <?php } elseif ($featured['isRegister'] === '0' && $featured['isseatFull'] === '0' && $featured['isCondition'] === '0') { ?>
+                        <button class="course-primary catalog-enroll-action" type="button" data-course-id="<?php echo $featured['cos_id']; ?>"><?php echo $copy['register']; ?><i class="mdi mdi-arrow-right"></i></button>
+                        <?php } ?>
+                    </div>
+                </article>
+
+                <div class="course-grid">
+                    <?php
+                    $featuredGroupLabel = '';
+                    foreach ($featured['cg_arr'] as $featuredGroupId) {
+                        if (isset($courseGroupNames[(string)$featuredGroupId])) { $featuredGroupLabel = $courseGroupNames[(string)$featuredGroupId]; break; }
+                    }
+                    ?>
+                    <article class="course-card course-item" data-feature-mode="card" data-name="<?php echo htmlspecialchars(mb_strtolower($featured['cname'], 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?>" data-groups="<?php echo premium_course_groups($featured); ?>" hidden>
+                        <button class="course-bookmark" type="button" aria-label="Bookmark" aria-pressed="false"><i class="mdi mdi-bookmark-outline"></i></button>
+                        <a class="course-card__image<?php echo $featured['isCondition'] === '1' ? ' onCondition' : ''; ?>" <?php if ($featured['isRegister'] === '1' && $featured['isCondition'] === '0') { ?>href="<?php echo REAL_PATH; ?>/coursemain/detail/<?php echo $featured['cos_id']; ?>"<?php } ?> msg="<?php echo htmlspecialchars(str_replace('_coursename_', $featured['msgCondition'], label('condition_msg')), ENT_QUOTES, 'UTF-8'); ?>" style="background-image:url('<?php echo htmlspecialchars(premium_course_image($featured), ENT_QUOTES, 'UTF-8'); ?>')"></a>
+                        <div class="course-card__body">
+                            <?php if ($featuredGroupLabel !== '') { ?><span class="course-card__kicker"><?php echo htmlspecialchars($featuredGroupLabel, ENT_QUOTES, 'UTF-8'); ?></span><?php } ?>
+                            <h3 title="<?php echo htmlspecialchars($featured['cname'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($featured['cname'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p><i class="mdi mdi-calendar"></i><?php echo htmlspecialchars($featured['txt_period_course'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <div class="course-card__meta"><span><i class="mdi mdi-account-multiple-outline"></i><?php echo number_format($featured['seat']); ?> <?php echo $copy['students']; ?></span><span><?php echo htmlspecialchars($featured['status'], ENT_QUOTES, 'UTF-8'); ?></span></div>
+                            <div class="course-card__footer">
+                                <div class="course-progress"><span style="width:<?php echo $featured['isRegister'] === '1' ? '60' : '8'; ?>%"></span></div>
+                                <?php if ($featured['isRegister'] === '1' && $featured['isCondition'] === '0') { ?>
+                                <a href="<?php echo REAL_PATH; ?>/coursemain/detail/<?php echo $featured['cos_id']; ?>"><?php echo $copy['continue']; ?><i class="mdi mdi-chevron-right"></i></a>
+                                <?php } elseif ($featured['isRegister'] === '0' && $featured['isseatFull'] === '0' && $featured['isCondition'] === '0') { ?>
+                                <button class="catalog-enroll-action" type="button" data-course-id="<?php echo $featured['cos_id']; ?>"><?php echo $copy['register']; ?><i class="mdi mdi-chevron-right"></i></button>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </article>
+                    <?php foreach (array_slice($courses, 1) as $course) { ?>
+                    <?php
+                    $cardGroupLabel = '';
+                    foreach ($course['cg_arr'] as $cardGroupId) {
+                        if (isset($courseGroupNames[(string)$cardGroupId])) { $cardGroupLabel = $courseGroupNames[(string)$cardGroupId]; break; }
+                    }
+                    ?>
+                    <article class="course-card course-item" data-name="<?php echo htmlspecialchars(mb_strtolower($course['cname'], 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?>" data-groups="<?php echo premium_course_groups($course); ?>">
+                        <button class="course-bookmark" type="button" aria-label="Bookmark" aria-pressed="false"><i class="mdi mdi-bookmark-outline"></i></button>
+                        <a class="course-card__image<?php echo $course['isCondition'] === '1' ? ' onCondition' : ''; ?>" <?php if ($course['isRegister'] === '1' && $course['isCondition'] === '0') { ?>href="<?php echo REAL_PATH; ?>/coursemain/detail/<?php echo $course['cos_id']; ?>"<?php } ?> msg="<?php echo htmlspecialchars(str_replace('_coursename_', $course['msgCondition'], label('condition_msg')), ENT_QUOTES, 'UTF-8'); ?>" style="background-image:url('<?php echo htmlspecialchars(premium_course_image($course), ENT_QUOTES, 'UTF-8'); ?>')"></a>
+                        <div class="course-card__body">
+                            <?php if ($cardGroupLabel !== '') { ?><span class="course-card__kicker"><?php echo htmlspecialchars($cardGroupLabel, ENT_QUOTES, 'UTF-8'); ?></span><?php } ?>
+                            <h3 title="<?php echo htmlspecialchars($course['cname'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($course['cname'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p><i class="mdi mdi-calendar"></i><?php echo htmlspecialchars($course['txt_period_course'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <div class="course-card__meta"><span><i class="mdi mdi-account-multiple-outline"></i><?php echo number_format($course['seat']); ?> <?php echo $copy['students']; ?></span><span><?php echo htmlspecialchars($course['status'], ENT_QUOTES, 'UTF-8'); ?></span></div>
+                            <div class="course-card__footer">
+                                <div class="course-progress"><span style="width:<?php echo $course['isRegister'] === '1' ? '45' : '8'; ?>%"></span></div>
+                                <?php if ($course['isRegister'] === '1' && $course['isCondition'] === '0') { ?>
+                                <a href="<?php echo REAL_PATH; ?>/coursemain/detail/<?php echo $course['cos_id']; ?>"><?php echo $copy['continue']; ?><i class="mdi mdi-chevron-right"></i></a>
+                                <?php } elseif ($course['isRegister'] === '0' && $course['isseatFull'] === '0' && $course['isCondition'] === '0') { ?>
+                                <button class="catalog-enroll-action" type="button" data-course-id="<?php echo $course['cos_id']; ?>"><?php echo $copy['register']; ?><i class="mdi mdi-chevron-right"></i></button>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </article>
+                    <?php } ?>
                 </div>
             </div>
-        </div>
-    </div>
-    <?php $this->load->view('frontend/inc/inc-footer.php'); ?>
+            <div class="course-empty" id="courseEmpty" hidden><i class="mdi mdi-book-open-page-variant"></i><h3><?php echo $copy['empty']; ?></h3><button type="button"><?php echo $copy['clear']; ?></button></div>
+            <?php } else { ?>
+            <div class="course-empty"><i class="mdi mdi-book-open-page-variant"></i><h3><?php echo label('lrn_b_course_notfound'); ?></h3></div>
+            <?php } ?>
+        </section>
+    </main>
+</div>
 
-      <div id="myModal_process" class="modal fade bs-example-modal-lg" role="dialog" aria-labelledby="smallModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-body" align="center">
-                <img src="<?php echo REAL_PATH; ?>/assets/images/01-progress.gif" style="width: 50%">
-                <br>
-                <h3 style="color: black;"><?php echo label('please_wait'); ?></h3>
-              </div>
-            </div>
-        </div>
-      </div>
+<?php $this->load->view('frontend/inc/inc-footer.php'); ?>
+<div id="myModal_process" class="modal fade bs-example-modal-lg" role="dialog" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-body text-center"><img src="<?php echo REAL_PATH; ?>/assets/images/01-progress.gif" alt="" style="width:50%"><h3><?php echo label('please_wait'); ?></h3></div></div></div></div>
 
-    <script type="text/javascript">var base_url = "<?php echo REAL_PATH; ?>";</script>
-    <!-- wysuhtml5 Plugin JavaScript -->
-    <script src="<?php echo REAL_PATH; ?>/assets/plugins/tinymce/tinymce.min.js"></script>
-    <!-- This is data table -->
-    <script src="<?php echo REAL_PATH; ?>/assets/plugins/datatables/datatables.min.js"></script>
+<script>
+(function () {
+    var search = document.getElementById('courseSearchInput');
+    var clear = document.getElementById('courseSearchClear');
+    var categoryButtons = document.querySelectorAll('.course-category');
+    var items = document.querySelectorAll('.course-item');
+    var empty = document.getElementById('courseEmpty');
+    var activeGroup = 'all';
 
-    <script src="<?php echo REAL_PATH; ?>/assets/plugins/bootstrap-datepicker/bootstrap-datepicker-custom/dist/js/bootstrap-datepicker-custom.js"></script>
-    <script src="<?php echo REAL_PATH; ?>/assets/plugins/bootstrap-datepicker/bootstrap-datepicker-custom/dist/locales/bootstrap-datepicker.th.min.js" charset="UTF-8"></script>
-
-    <script type="text/javascript">
-      
-      
-      
-      function filterCoursesByName() {
-        const input = document.getElementById("courseSearchInput").value.toLowerCase();
-        const courseItems = document.querySelectorAll(".course-item");
-        const groupVisibleMap = {};
-
-        // ซ่อนหรือแสดงแต่ละหลักสูตร
-        courseItems.forEach(item => {
-          const name = item.getAttribute("data-name");
-          const groupId = item.getAttribute("data-group");
-
-          const isVisible = name.includes(input);
-          item.style.display = isVisible ? "block" : "none";
-
-          if (!groupVisibleMap[groupId]) groupVisibleMap[groupId] = 0;
-          if (isVisible) groupVisibleMap[groupId]++;
+    function applyFilters() {
+        var query = search ? search.value.trim().toLocaleLowerCase() : '';
+        var visible = 0;
+        Array.prototype.forEach.call(items, function (item) {
+            var groups = (item.getAttribute('data-groups') || '').split(',');
+            var matchesGroup = activeGroup === 'all' || groups.indexOf(activeGroup) !== -1;
+            var matchesText = !query || (item.getAttribute('data-name') || '').indexOf(query) !== -1;
+            var show = matchesGroup && matchesText;
+            var featureMode = item.getAttribute('data-feature-mode');
+            if (featureMode === 'hero') show = show && activeGroup === 'all';
+            if (featureMode === 'card') show = show && activeGroup !== 'all';
+            item.hidden = !show;
+            if (show) visible++;
         });
-
-        // แสดงหรือซ่อนทั้งกลุ่มตามจำนวนที่เหลือ
-        Object.keys(groupVisibleMap).forEach(groupId => {
-          const visibleCount = groupVisibleMap[groupId];
-
-          const headers = document.querySelectorAll(`.div_cgheader${groupId}`);
-          headers.forEach(el => {
-            el.style.display = visibleCount > 0 ? "block" : "none";
-          });
-        });
-
-        // กลุ่มที่ไม่มี course-item แสดงเลย (เผื่อ fallback)
-        const allGroupHeaders = document.querySelectorAll("[class^='div_cgheader']");
-
-        allGroupHeaders.forEach(el => {
-          const match = el.className.match(/div_cgheader(\d+)/);
-          if (match) {
-            const groupId = match[1];
-            if (!groupVisibleMap[groupId] || groupVisibleMap[groupId] === 0) {
-              el.style.display = "none";
-            }
-          }
-        });
-      }
-
-      $('.onCondition').click(function(){
-            var msg = $(this).attr("msg");
-                        swal({
-                            title: msg,
-                            text: "",
-                            type: 'warning',
-                            showCancelButton: false,
-                            confirmButtonClass: 'btn btn-primary',
-                            confirmButtonText: '<?php echo label('m_ok'); ?>'
-                        })
-      });
-      function clickdiv_cg(cg_id){
-        var chkbox = document.getElementById('chk_cg_'+cg_id);
-        if(chkbox.checked){
-          $('.div_cgheader'+cg_id).show();
-        }else{
-          $('.div_cgheader'+cg_id).hide();
+        var results = document.getElementById('courseResults');
+        var feature = results && results.querySelector('.course-feature');
+        if (results && feature) results.classList.toggle('is-feature-filtered', feature.hidden);
+        if (empty) empty.hidden = visible > 0;
+        if (clear) {
+            clear.classList.toggle('has-query', !!query);
+            clear.disabled = !query;
         }
-      }
+    }
 
-      $(document).on('click', '.btn_register', function(){
-            var cos_id = $(this).attr("id");
-            swal({
-                title: '<?php echo label('enroll_msg'); ?>',
-                text: "",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: "#FE0000",   
-                confirmButtonText: '<?php echo label('lrn_btn_register'); ?>',
-                cancelButtonText: '<?php echo label('cancel'); ?>'
-            }).then(function (isChk) {
-              if(isChk.value){
-                $("#myModal_process").modal({backdrop: false});
-                $( document.body ).css( 'pointer-events', 'none' );
-                $.ajax({
-                      url:"<?=base_url()?>index.php/querydata/enroll_course_byuser",
-                      method:"POST",
-                      data:{cos_id:cos_id},
-                      dataType:"json",
-                      success:function(data)
-                      {
-                          $( document.body ).css( 'pointer-events', '' );
-                          if(data.status=="2"){
-                              swal(
-                                  '<?php echo label("enroll_reuse_success"); ?>',
-                                  '',
-                                  'success'
-                              ).then(function () {
-                                location.reload();
-                              })
-                          }else if(data.status=="3"){//Wait approve
-                              swal({
-                                title: '<?php echo label('lrn_b_approver_student'); ?>',
-                                text: "",
-                                type: 'warning',
-                                showCancelButton: false,
-                                confirmButtonClass: 'btn btn-primary',
-                                confirmButtonText: '<?php echo label('lrn_btn_ok'); ?>'
-                              }).then(function () {
-                                location.reload();
-                              })
-                          }else if(data.status=="1"){//Duplicate
-                              swal({
-                                title: '<?php echo label('lrn_btn_re_enroll'); ?>',
-                                text: "",
-                                type: 'warning',
-                                showCancelButton: false,
-                                confirmButtonClass: 'btn btn-primary',
-                                confirmButtonText: '<?php echo label('lrn_btn_ok'); ?>'
-                              }).then(function () {
-                                location.reload();
-                              })
-                          }else if(data.status=="5"){//Seat Full
-                              swal({
-                                title: '<?php echo label('lrn_p_regis_sub'); ?>',
-                                text: "",
-                                type: 'warning',
-                                showCancelButton: false,
-                                confirmButtonClass: 'btn btn-primary',
-                                confirmButtonText: '<?php echo label('lrn_btn_ok'); ?>'
-                              }).then(function () {
-                                location.reload();
-                              })
-                          }else if(data.status=="11"){//condition
-                              swal({
-                                title: '<?php echo label('register_condition'); ?>'+data.msg,
-                                text: "",
-                                type: 'warning',
-                                showCancelButton: false,
-                                confirmButtonClass: 'btn btn-primary',
-                                confirmButtonText: '<?php echo label('lrn_btn_ok'); ?>'
-                              }).then(function () {
-                                location.reload();
-                              })
-                          }else{
-                              swal({
-                                title: '<?php echo label('lrn_p_data_not_found'); ?>',
-                                text: "",
-                                type: 'warning',
-                                showCancelButton: false,
-                                confirmButtonClass: 'btn btn-primary',
-                                confirmButtonText: '<?php echo label('lrn_btn_ok'); ?>'
-                              }).then(function () {
-                                location.reload();
-                              })
-                          }
-                      }
-                });
-              }
+    Array.prototype.forEach.call(categoryButtons, function (button) {
+        button.addEventListener('click', function () {
+            activeGroup = button.getAttribute('data-group');
+            Array.prototype.forEach.call(categoryButtons, function (item) {
+                var selected = item === button;
+                item.classList.toggle('is-active', selected);
+                item.setAttribute('aria-selected', selected ? 'true' : 'false');
             });
-      });
-    </script>
-</body>
+            var heading = document.getElementById('recommendedTitle');
+            var categoryLabel = button.querySelector('span');
+            if (heading) heading.textContent = activeGroup === 'all'
+                ? <?php echo json_encode($copy['recommended'], JSON_UNESCAPED_UNICODE); ?>
+                : (categoryLabel ? categoryLabel.textContent : '');
+            applyFilters();
+        });
+    });
+    if (search) search.addEventListener('input', applyFilters);
+    if (clear) clear.addEventListener('click', function () {
+        if (search.value) search.value = '';
+        search.focus();
+        applyFilters();
+    });
+    var emptyButton = empty && empty.querySelector('button');
+    if (emptyButton) emptyButton.addEventListener('click', function () { search.value = ''; activeGroup = 'all'; categoryButtons[0].click(); });
+    document.addEventListener('click', function (event) {
+        var bookmark = event.target.closest('.course-bookmark');
+        if (!bookmark) return;
+        var active = bookmark.getAttribute('aria-pressed') === 'true';
+        bookmark.setAttribute('aria-pressed', active ? 'false' : 'true');
+        bookmark.classList.toggle('is-active', !active);
+        bookmark.querySelector('i').className = active ? 'mdi mdi-bookmark-outline' : 'mdi mdi-bookmark';
+    });
+})();
 
+$('.onCondition').click(function(event){
+    event.preventDefault();
+    swal({title: $(this).attr('msg'), text: '', type: 'warning', showCancelButton: false, confirmButtonClass: 'btn btn-primary', confirmButtonText: '<?php echo label('m_ok'); ?>'});
+});
+
+$(document).on('click', '.catalog-enroll-action', function(){
+    var cos_id = $(this).data('course-id');
+    swal({title: '<?php echo label('enroll_msg'); ?>', text: '', type: 'warning', showCancelButton: true, confirmButtonColor: '#E31B23', confirmButtonText: '<?php echo label('lrn_btn_register'); ?>', cancelButtonText: '<?php echo label('cancel'); ?>'}).then(function(result) {
+        if (!result.value) return;
+        $('#myModal_process').modal({backdrop: false});
+        $.ajax({url:'<?php echo base_url(); ?>index.php/querydata/enroll_course_byuser', method:'POST', data:{cos_id:cos_id}, dataType:'json', success:function(data){
+            if (data.status === '2') swal('<?php echo label('enroll_reuse_success'); ?>', '', 'success').then(function(){ location.reload(); });
+            else if (data.status === '3') swal({title:'<?php echo label('lrn_b_approver_student'); ?>', type:'warning', confirmButtonText:'<?php echo label('lrn_btn_ok'); ?>'}).then(function(){ location.reload(); });
+            else if (data.status === '1') swal({title:'<?php echo label('lrn_btn_re_enroll'); ?>', type:'warning', confirmButtonText:'<?php echo label('lrn_btn_ok'); ?>'}).then(function(){ location.reload(); });
+            else swal({title:'<?php echo label('enroll_success'); ?>', type:'success', confirmButtonText:'<?php echo label('lrn_btn_ok'); ?>'}).then(function(){ location.reload(); });
+        }});
+    });
+});
+</script>
+</body>
 </html>

@@ -101,6 +101,55 @@ class Insertdata extends CI_Controller
         'u_date' => date('Y-m-d H:i'),
         'u_by' => $sess['u_id'],
       );
+
+      if (isset($_FILES['cg_icon']) && $_FILES['cg_icon']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $iconFile = $_FILES['cg_icon'];
+        $iconInfo = $iconFile['error'] === UPLOAD_ERR_OK && is_uploaded_file($iconFile['tmp_name'])
+          ? @getimagesize($iconFile['tmp_name'])
+          : false;
+        $isPng = $iconInfo !== false
+          && isset($iconInfo[2])
+          && $iconInfo[2] === IMAGETYPE_PNG
+          && strtolower(pathinfo($iconFile['name'], PATHINFO_EXTENSION)) === 'png';
+
+        if (!$isPng || $iconFile['size'] > (2 * 1024 * 1024)) {
+          echo json_encode(array(
+            'status' => '4',
+            'message' => 'Course group icon must be a PNG file no larger than 2 MB.'
+          ));
+          return;
+        }
+
+        $iconDirectory = ROOT_DIR . 'uploads/course_group/icons/';
+        if (!is_dir($iconDirectory) && !@mkdir($iconDirectory, 0755, true)) {
+          echo json_encode(array('status' => '4', 'message' => 'Unable to create the icon upload directory.'));
+          return;
+        }
+
+        try {
+          $iconToken = bin2hex(random_bytes(8));
+        } catch (Exception $exception) {
+          $iconToken = str_replace('.', '', uniqid('', true));
+        }
+        $cgIcon = 'cog_icon_' . date('YmdHis') . '_' . $iconToken . '.png';
+        $iconTargetPath = $iconDirectory . $cgIcon;
+
+        if (!audit_move_uploaded_file($iconFile['tmp_name'], $iconTargetPath)) {
+          echo json_encode(array('status' => '4', 'message' => 'Unable to save the course group icon.'));
+          return;
+        }
+
+        if ($_REQUEST['operation'] == 'Edit') {
+          $existingGroup = $this->func_query->query_row('lms_cog', '', '', '', 'cg_id="' . $_REQUEST['cg_id'] . '"');
+          if (countArray($existingGroup) > 0 && !empty($existingGroup['cg_icon'])) {
+            $oldIconPath = $iconDirectory . basename($existingGroup['cg_icon']);
+            if (is_file($oldIconPath)) {
+              audit_unlink($oldIconPath);
+            }
+          }
+        }
+        $arr['cg_icon'] = $cgIcon;
+      }
       $cgtitle = "";
       if ($lang == "thai") {
         $cgtitle = $arr['cgtitle_th'] != "" ? $arr['cgtitle_th'] : $arr['cgtitle_en'];

@@ -6,6 +6,7 @@
     <link href="<?php echo REAL_PATH; ?>/assets/css/pages/tab-page.css" rel="stylesheet">
     <link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">
     <link href="<?php echo REAL_PATH; ?>/assets/css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="<?php echo REAL_PATH; ?>/assets/css/course-demo-premium.css?v=20260721-01" rel="stylesheet">
     <style type="text/css">
       .disable {
          pointer-events: none;
@@ -61,7 +62,7 @@ hyphens: auto;
     </style>
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
+<body class="fix-header fix-sidebar card-no-border demo-course-detail">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
@@ -79,9 +80,9 @@ hyphens: auto;
         <?php $this->load->view('frontend/inc/inc-sidemenu.php'); ?>
         <!-- Page wrapper  -->
         <!-- ============================================================== -->
-        <div class="page-wrapper">
+        <div class="page-wrapper demo-course-page">
 
-            <div class="container-fluid">                
+            <div class="container-fluid demo-course-shell">
                 <div class="row col-12 page-titles">
                     <!-- <div class="col-md-auto">
                         <b><?php echo ucwords($course_main['cname']); ?></b>
@@ -271,13 +272,15 @@ hyphens: auto;
                   $condition_msg = 'このコースを受けることにあたり、以下のコースを完了しなければなりません<br>&#34;_coursename_&#34;';
                 }
                 ?>
-                <div class="row">
-                  <div class="col-auto col-md-12 col-lg-4 mb-0 card card-body">
+                <section class="demo-course-hero">
+                <div class="row demo-course-overview">
+                  <div class="col-auto col-md-12 col-lg-4 mb-0 card card-body demo-course-cover">
                     <img class="card-img-top img-responsive" src="<?php echo REAL_PATH;?>/uploads/course/<?php echo $course_main['cos_pic']; ?>" onerror="this.src='<?php echo REAL_PATH;?>/images/cover_course.jpg';" alt="Card image cap">
                   </div>
 
-                  <div class="col-md-12 col-lg-8 mb-0 card card-body">
-                    <h4 class="text-truncate"><?php echo $course_main['cname']; ?></h4>
+                  <div class="col-md-12 col-lg-8 mb-0 card card-body demo-course-info">
+                    <span class="demo-course-eyebrow"><i class="mdi mdi-eye-outline"></i> <?php echo $lang_select == 'thai' ? 'ตัวอย่างหลักสูตร' : ($lang_select == 'japan' ? 'コースプレビュー' : 'COURSE PREVIEW'); ?></span>
+                    <h1><?php echo $course_main['cname']; ?></h1>
                     <div class="d-block position-relative">
 
                         <div class="row">
@@ -318,10 +321,20 @@ hyphens: auto;
                     <?php echo  str_replace('../uploads/texteditor/', base_url().'/uploads/texteditor/',$course_main['cdetail']); ?>
                   </div>
                 </div>
+                </section>
 
             </div>
             
-            <?php $this->load->view('frontend/tab/course_demo.php'); ?>
+            <section class="demo-learning-workspace">
+              <div class="demo-learning-heading">
+                <div>
+                  <span><?php echo $lang_select == 'thai' ? 'โหมดสาธิต' : ($lang_select == 'japan' ? 'デモモード' : 'DEMO MODE'); ?></span>
+                  <h2><?php echo $lang_select == 'thai' ? 'เส้นทางการเรียนรู้' : ($lang_select == 'japan' ? '学習パス' : 'Learning path'); ?></h2>
+                </div>
+                <div class="demo-mode-badge"><i class="mdi mdi-eye-outline"></i> <?php echo $lang_select == 'thai' ? 'ดูตัวอย่างเท่านั้น' : ($lang_select == 'japan' ? 'プレビューのみ' : 'Preview only'); ?></div>
+              </div>
+              <div class="demo-learning-list">
+                <?php $this->load->view('frontend/tab/course_demo.php'); ?>
 
             <?php if(countArray($survey_arr)>0){
                       foreach ($survey_arr as $key_survey => $value_survey) {
@@ -345,6 +358,8 @@ hyphens: auto;
           <?php         
                       }
                   } ?> 
+              </div>
+            </section>
 
         </div>
     </div>

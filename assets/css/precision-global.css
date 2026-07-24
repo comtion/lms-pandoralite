@@ -90,7 +90,7 @@
   display:flex;
   align-items:center;
   margin:0 0 14px !important;
-  padding:10px 8px !important;
+  padding-top:1rem !important;
 }
 .precision-app-shell .container-fluid > .page-titles:first-of-type:not(#div_maincourse) > [class*="col-"] { padding:0 8px; }
 .precision-app-shell .container-fluid > .page-titles:first-of-type:not(#div_maincourse) b { color:#171c25; font-size:17px; font-weight:800; }
@@ -1998,6 +1998,12 @@
   font-weight:800 !important;
   line-height:1.2 !important;
   transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease !important;
+}
+/* Preserve SweetAlert's own visibility rules. Only confirmations that
+   explicitly enable a cancel button should render one. */
+.swal2-popup .swal2-styled[style*="display: none"],
+.swal2-popup .swal2-styled[style*="display:none"] {
+  display:none !important;
 }
 .swal2-popup .swal2-styled.swal2-confirm,
 .swal2-popup .swal2-confirm.btn,

@@ -1,0 +1,2 @@
+ALTER TABLE `lms_cog`
+  ADD COLUMN `cg_icon` VARCHAR(255) NULL DEFAULT NULL AFTER `cgthumb`;

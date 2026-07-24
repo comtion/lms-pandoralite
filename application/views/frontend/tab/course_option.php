@@ -10,7 +10,8 @@
               }
             </style>
             
-            <?php 
+            <?php
+                $learning_step_number = 1;
 
                 function twodshuffle($array)
                 {
@@ -201,6 +202,7 @@
               <form method="post" id="pretest_form<?php echo $value_pretest['qiz_id']; ?>" autocomplete="off" name="pretest_form<?php echo $value_pretest['qiz_id']; ?>" enctype="multipart/form-data"  class="form-horizontal" role="form" onclick="showAlert('pretest_form<?php echo $value_pretest['qiz_id']; ?>')">
               <div class="container-fluid p-0 mb-3">
                 <a href="#" class="btn btn-block <?php if($value_pretest['status_tc']=="3"){ ?>imat-red-bg btn-danger<?php } ?> waves-effect waves-light rounded-0 text-left onclickrechk div_header_tab<?php echo $num_loop_div;$num_loop_div++; ?>" type="button" data-toggle="collapse" data-target="#collapseExample_<?php echo $value_pretest['qiz_id']; ?>" aria-expanded="false" id="pretestlink<?php echo $value_pretest['qiz_id']; ?>" data-statustc="<?php echo $status_update; ?>" <?php if($value_pretest['status_tc']!="3"&&$value_pretest['endstatus']=="0"){ ?>style="background-color: #95a5a6;color: #ecf0f1;border-color: #95a5a6;"<?php } ?> aria-controls="collapseExample_<?php echo $value_pretest['qiz_id']; ?>">
+                  <span class="learning-step-index"><?php echo $learning_step_number++; ?></span>
                   <?php if($value_pretest['status_tc']=="3"&&$value_pretest['endstatus']=="1"){ ?><i class="fa fas fa-check mr-2"></i><?php } ?> <?php echo $preExam_label.": ".$quiz_name; ?>
                   <?php if($value_pretest['status_tc']=="3"&&$value_pretest['isNull']=="0"){if($value_pretest['quiz_grade']=="1"){ echo " (".intval($value_pretest['sum_score'])."/".intval($value_pretest['fullscore']).": ".$statustxt.")";}else{echo " (".$statustxt.")";}} ?>
                   <i class="fa fa-chevron-right float-right"></i>
@@ -414,13 +416,13 @@
                                         $tc_answer = isset($value_ques['tc']['tc_answer'])?$value_ques['tc']['tc_answer']:"";
                                         for ($choicenum=0; $choicenum < countArray($arr_choice); $choicenum++) { 
                                                     $rechkimgtext = strpos($arr_choice[$choicenum]['name_choice'], 'uploads/texteditor');
-                                                    if($rechkimgtext){ echo "<p>";}
+                                                    if($rechkimgtext !== false){ echo '<div class="quiz-image-choice">';}
                                           ?>
                                 <input name="multi_choice_group_pretest_<?php echo $value_ques['ques_id']; ?>" <?php if($value_pretest['endstatus']=='1'){ echo "disabled"; }?> onclick="onselectVal('pretest','<?php echo $value_ques['ques_id']; ?>','<?php echo $arr_choice[$choicenum]['value_choice']; ?>')" type="radio" id="multi_choice_group_pretest_<?php echo $value_ques['ques_id']; ?><?php echo  $arr_choice[$choicenum]['num_choice']; ?>" class="with-gap radio-col-red" value="<?php echo $arr_choice[$choicenum]['value_choice']; ?>" <?php if($tc_answer==$arr_choice[$choicenum]['value_choice']){echo "checked";} ?>>
                                 <label  onclick="onselectVal('pretest','<?php echo $value_ques['ques_id']; ?>','<?php echo $arr_choice[$choicenum]['value_choice']; ?>')" for="multi_choice_group_pretest_<?php echo $value_ques['ques_id']; ?><?php echo  $arr_choice[$choicenum]['num_choice']; ?>"><?php echo str_replace('../uploads/texteditor/', base_url().'/uploads/texteditor/',$arr_choice[$choicenum]['name_choice']); ?></label>
                                 <br>
                                           <?php
-                                                    if($rechkimgtext){ echo "</p>";}
+                                                    if($rechkimgtext !== false){ echo "</div>";}
                                         }
 /*
 <?php if($value_pretest['status_tc']=="3"&&$value_pretest['endstatus']=="1"){if($value_pretest['quiz_answer']=="1"&&in_array($arr_choice[$choicenum]['value_choice'], $mul_answer)){ if($tc_answer==$arr_choice[$choicenum]['value_choice']){?>class="label label-light-success"<?php }}else{if($tc_answer==$arr_choice[$choicenum]['value_choice']){?>class="label label-light-danger"<?php }else{if(in_array($arr_choice[$choicenum]['value_choice'], $mul_answer)){?>class="label label-light-success"<?php }}}} ?>
@@ -523,6 +525,7 @@ strip_tags($arr_choice[$choicenum]['name_choice'],"<label>")
                     aria-expanded="<?php echo $ariaExpanded; ?>" 
                     <?php if($lesson_status!=countArray($lesson_arr)){ ?>style="background-color: #95a5a6;color: #ecf0f1;border-color: #95a5a6;"<?php } ?> 
                     aria-controls="collapseExample_lesson">
+                  <span class="learning-step-index"><?php echo $learning_step_number++; ?></span>
                   <span id="txtstatus_lesson"><?php if($lesson_status==countArray($lesson_arr)){ ?><i class="fa fas fa-check mr-2"></i><?php }else if($lesson_status>0){ ?><i class="fa fas fa-hourglass-half mr-2"></i><?php } ?></span> <?php echo $lessontxt.":"; ?>
                   <i class="fa fa-chevron-right float-right"></i>
                   <i class="fa fa-chevron-down float-right"></i>
@@ -602,7 +605,7 @@ strip_tags($arr_choice[$choicenum]['name_choice'],"<label>")
                                 <div class="col-md-4">
                                     <br>
                                     <div onclick="onplayer_video_cos('<?php echo $value_med['type']; ?>','<?php echo preg_replace( "/\r|\n/", "",$value_med['video']); ?>','<?php echo $value_med['id']; ?>')" class="onplayer_video" style="width: 100%;height: 150px;background-image: url('<?php echo $thumbnail_med;?>');background-position: center;background-size:cover;display: flex;justify-content:center;align-items: center;cursor: pointer;">
-                                        <i style="font-size: 60px;" class="fas fa-play-circle playbutton" title="<?php echo $med_name; ?>"></i>
+                                        <i class="mdi mdi-play-circle playbutton" title="<?php echo $med_name; ?>"></i>
                                     </div><br>
                                 </div>
                               <?php } ?>
@@ -705,6 +708,7 @@ strip_tags($arr_choice[$choicenum]['name_choice'],"<label>")
               <form method="post" id="posttest_form<?php echo $value_posttest['qiz_id']; ?>" autocomplete="off" name="posttest_form<?php echo $value_posttest['qiz_id']; ?>" enctype="multipart/form-data"  class="form-horizontal" role="form" onclick="showAlert('posttest_form<?php echo $value_posttest['qiz_id']; ?>')">
               <div class="container-fluid p-0 mb-3">
                 <a href="#" id="quizheader<?php echo $value_posttest['qiz_id']; ?>" class="btn btn-block <?php if($value_posttest['status_tc']=="3"&&$value_posttest['isPass']=="1"&&$value_posttest['endstatus']=="1"){ ?>imat-red-bg btn-danger<?php } ?> waves-effect waves-light rounded-0 text-left onclickrechk div_header_tab<?php echo $num_loop_div;$num_loop_div++; ?> <?php if($loop_run==0){echo "disable";} ?>" type="button" data-toggle="collapse" data-statustc="<?php echo $status_update; ?>" data-target="#collapseExample_<?php echo $value_posttest['qiz_id']; ?>" aria-expanded="false" <?php if($value_posttest['endstatus']=="0"){ ?>style="background-color: #95a5a6;color: #ecf0f1;border-color: #95a5a6;"<?php } ?> aria-controls="collapseExample_<?php echo $value_posttest['qiz_id']; ?>" >
+                  <span class="learning-step-index"><?php echo $learning_step_number++; ?></span>
                   <span id="txtstatus_quiz<?php echo $value_posttest['qiz_id']; ?>"><?php if($value_posttest['status_tc']=="3"&&$value_posttest['endstatus']=="1"){ ?><i class="fa fas fa-check mr-2"></i><?php }else if($value_posttest['status_tc']=="2"){ ?><i class="fa fas fa-hourglass-half mr-2"></i><?php } ?></span>  <?php echo $finalExam_label.": ".$quiz_name; ?>
                   <?php if($value_posttest['status_tc']=="3"&&$value_posttest['isNull']=="0"){if($value_posttest['quiz_grade']=="1"){ echo " (".intval($value_posttest['sum_score'])."/".intval($value_posttest['fullscore']).": ".$statustxt.")";}else{echo " (".$statustxt.")";}} ?>
                   <i class="fa fa-chevron-right float-right"></i>
@@ -919,14 +923,14 @@ strip_tags($arr_choice[$choicenum]['name_choice'],"<label>")
                                         $tc_answer = isset($value_ques['tc']['tc_answer'])?$value_ques['tc']['tc_answer']:"";
                                         for ($choicenum=0; $choicenum < countArray($arr_choice); $choicenum++) { 
                                                     $rechkimgtext = strpos($arr_choice[$choicenum]['name_choice'], 'uploads/texteditor');
-                                                    if($rechkimgtext){ echo "<p>";}
+                                                    if($rechkimgtext !== false){ echo '<div class="quiz-image-choice">';}
                                           ?>
                                           
                                 <input name="multi_choice_group_posttest_<?php echo $value_ques['ques_id']; ?>" <?php if($value_posttest['endstatus']=='1'){ echo "disabled"; }?> onclick="onselectVal('posttest','<?php echo $value_ques['ques_id']; ?>','<?php echo $arr_choice[$choicenum]['value_choice']; ?>')" type="radio" id="multi_posttest_<?php echo $value_ques['ques_id']; ?><?php echo  $arr_choice[$choicenum]['num_choice']; ?>" class="with-gap radio-col-red" value="<?php echo $arr_choice[$choicenum]['value_choice']; ?>" <?php if($tc_answer==$arr_choice[$choicenum]['value_choice']){echo "checked";} ?>>
                                 <label <?php if($value_posttest['status_tc']=="3"&&$value_posttest['endstatus']=="1"){ if($value_posttest['quiz_answer']=="1"){ if(in_array($arr_choice[$choicenum]['value_choice'], $mul_answer)){ if($tc_answer==$arr_choice[$choicenum]['value_choice']&&in_array($tc_answer, $mul_answer)){ ?>class="label label-light-success"<?php }else{ if(in_array($arr_choice[$choicenum]['value_choice'], $mul_answer)){ ?>class="label label-light-success"<?php } } }else{ if($tc_answer==$arr_choice[$choicenum]['value_choice']){  ?>class="label label-light-danger 905หห"<?php } } }else{ if($tc_answer==$arr_choice[$choicenum]['value_choice']&&in_array($tc_answer, $mul_answer)){  ?>class="label label-light-success"<?php }else if($tc_answer==$arr_choice[$choicenum]['value_choice']){ ?>class="label label-light-danger"<?php  } } } ?> onclick="onselectVal('posttest','<?php echo $value_ques['ques_id']; ?>','<?php echo $arr_choice[$choicenum]['value_choice']; ?>')" for="multi_posttest_<?php echo $value_ques['ques_id']; ?><?php echo  $arr_choice[$choicenum]['num_choice']; ?>"><?php echo str_replace('../uploads/texteditor/', base_url().'/uploads/texteditor/',$arr_choice[$choicenum]['name_choice']); ?></label>
                                 <br>
                                           <?php
-                                                  if($rechkimgtext){ echo "</p>";}
+                                                  if($rechkimgtext !== false){ echo "</div>";}
                                         }
                                        /* $tc_answer = isset($value_ques['tc']['tc_answer'])?$value_ques['tc']['tc_answer']:"";
                                         if($mul_c1!=""){
@@ -1024,6 +1028,7 @@ strip_tags($arr_choice[$choicenum]['name_choice'],"<label>")
             ?>
             <div class="container-fluid p-0 mb-3 section-survey" id="div_survey<?php echo $value_survey['sv_id']; ?>" onclick="showAlert('div_survey<?php echo $value_survey['sv_id']; ?>')">
               <a id="<?php echo $value_survey['sv_id']; ?>" status_tc="<?php echo $value_survey['status_tc']; ?>" <?php if($value_survey['status_tc']!="1"){ ?>style="background-color:#95a5a6;border-color:#95a5a6;color: #ecf0f1;"<?php }else{ ?>style="color: #ffffff;"<?php } ?> class="btn btn-block waves-effect waves-light <?php if($value_survey['status_tc']=="1"){ ?>imat-red-bg btn-danger<?php } ?> div_header_tab<?php echo $num_loop_div;$num_loop_div++; ?> onclickrechk rounded-0 text-left <?php if($loop_run==1){echo "survey_main";}else{echo "disable";} ?>" data-statustc="<?php echo $status_update; ?>" type="button" >
+                <span class="learning-step-index"><?php echo $learning_step_number++; ?></span>
                 <?php if($value_survey['status_tc']=="1"){ ?><i class="fa fas fa-check mr-2"></i><?php } ?> <?php echo $survey_txt.': '.$sv_title; ?>
               </a>
             </div>

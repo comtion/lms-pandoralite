@@ -25,6 +25,7 @@ $lang_select = isset($lang_select) ? $lang_select : '';
 <link href="<?php echo REAL_PATH; ?>/assets/css/pages/tab-page.css" rel="stylesheet">
 <link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">
 <link href="<?php echo REAL_PATH; ?>/assets/css/bootstrap-select.min.css" rel="stylesheet">
+<link href="<?php echo REAL_PATH; ?>/assets/css/course-detail-premium.css?v=20260721-21" rel="stylesheet">
 
 <link href="<?php echo REAL_PATH; ?>/assets/video/video-js.css" rel="stylesheet" type="text/css">
 <script src="<?php echo REAL_PATH; ?>/assets/video/video.js"></script>
@@ -155,7 +156,7 @@ margin : 3px;
 </script>
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
+<body class="fix-header fix-sidebar card-no-border premium-course-detail">
   <!-- ============================================================== -->
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
@@ -172,16 +173,16 @@ margin : 3px;
   <!-- ============================================================== -->
   <!-- Main wrapper - style you can find in pages.scss -->
   <!-- ============================================================== -->
-  <div id="">
+  <div id="main-wrapper">
     <?php $this->load->view('frontend/inc/inc-header.php'); ?>
     <?php $this->load->view('frontend/inc/inc-sidemenu.php'); ?>
     <!-- Page wrapper  -->
     <!-- ============================================================== -->
     <div class="page-wrapper">
-      <div class="container-fluid">
-        <div class="row col-12 page-titles">
+      <div class="container-fluid course-detail-container">
+        <div class="row col-12 page-titles course-detail-toolbar">
           <div class="col-md-1 align-self-center">
-            <button class="btn btn-outline-info btn-sm"
+            <button class="btn btn-outline-info btn-sm course-detail-back"
               onclick="window.location.href='<?php echo REAL_PATH . '/coursemain/my_course'; ?>'"><i
                 class="mdi mdi-keyboard-return"></i> <?php echo ucwords(label('m_previous')); ?></button>
           </div>
@@ -346,20 +347,33 @@ margin : 3px;
           $video_loading = '動画を読み込み中…';
           $video_cannot_loading = '	動画を読み込めませんでした。';
         }
+        $premium_ui = array(
+          'course_overview' => $lang_select == 'thai' ? 'รายละเอียดหลักสูตร' : ($lang_select == 'japan' ? 'コース概要' : 'Course overview'),
+          'learning_path' => $lang_select == 'thai' ? 'เส้นทางการเรียนรู้' : ($lang_select == 'japan' ? '学習パス' : 'Learning path'),
+          'progress' => $lang_select == 'thai' ? 'ความคืบหน้า' : ($lang_select == 'japan' ? '進捗' : 'Progress'),
+          'learning_content' => $lang_select == 'thai' ? 'เนื้อหาการเรียนรู้' : ($lang_select == 'japan' ? '学習コンテンツ' : 'Learning content'),
+          'back_to_content' => $lang_select == 'thai' ? 'กลับไปเนื้อหาบทเรียน' : ($lang_select == 'japan' ? 'レッスン内容に戻る' : 'Back to lesson content'),
+          'course_feedback' => $lang_select == 'thai' ? 'ความคิดเห็นต่อหลักสูตร' : ($lang_select == 'japan' ? 'コースフィードバック' : 'Course feedback')
+        );
         ?>
-        <div class="row">
-          <div class="col-auto col-md-12 col-lg-4 mb-0 card card-body">
+        <div class="row course-detail-overview">
+          <div class="course-detail-cover">
             <img class="card-img-top img-responsive"
               src="<?php echo REAL_PATH; ?>/uploads/course/<?php echo $course_main['cos_pic']; ?>"
               onerror="this.src='<?php echo REAL_PATH; ?>/images/cover_course.jpg';" alt="Card image cap">
           </div>
 
-          <div class="col-md-12 col-lg-8 mb-0 card card-body">
-            <h4 class="text-truncate"><?php echo isset($course_main['cname']) ? $course_main['cname'] : ""; ?></h4>
+          <div class="course-detail-info">
+            <span class="course-detail-eyebrow"><i class="mdi mdi-book-open-page-variant"></i> ISUZU E-LEARNING</span>
+            <h1><?php echo isset($course_main['cname']) ? $course_main['cname'] : ""; ?></h1>
+            <div class="course-detail-meta-bar">
+              <span><i class="mdi mdi-calendar-clock"></i><small><?php echo $periodtxt; ?></small><strong><?php echo $course_main['txt_period_course']; ?></strong></span>
+              <span><i class="mdi mdi-domain"></i><small><?php echo $createBy; ?></small><strong><?php echo isset($course_main['com_name']) ? $course_main['com_name'] : ''; ?></strong></span>
+            </div>
             <div class="d-block position-relative">
 
               <div class="row">
-                <div class="col-lg-8 col-sm-12 mt-3">
+                <div class="col-lg-8 col-sm-12 mt-3 course-detail-creator-legacy">
                   <!-- FOR DESKTOP -->
                   <small class="text-muted text-truncate position-absolute col-md-12 col-lg-8 p-0 hidden-xs-down"
                     style="bottom: 0;"><?php echo isset($course_main['com_name']) ? $createBy . ': ' . $course_main['com_name'] : ''; ?></small>
@@ -400,24 +414,236 @@ margin : 3px;
               </div>
 
             </div>
-            <hr>
-            <?php echo  isset($course_main['cdetail']) ? str_replace('../uploads/texteditor/', base_url() . '/uploads/texteditor/', $course_main['cdetail']) : ""; ?>
           </div>
+        </div>
+        <div class="course-workspace-grid">
+          <section class="course-detail-description-panel">
+            <header>
+              <i class="mdi mdi-clipboard-text course-section-icon" aria-hidden="true"></i>
+              <span>ABOUT THIS COURSE</span>
+              <h2><?php echo $premium_ui['course_overview']; ?></h2>
+            </header>
+            <div class="course-detail-description">
+              <?php echo  isset($course_main['cdetail']) ? str_replace('../uploads/texteditor/', base_url() . '/uploads/texteditor/', $course_main['cdetail']) : ""; ?>
+            </div>
+            <?php if (isset($document_cos) && countArray($document_cos) > 0) { ?>
+            <div class="course-materials">
+              <h3><i class="mdi mdi-file-document"></i><?php echo $lesson_file; ?></h3>
+              <div class="course-materials-list">
+                <?php foreach ($document_cos as $value_doccos) {
+                  if ($lang_select == "thai") {
+                    $material_name = $value_doccos['name_file_th'] != "" ? $value_doccos['name_file_th'] : $value_doccos['name_file_eng'];
+                    $material_name = $material_name != "" ? $material_name : $value_doccos['name_file_jp'];
+                  } else if ($lang_select == "english") {
+                    $material_name = $value_doccos['name_file_eng'] != "" ? $value_doccos['name_file_eng'] : $value_doccos['name_file_th'];
+                    $material_name = $material_name != "" ? $material_name : $value_doccos['name_file_jp'];
+                  } else {
+                    $material_name = $value_doccos['name_file_jp'] != "" ? $value_doccos['name_file_jp'] : $value_doccos['name_file_eng'];
+                    $material_name = $material_name != "" ? $material_name : $value_doccos['name_file_th'];
+                  }
+                ?>
+                <button class="course-material-item view_doccos" type="button" typevalue="course_file"
+                  id="<?php echo $value_doccos['fil_cos_id']; ?>" path="<?php echo $value_doccos['path_file']; ?>">
+                  <i class="mdi mdi-file-pdf-box"></i><span><?php echo $material_name; ?></span><i class="mdi mdi-download"></i>
+                </button>
+                <?php } ?>
+              </div>
+            </div>
+            <?php } ?>
+          </section>
+
+          <section class="course-learning-path">
+        <header class="course-learning-path__header">
+          <i class="mdi mdi-format-list-numbers course-section-icon" aria-hidden="true"></i>
+          <strong><span class="course-progress-label"><?php echo $premium_ui['progress']; ?></span> <span id="courseProgressText">0%</span></strong>
+          <span>COURSE CONTENT</span>
+          <h2><?php echo $premium_ui['learning_path']; ?></h2>
+        </header>
+            <div class="course-learning-progress" aria-hidden="true"><span id="courseProgressBar"></span></div>
+            <div class="course-learning-steps">
+              <?php $this->load->view('frontend/tab/course_option.php'); ?>
+            </div>
+          </section>
         </div>
 
       </div>
-
-      <?php $this->load->view('frontend/tab/course_option.php'); ?>
 
 
     </div>
   </div>
 
-  <!-- SELECT LANGUAGE MODAL -->
-  <div id="select_lang_modal" class="modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var path = document.querySelector('.course-learning-path');
+    if (!path) return;
+    var steps = path.querySelectorAll('.onclickrechk');
+    var completed = 0;
+    for (var i = 0; i < steps.length; i += 1) {
+      if (steps[i].getAttribute('data-statustc') === '1') completed += 1;
+    }
+    if (steps.length) {
+      steps[0].classList.add('timeline-first');
+      steps[steps.length - 1].classList.add('timeline-last');
+    }
+    var progress = steps.length ? Math.round((completed / steps.length) * 100) : 0;
+    var text = document.getElementById('courseProgressText');
+    var bar = document.getElementById('courseProgressBar');
+    if (text) text.textContent = progress + '%';
+    if (bar) bar.style.width = progress + '%';
+
+    var activePanel = null;
+    var panelPlaceholder = null;
+    var modalElement = document.getElementById('learningContentModal');
+    var modalBody = document.getElementById('learningContentModalBody');
+    var modalTitle = document.getElementById('learningContentModalTitle');
+    var inlinePlayer = document.getElementById('learningInlinePlayer');
+    var inlinePlayerStage = document.getElementById('learningInlinePlayerStage');
+    var inlinePlayerBack = document.getElementById('learningPlayerBack');
+    var videoModalHome = document.querySelector('#modal-viewvideo .imat-body');
+    var quizFooter = document.getElementById('learningQuizFooter');
+    var quizNavigation = null;
+    var quizNavigationPlaceholder = null;
+
+    function restoreQuizNavigation() {
+      if (quizNavigation && quizNavigationPlaceholder && quizNavigationPlaceholder.parentNode) {
+        quizNavigationPlaceholder.parentNode.insertBefore(quizNavigation, quizNavigationPlaceholder);
+        quizNavigationPlaceholder.parentNode.removeChild(quizNavigationPlaceholder);
+      }
+      quizNavigation = null;
+      quizNavigationPlaceholder = null;
+      if (quizFooter) {
+        quizFooter.innerHTML = '';
+        quizFooter.hidden = true;
+      }
+    }
+
+    function mountQuizNavigation() {
+      restoreQuizNavigation();
+      if (!modalBody || !quizFooter) return;
+      var activeQuestion = modalBody.querySelector('.tab-pane.active[id^="quiz_"]');
+      if (!activeQuestion || activeQuestion.id === 'quiz_detail') return;
+      var rows = Array.prototype.filter.call(activeQuestion.children, function (child) {
+        return child.classList && child.classList.contains('row') && child.querySelector('button');
+      });
+      if (!rows.length) return;
+      quizNavigation = rows[rows.length - 1];
+      quizNavigationPlaceholder = document.createElement('span');
+      quizNavigationPlaceholder.className = 'quiz-navigation-placeholder';
+      quizNavigation.parentNode.insertBefore(quizNavigationPlaceholder, quizNavigation);
+      quizFooter.appendChild(quizNavigation);
+      quizFooter.hidden = false;
+      modalBody.scrollTop = 0;
+      var quizScrollArea = modalBody.querySelector('.vtabs .tab-content');
+      if (quizScrollArea) quizScrollArea.scrollTop = 0;
+    }
+
+    window.openLearningInlinePlayer = function () {
+      if (!inlinePlayer || !inlinePlayerStage || !modalBody) return;
+      ['video-loading', 'video_file_view', 'video_url_view'].forEach(function (id) {
+        var element = document.getElementById(id);
+        if (element) inlinePlayerStage.appendChild(element);
+      });
+      modalBody.hidden = true;
+      inlinePlayer.hidden = false;
+    };
+
+    function restoreLearningContent() {
+      if (!inlinePlayer || inlinePlayer.hidden) return;
+      if (typeof window.onResetVideo === 'function') window.onResetVideo();
+      if (videoModalHome) {
+        ['video-loading', 'video_file_view', 'video_url_view'].forEach(function (id) {
+          var element = document.getElementById(id);
+          if (element) videoModalHome.appendChild(element);
+        });
+      }
+      inlinePlayer.hidden = true;
+      modalBody.hidden = false;
+    }
+
+    if (inlinePlayerBack) inlinePlayerBack.addEventListener('click', restoreLearningContent);
+
+    path.addEventListener('click', function (event) {
+      var trigger = event.target.closest('.onclickrechk');
+      if (!trigger || trigger.classList.contains('disable')) return;
+      var targetSelector = trigger.getAttribute('data-target');
+      if (!targetSelector || targetSelector.charAt(0) !== '#') return;
+      var panel = document.querySelector(targetSelector);
+      if (!panel || !modalElement || !modalBody || !window.jQuery) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      panelPlaceholder = document.createElement('span');
+      panelPlaceholder.className = 'learning-panel-placeholder';
+      panel.parentNode.insertBefore(panelPlaceholder, panel);
+      activePanel = panel;
+      var titleSource = trigger.cloneNode(true);
+      var titleIndex = titleSource.querySelector('.learning-step-index');
+      if (titleIndex) titleIndex.remove();
+      modalTitle.textContent = titleSource.textContent.replace(/\s+/g, ' ').replace(/:\s*$/, '').trim();
+      modalBody.appendChild(panel);
+      panel.querySelectorAll('img').forEach(function (image) {
+        var originalSource = image.getAttribute('src') || '';
+        var marker = 'uploads/texteditor/';
+        var markerPosition = originalSource.indexOf(marker);
+        if (markerPosition >= 0 && !/^https?:\/\//i.test(originalSource)) {
+          image.src = '<?php echo rtrim(base_url(), '/'); ?>/uploads/texteditor/' + originalSource.substring(markerPosition + marker.length);
+        }
+      });
+      panel.classList.add('show');
+      panel.style.display = 'block';
+      window.jQuery(modalElement).modal('show');
+      window.setTimeout(mountQuizNavigation, 0);
+    }, true);
+
+    if (window.jQuery && modalElement) {
+      window.jQuery(modalElement).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
+        window.setTimeout(mountQuizNavigation, 0);
+      });
+      window.jQuery(modalElement).on('hidden.bs.modal', function () {
+        restoreLearningContent();
+        restoreQuizNavigation();
+        if (activePanel && panelPlaceholder && panelPlaceholder.parentNode) {
+          panelPlaceholder.parentNode.insertBefore(activePanel, panelPlaceholder);
+          panelPlaceholder.parentNode.removeChild(panelPlaceholder);
+          activePanel.classList.remove('show');
+          activePanel.style.display = '';
+        }
+        activePanel = null;
+        panelPlaceholder = null;
+        if (modalBody) modalBody.innerHTML = '';
+      });
+    }
+  });
+  </script>
+
+  <div id="learningContentModal" class="modal fade learning-content-modal" tabindex="-1" role="dialog"
+    aria-labelledby="learningContentModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered learning-content-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
+          <div><small><?php echo strtoupper($premium_ui['learning_content']); ?></small><h2 class="modal-title" id="learningContentModalTitle"></h2></div>
+          <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo $close; ?>"><i class="mdi mdi-close" aria-hidden="true"></i></button>
+        </div>
+        <div class="modal-body" id="learningContentModalBody"></div>
+        <div class="learning-quiz-footer" id="learningQuizFooter" hidden></div>
+        <div class="learning-inline-player" id="learningInlinePlayer" hidden>
+          <div class="learning-inline-player__toolbar">
+            <button type="button" id="learningPlayerBack"><i class="mdi mdi-arrow-left"></i><span><?php echo $premium_ui['back_to_content']; ?></span></button>
+            <strong>วิดีโอการเรียนรู้</strong>
+          </div>
+          <div class="learning-inline-player__stage" id="learningInlinePlayerStage"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELECT LANGUAGE MODAL -->
+  <div id="select_lang_modal" class="modal course-entry-modal-wrap" role="dialog" aria-labelledby="courseEntryTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered course-entry-dialog">
+      <div class="modal-content course-entry-modal">
+        <div class="modal-header">
+          <div class="course-entry-brand"><span>ISUZU</span><small>E-LEARNING</small></div>
           <button type="button" class="close"
             onclick="window.location.replace('<?php echo REAL_PATH; ?>/coursemain/all_courses');">
             <span aria-hidden="true">&times;</span>
@@ -425,22 +651,24 @@ margin : 3px;
         </div>
         <form enctype="multipart/form-data" id="lang_form" name="lang_form" autocomplete="off" method="POST"
           accept-charset="utf-8" class="form-horizontal p-t-20">
-          <div class="col-lg-12">
-            <h4 class="text-truncate mb-0" data-toggle="tooltip"
+          <div class="course-entry-heading">
+            <span class="course-entry-kicker"><?php echo $lang_select == 'thai' ? 'พร้อมเริ่มการเรียนรู้' : ($lang_select == 'japan' ? '学習を始める準備ができました' : 'READY TO LEARN'); ?></span>
+            <h2 id="courseEntryTitle" data-toggle="tooltip"
               title="<?php echo isset($course_main['cname']) ? $course_main['cname'] : ""; ?>">
-              <?php echo isset($course_main['cname']) ? $course_main['cname'] : ""; ?></h4>
+              <?php echo isset($course_main['cname']) ? $course_main['cname'] : ""; ?></h2>
           </div>
-          <div class="modal-body row pt-0">
-            <div class="col-lg-6 pt-3">
-              <img class="card-img-top img-responsive" style="max-width: 300px;"
+          <div class="modal-body course-entry-body">
+            <div class="course-entry-cover">
+              <img class="card-img-top img-responsive"
                 src="<?php echo REAL_PATH; ?>/uploads/course/<?php echo $course_main['cos_pic']; ?>"
                 onerror="this.src='<?php echo REAL_PATH; ?>/images/cover_course.jpg';" alt="Card image cap">
             </div>
-            <div class="col-lg-6 pt-3">
-              <p class="card-text"><?php echo $periodtxt . ': '; ?>
-                <br><?php echo isset($course_main['txt_period_course']) ? $course_main['txt_period_course'] : ''; ?>
-              </p>
-              <p class="mb-0"><?php echo $Chooselangtxt . ': '; ?></p>
+            <div class="course-entry-options">
+              <div class="course-entry-meta">
+                <i class="mdi mdi-calendar-clock"></i>
+                <span><small><?php echo $periodtxt; ?></small><strong><?php echo isset($course_main['txt_period_course']) ? $course_main['txt_period_course'] : ''; ?></strong></span>
+              </div>
+              <label for="course_lang"><?php echo $Chooselangtxt; ?></label>
 
               <select id="course_lang" name="course_lang" class="selectpicker">
                 <?php if (isset($course_main['isENG']) && $course_main['isENG'] == "1") { ?><option value="english" <?php if ($course_main['select_lang'] == "english") {
@@ -462,10 +690,10 @@ margin : 3px;
             </div>
 
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer course-entry-footer">
             <button type="submit" title="<?php echo $go_to_course; ?>"
-              class="btn waves-effect waves-light btn-outline-danger btn-danger-hover float-right" name="action"
-              id="action"><i class="mdi mdi-file-document-box"></i> <?php echo $go_to_course; ?></button>
+              class="btn waves-effect waves-light course-entry-submit" name="action"
+              id="action"><span><?php echo $go_to_course; ?></span><i class="mdi mdi-arrow-right"></i></button>
           </div>
         </form>
       </div>
@@ -480,7 +708,9 @@ margin : 3px;
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title" id="myModalLabel"><?php echo $hinttxt; ?></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo $close; ?>">
+            <i class="mdi mdi-close" aria-hidden="true"></i>
+          </button>
         </div>
         <div class="modal-body">
           <img id="imgques_hintimg" class="card-img-top img-responsive mx-auto d-block" style="max-width: 300px;"
@@ -533,7 +763,7 @@ margin : 3px;
   <div class="modal fade" id="modal-viewvideo" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-imat-video" role="document">
       <div class="modal-content">
-        <button type="button" class="imat-close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="imat-close" data-dismiss="modal" aria-label="<?php echo $close; ?>">
           <!-- ไอคอนปิด (SVG) -->
           <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
             <path d="M18.3 5.71L12 12.01 5.7 5.7 4.29 7.11 10.59 13.41 4.3 19.7 5.71 21.11 12 14.82 18.29 21.11 19.7 19.7 13.41 13.41 19.7 7.12z"/>
@@ -557,30 +787,36 @@ margin : 3px;
     </div>
   </div>
 
-  <div id="surveyModal" class="modal fade bs-example-modal-lg" role="dialog" aria-labelledby="myLargeModalLabel"
+  <div id="surveyModal" class="modal fade survey-experience-modal" role="dialog" aria-labelledby="surveyModalTitle"
     aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-dialog-centered survey-experience-dialog">
       <div class="modal-content">
-        <div class="modal-header" style="max-width: 100% ">
-          <h4 class="modal-title" id="myLargeModalLabel"><?php echo $survey_txt . ': '; ?><span
-              id="txt_headsurvey"></span></h4>
+        <div class="modal-header">
+          <div class="survey-experience-heading">
+            <span class="survey-experience-kicker"><?php echo $premium_ui['course_feedback']; ?></span>
+            <h2 class="modal-title" id="surveyModalTitle"><span id="txt_headsurvey"></span></h2>
+          </div>
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         </div>
         <form enctype="multipart/form-data" id="survey_form" name="survey_form" autocomplete="off" method="POST"
-          accept-charset="utf-8" class="form-horizontal p-t-20">
-          <div class="modal-body" style="overflow-x: auto;">
-            <h5 id="txt_infosurvey"></h5>
-            <div id="survey_data">
-
+          accept-charset="utf-8" class="survey-experience-form">
+          <div class="modal-body">
+            <div class="survey-experience-intro">
+              <span class="survey-experience-intro-icon"><i class="mdi mdi-message-text-outline"></i></span>
+              <div>
+                <span class="survey-experience-intro-label"><?php echo $survey_txt; ?></span>
+                <h5 id="txt_infosurvey"></h5>
+              </div>
             </div>
+            <div id="survey_data" class="survey-experience-data" aria-live="polite"></div>
           </div>
           <input type="hidden" name="sv_id" id="sv_id">
           <input type="hidden" name="cosen_id" id="cosen_id" value="<?php echo $cosen_id; ?>">
-          <div class="modal-footer" align="right">
-            <button type="submit" class="btn waves-effect waves-light btn-outline-success btn_survey" name="action"
+          <div class="modal-footer">
+            <button type="button" class="btn survey-btn-secondary" data-dismiss="modal"><i
+                class="mdi mdi-arrow-left"></i> <?php echo $close; ?></button>
+            <button type="submit" class="btn survey-btn-primary btn_survey" name="action"
               id="action"><i class="mdi mdi-send"></i> <?php echo $sent_survey; ?></button>
-            <button type="button" class="btn waves-effect waves-light btn-outline-danger" data-dismiss="modal"><i
-                class="mdi mdi-window-close"></i> <?php echo $close; ?></button>
           </div>
         </form>
       </div>
@@ -738,8 +974,6 @@ margin : 3px;
       return false;
     }
   });
-  $("footer").addClass("mt-5");
-
   function ongotab(les_id, lesson) {
     $('a[href="#' + les_id + '"]').tab('show');
     $('html,body').animate({
@@ -841,7 +1075,12 @@ margin : 3px;
   function onplayer_video_cos(type, video, id) {
     // Show loading by default
     loadingPopup.classList.remove('hidden');
-    $('#modal-viewvideo').modal({backdrop: false});
+    var learningModalOpen = $('#learningContentModal').hasClass('show');
+    if (learningModalOpen) {
+      openLearningInlinePlayer();
+    } else {
+      $('#modal-viewvideo').modal({backdrop: false});
+    }
     if (type == "url") {
       document.getElementById('video_file_view').style.display = 'none';
       document.getElementById('video_url_view').style.display = '';
@@ -977,7 +1216,8 @@ margin : 3px;
       $('.btn_survey').show();
     }
     $("#surveyModal").modal({
-      backdrop: false
+      backdrop: 'static',
+      keyboard: true
     });
     $('#sv_id').val(sv_id);
     $.ajax({
@@ -1006,7 +1246,7 @@ margin : 3px;
         cosen_id: '<?php echo $cosen_id; ?>'
       },
       success: function(data_cg) {
-        $('#survey_data').html(data_cg);
+        $('#survey_data').html('<div class="survey-table-scroll">' + data_cg + '</div>');
       }
     });
   });

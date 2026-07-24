@@ -42,6 +42,28 @@
       #myModal_process #circle-b{
         margin:0;
       }
+      .course-group-icon-dropify .dropify-wrapper {
+        height: 142px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        background: #f8fafc;
+        transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+      }
+      .course-group-icon-dropify .dropify-wrapper:hover {
+        border-color: #ef1b23;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+      }
+      .course-group-icon-dropify .dropify-wrapper .dropify-message p {
+        color: #64748b;
+        font-size: 13px;
+      }
+      .course-group-icon-dropify .dropify-wrapper .dropify-preview .dropify-render img {
+        max-width: 64px;
+        max-height: 64px;
+        object-fit: contain;
+      }
+      .course-group-icon-help { display: block; margin-top: 6px; color: #718096; font-size: 11px; }
     </style>
 </head>
 
@@ -191,6 +213,16 @@
                     <input type="file" name="cgthumb" id="cgthumb" class="dropify"  accept="image/png, image/jpeg" />
                   </div>
                 </div> -->
+
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="cg_icon"><?php echo $lang == 'thai' ? 'ไอคอนสำหรับแท็บ (PNG)' : ($lang == 'japan' ? 'タブアイコン (PNG)' : 'Tab icon (PNG)'); ?>:</label>
+                    <div class="course-group-icon-dropify">
+                      <input type="file" name="cg_icon" id="cg_icon" class="dropify" accept="image/png,.png" data-allowed-file-extensions="png" data-max-file-size="2M" data-height="140" data-show-remove="true">
+                    </div>
+                    <small class="course-group-icon-help"><?php echo $lang == 'thai' ? 'รองรับเฉพาะ PNG ขนาดไม่เกิน 2 MB หากไม่อัปโหลด ระบบจะแสดงไอคอนมาตรฐาน' : ($lang == 'japan' ? 'PNGのみ、最大2 MB。未設定の場合は標準アイコンを表示します。' : 'PNG only, maximum 2 MB. If omitted, the default icon will be used.'); ?></small>
+                  </div>
+                </div>
 
                 <div class="col-md-4">
                   <div class="form-group">
@@ -361,11 +393,26 @@
                     drEvent.destroy();
                     drEvent.init();
         }
+        function resetCourseGroupIcon(imageUrl) {
+          var $input = $('#cg_icon');
+          var dropify = $input.data('dropify');
+          $input.val('');
+          if (!dropify) {
+            $input.attr('data-default-file', imageUrl || '');
+            return;
+          }
+          dropify.resetPreview();
+          dropify.clearElement();
+          dropify.settings.defaultFile = imageUrl || '';
+          dropify.destroy();
+          dropify.init();
+        }
            $('#add_button').click(function(){
                 $("#modal-default").modal({backdrop: false});
                 $('.modal-title').text('<?php echo label('createcoursegroup'); ?>');
                 $('#course_group_form')[0].reset();
                 $('#operation').val("Add");
+                resetCourseGroupIcon();
                 // clear_dropify('cgthumb');
                 var com_id = $('#com_id_search').val();
                 $('#com_id').val(com_id);
@@ -1054,6 +1101,7 @@
                   $('.modal-title').text('<?php echo ucwords(label("editcoursegroup")); ?>');
                   $('#course_group_form')[0].reset();
                   $('#operation').val("Edit");
+                  resetCourseGroupIcon(data.cg_icon ? "<?php echo REAL_PATH;?>/uploads/course_group/icons/" + data.cg_icon : '');
 
                   /*if(data.cgthumb!=""){
                     var imagenUrl = "<?php echo REAL_PATH;?>/uploads/course_group/"+data.cgthumb;
