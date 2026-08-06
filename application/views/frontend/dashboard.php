@@ -16,7 +16,7 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css">
 <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard.css">
 <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-premium.css?v=20260720-1">
-<link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-20">
+<link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260806-4">
 <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-15">
 <!-- Timeline CSS -->
 <link href="<?php echo REAL_PATH; ?>/assets/plugins/horizontal-timeline/css/horizontal-timeline.css" rel="stylesheet">
@@ -460,29 +460,65 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 						<?php if ($user['ug_id'] == "1") { ?>
 							<!-- Comany Active User -->
 							<div class="card card-body" id="active_user_admin">
-								<h4 class="card-title"><span class="lstick"></span><?php echo label('dash_h_usage_information'); ?></h4>
+								<?php
+								$usage_company_total = count($company_arr);
+								$usage_user_total = array_sum(array_column($company_arr, 'usertotal'));
+								$usage_course_total = array_sum(array_column($company_arr, 'coursetotal'));
+								$usage_survey_total = array_sum(array_column($company_arr, 'surveytotal'));
+								$usage_company_divisor = max(1, $usage_company_total);
+								?>
+								<div class="usage-section-heading">
+									<div>
+										<h4 class="card-title"><span class="lstick"></span><?php echo label('dash_h_usage_information'); ?></h4>
+										<p><?php echo $lang == 'thai' ? 'ภาพรวมจำนวนผู้ใช้งาน หลักสูตร และแบบสำรวจ แยกตามบริษัท' : 'An overview of users, courses and surveys by company'; ?></p>
+									</div>
+									<span class="usage-company-count"><i class="mdi mdi-domain"></i><?php echo number_format($usage_company_total); ?> <?php echo $lang == 'thai' ? 'บริษัท' : 'companies'; ?></span>
+								</div>
+								<div class="usage-summary-grid" aria-label="<?php echo label('dash_h_usage_information'); ?>">
+									<div class="usage-summary-item is-company"><span><i class="mdi mdi-domain"></i></span><div><small><?php echo $lang == 'thai' ? 'บริษัททั้งหมด' : 'Total companies'; ?></small><strong><?php echo number_format($usage_company_total); ?></strong><em><?php echo $lang == 'thai' ? 'องค์กรในระบบ' : 'organizations in the system'; ?></em></div></div>
+									<div class="usage-summary-item is-user"><span><i class="mdi mdi-account-multiple-outline"></i></span><div><small><?php echo label('dash_b_user_total'); ?></small><strong><?php echo number_format($usage_user_total); ?></strong><em><?php echo $lang == 'thai' ? 'เฉลี่ย' : 'Avg.'; ?> <?php echo number_format($usage_user_total / $usage_company_divisor, 0); ?> / <?php echo $lang == 'thai' ? 'บริษัท' : 'company'; ?></em></div></div>
+									<div class="usage-summary-item is-course"><span><i class="mdi mdi-book-open-page-variant"></i></span><div><small><?php echo label('dash_b_total_course'); ?></small><strong><?php echo number_format($usage_course_total); ?></strong><em><?php echo $lang == 'thai' ? 'เฉลี่ย' : 'Avg.'; ?> <?php echo number_format($usage_course_total / $usage_company_divisor, 0); ?> / <?php echo $lang == 'thai' ? 'บริษัท' : 'company'; ?></em></div></div>
+									<div class="usage-summary-item is-survey"><span><i class="mdi mdi-clipboard-text-outline"></i></span><div><small><?php echo label('dash_b_total_survey'); ?></small><strong><?php echo number_format($usage_survey_total); ?></strong><em><?php echo $lang == 'thai' ? 'เฉลี่ย' : 'Avg.'; ?> <?php echo number_format($usage_survey_total / $usage_company_divisor, 0); ?> / <?php echo $lang == 'thai' ? 'บริษัท' : 'company'; ?></em></div></div>
+								</div>
+								<div class="usage-table-shell">
+									<div class="usage-table-heading">
+										<div><i class="mdi mdi-format-list-bulleted"></i><span><?php echo $lang == 'thai' ? 'รายละเอียดตามบริษัท' : 'Company breakdown'; ?></span></div>
+										<small><?php echo $lang == 'thai' ? 'แสดง 10 รายการต่อหน้า' : '10 items per page'; ?></small>
+									</div>
 								<table id="company_active_user_table" class="display table table-hover table-ellipsis-350px" cellspacing="0" width="100%">
 									<thead>
 										<tr>
-											<th width="55%"><b><?php echo label('dash_b_company_name'); ?></b></th>
-											<th width="15%"><b style="float: right;"><?php echo label('dash_b_user_total'); ?></b></th>
-											<th width="15%"><b style="float: right;"><?php echo label('dash_b_total_course'); ?></b></th>
-											<th width="15%"><b style="float: right;"><?php echo label('dash_b_total_survey'); ?></b></th>
+											<th width="55%"><b><i class="mdi mdi-domain"></i><?php echo label('dash_b_company_name'); ?></b></th>
+											<th width="15%"><b><i class="mdi mdi-account-multiple-outline"></i><?php echo label('dash_b_user_total'); ?></b></th>
+											<th width="15%"><b><i class="mdi mdi-book-open-page-variant"></i><?php echo label('dash_b_total_course'); ?></b></th>
+											<th width="15%"><b><i class="mdi mdi-clipboard-text-outline"></i><?php echo label('dash_b_total_survey'); ?></b></th>
 										</tr>
 									</thead>
 									<tbody>
 										<?php foreach ($company_arr as $key_com => $value_com) {
 											$com_name = $lang == "thai" ? $value_com['com_name_th'] : $value_com['com_name_eng'];
+											$company_user_total = (int) $value_com['usertotal'];
+											$company_course_total = (int) $value_com['coursetotal'];
+											$company_survey_total = (int) $value_com['surveytotal'];
 										?>
 											<tr>
-												<td title="<?php echo $com_name; ?>"><?php echo $com_name; ?></td>
-												<td align="right"><?php echo number_format($value_com['usertotal']); ?></td>
-												<td align="right"><?php echo number_format($value_com['coursetotal']); ?></td>
-												<td align="right"><?php echo number_format($value_com['surveytotal']); ?></td>
+												<td title="<?php echo $com_name; ?>"><span class="usage-company-name"><i class="mdi mdi-domain"></i><span><?php echo $com_name; ?></span></span></td>
+												<td align="right"><span class="usage-value is-user"><strong><?php echo number_format($company_user_total); ?></strong><small><?php echo number_format(($company_user_total / max(1, $usage_user_total)) * 100, 1); ?>%</small></span></td>
+												<td align="right"><span class="usage-value is-course"><strong><?php echo number_format($company_course_total); ?></strong><small><?php echo number_format(($company_course_total / max(1, $usage_course_total)) * 100, 1); ?>%</small></span></td>
+												<td align="right"><span class="usage-value is-survey"><strong><?php echo number_format($company_survey_total); ?></strong><small><?php echo number_format(($company_survey_total / max(1, $usage_survey_total)) * 100, 1); ?>%</small></span></td>
 											</tr>
 										<?php } ?>
 									</tbody>
+									<tfoot>
+										<tr>
+											<td><span class="usage-total-label"><i class="mdi mdi-sigma"></i><?php echo $lang == 'thai' ? 'รวมทั้งหมด' : 'Grand total'; ?></span></td>
+											<td align="right"><?php echo number_format($usage_user_total); ?></td>
+											<td align="right"><?php echo number_format($usage_course_total); ?></td>
+											<td align="right"><?php echo number_format($usage_survey_total); ?></td>
+										</tr>
+									</tfoot>
 								</table>
+								</div>
 							</div>
 						<?php } ?>
 						<div class="row">
@@ -1227,10 +1263,9 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 					"sNext": ">", // This is the link to the next page
 				}
 			},
-			"dom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-				"<'row'<'col-sm-12'tr>>" +
-				'<"row"<"col-sm-12 m-t-20 m-b-20"p>>',
-			"scrollX": true
+			"dom": "<'usage-table-scroll't><'usage-table-footer'p>",
+			"scrollX": true,
+			"pageLength": 10
 		});
 
 

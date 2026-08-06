@@ -558,6 +558,65 @@ class Dashboard extends CI_Controller
 
 	public function update_password()
 	{
+		$this->output->set_content_type('application/json');
+		$sess = $this->session->userdata('user');
+		if (!is_array($sess) || empty($sess['u_id'])) {
+			$this->output->set_status_header(401);
+			echo json_encode(array('rs' => false, 'msg' => 'Session หมดอายุ กรุณาเข้าสู่ระบบใหม่'));
+			return;
+		}
+		$this->load->database();
+		$oldPassword = (string) $this->input->post('oldpass', false);
+		$newPassword = (string) $this->input->post('newpass', false);
+		$confirmPassword = (string) $this->input->post('confirmpass', false);
+		if ($newPassword !== $confirmPassword) {
+			echo json_encode(array('rs' => false, 'msg' => 'รหัสผ่านใหม่และการยืนยันไม่ตรงกัน'));
+			return;
+		}
+		if (!$this->isStrongPassword($newPassword)) {
+			echo json_encode(array('rs' => false, 'msg' => 'รหัสผ่านต้องมีอย่างน้อย 10 ตัว และมีตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก ตัวเลข และอักขระพิเศษ'));
+			return;
+		}
+		$current = $this->db->select('userp')->get_where('lms_usp', array('u_id' => $sess['u_id'], 'u_isDelete' => 0))->row_array();
+		$storedHash = isset($current['userp']) ? (string) $current['userp'] : '';
+		$isModern = preg_match('/^\$(2[ayb]|argon2i|argon2id)\$/', $storedHash) === 1;
+		$oldMatches = $isModern ? password_verify($oldPassword, $storedHash) : hash_equals($storedHash, hash('sha256', $oldPassword));
+		if (!$oldMatches) {
+			echo json_encode(array('rs' => false, 'msg' => 'รหัสผ่านเดิมไม่ถูกต้อง'));
+			return;
+		}
+
+		$history = $this->db->order_by('lp_id', 'DESC')->limit(3)
+			->get_where('lms_log_password', array('u_id' => $sess['u_id']))->result_array();
+		foreach ($history as $item) {
+			$historyHash = (string) $item['lp_password'];
+			if (password_verify($newPassword, $historyHash) || hash_equals($historyHash, hash('sha256', $newPassword))) {
+				echo json_encode(array('rs' => false, 'msg' => 'ไม่สามารถใช้รหัสผ่านซ้ำกับ 3 ครั้งล่าสุดได้'));
+				return;
+			}
+		}
+
+		$newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+		$now = date('Y-m-d H:i:s');
+		$this->db->trans_start();
+		$this->db->where('u_id', $sess['u_id'])->update('lms_usp', array(
+			'userp' => $newHash,
+			'expiredate' => date('Y-m-d H:i:s', strtotime('+90 days'))
+		));
+		$this->db->insert('lms_log_password', array(
+			'u_id' => $sess['u_id'], 'lp_datetime' => $now, 'lp_password' => $newHash
+		));
+		$this->db->trans_complete();
+		if (!$this->db->trans_status()) {
+			$this->output->set_status_header(500);
+			echo json_encode(array('rs' => false, 'msg' => 'ไม่สามารถเปลี่ยนรหัสผ่านได้ กรุณาลองใหม่'));
+			return;
+		}
+		$this->session->sess_regenerate(true);
+		log_message('info', 'User changed password: ' . $sess['useri']);
+		echo json_encode(array('rs' => true, 'msg' => 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว'));
+		return;
+
 		$sess = $this->session->userdata("user");
 		$useri = $sess['useri'];
 
@@ -937,7 +996,7 @@ class Dashboard extends CI_Controller
 		$this->load->model('User_model', 'login', true);
 		//$this->login->sendLogin($redirect);
 
-		redirect(base_url() . 'home', 'refresh');
+		redirect(base_url() . 'home', 'location', 302);
 	}
 	public function firsttime()
 	{
@@ -1005,6 +1064,12 @@ class Dashboard extends CI_Controller
 	}
 	public function updatePass($resetPass = 0)
 	{
+		$this->output->set_content_type('application/json');
+		$issuedAt = (int) $this->session->userdata('password_change_issued_at');
+		if ($issuedAt <= 0 || (time() - $issuedAt) > 900) {
+			echo json_encode(array('rs' => false, 'msg' => 'คำขอหมดอายุ กรุณาเข้าสู่ระบบใหม่'));
+			return;
+		}
 		$this->load->model('Function_query_model', 'func_query', true);
 		$this->func_query->loadDB();
 		$arr_result = array();
@@ -1014,13 +1079,17 @@ class Dashboard extends CI_Controller
 				$password = isset($_POST['newpass']) ? $_POST['newpass'] : '';
 				if ($password != '') {
 					$user = $this->session->userdata('username_firsttime');
-					$password_enc = hash('sha256', $password); // and lms_usp.userp="'.$password_enc.'"
+					if (!$this->isStrongPassword($password)) {
+						echo json_encode(array('rs' => false, 'msg' => 'รหัสผ่านต้องมีอย่างน้อย 10 ตัว และมีตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก ตัวเลข และอักขระพิเศษ'));
+						return;
+					}
+					$password_enc = password_hash($password, PASSWORD_DEFAULT);
 					$status_duplicate = 0;
 					$fetch_logpass = $this->func_query->query_result('lms_log_password', 'lms_usp', 'lms_usp.u_id = lms_log_password.u_id', '', 'lms_usp.useri="' . $user . '" and lms_usp.u_isDelete="0"', 'lms_log_password.lp_id DESC', '', 3);
 					if (countArray($fetch_logpass) > 0) {
 						$chkpass = 0;
 						foreach ($fetch_logpass as $key_logpass => $value_logpass) {
-							if ($password_enc == $value_logpass['lp_password']) {
+							if (password_verify($password, $value_logpass['lp_password']) || hash_equals((string) $value_logpass['lp_password'], hash('sha256', $password))) {
 								$chkpass++;
 							}
 						}
@@ -1036,9 +1105,8 @@ class Dashboard extends CI_Controller
 							$arr_result['rs'] = true;
 							$arr_result['msg'] = "050"; //เปลี่ยนรหัสผ่านเรียบร้อย
 							$this->load->helper('cookie');
-							setcookie("emp_id", "", time() - 3600);
-							session_destroy();
-							unset($_SESSION);
+							setcookie("emp_id", "", time() - 3600, '/');
+							$this->session->sess_destroy();
 							echo json_encode($arr_result);
 						} else {
 							$arr_result['rs'] = false;
@@ -1061,6 +1129,16 @@ class Dashboard extends CI_Controller
 		} else {
 			redirect(base_url() . 'home');
 		}
+	}
+
+	private function isStrongPassword($password)
+	{
+		$password = (string) $password;
+		return strlen($password) >= 10
+			&& preg_match('/[A-Z]/', $password)
+			&& preg_match('/[a-z]/', $password)
+			&& preg_match('/[0-9]/', $password)
+			&& preg_match('/[^A-Za-z0-9]/', $password);
 	}
 	public function forgotpass()
 	{
@@ -1146,6 +1224,33 @@ class Dashboard extends CI_Controller
 
 	public function resetPassSubmit()
 	{
+		$this->output->set_content_type('application/json');
+		$genericMessage = 'หากข้อมูลตรงกับบัญชีในระบบ เราได้ส่งลิงก์ตั้งรหัสผ่านใหม่ไปยังอีเมลแล้ว ลิงก์มีอายุ 30 นาที';
+		$username = strtolower(trim((string) $this->input->post('useri', true)));
+		$this->load->model('User_model', 'login', false);
+		$this->login->loadDB();
+		$reset = $username !== '' && $this->login->passwordResetRequestAllowed()
+			? $this->login->createPasswordResetToken($username)
+			: null;
+		if ($reset) {
+			$this->load->model('Function_query_model', 'func_query', true);
+			$settings = $this->func_query->query_row('lms_setting_mail', '', '', '', 'sm_id="1"');
+			$link = base_url() . 'dashboard/reset_password/' . rawurlencode($reset['token']);
+			$name = !empty($reset['user']['fullname_th']) ? $reset['user']['fullname_th'] : $reset['user']['fullname_en'];
+			$subject = 'ตั้งรหัสผ่านใหม่สำหรับ LMS';
+			$message = '<p>เรียน ' . html_escape($name) . '</p>'
+				. '<p>มีคำขอตั้งรหัสผ่านใหม่สำหรับบัญชี LMS ของคุณ</p>'
+				. '<p><a href="' . html_escape($link) . '">ตั้งรหัสผ่านใหม่</a></p>'
+				. '<p>ลิงก์นี้ใช้ได้ครั้งเดียวและหมดอายุภายใน 30 นาที หากคุณไม่ได้เป็นผู้ขอ สามารถละเว้นอีเมลฉบับนี้ได้</p>';
+			try {
+				$this->db->sendEmail($reset['user']['email'], $message, $subject, $settings);
+			} catch (Throwable $e) {
+				log_message('error', 'Password reset email failed: ' . $e->getMessage());
+			}
+		}
+		echo json_encode(array('rs' => true, 'msg' => $genericMessage));
+		return;
+
 		$arr_result = array();
 		$arr = array();
 		$thaimonth = array("", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม");
@@ -1265,6 +1370,35 @@ class Dashboard extends CI_Controller
 			echo json_encode($arr_result);
 			$this->login->closeDB();
 		}
+	}
+
+	public function reset_password($token = '')
+	{
+		$this->load->model('User_model', 'login', false);
+		$this->login->loadDB();
+		$record = $this->login->findPasswordResetToken($token);
+		$data = array('token' => $token, 'valid_token' => !empty($record));
+		$this->load->view('frontend/reset_password_token', $data);
+	}
+
+	public function complete_password_reset()
+	{
+		$this->output->set_content_type('application/json');
+		$token = (string) $this->input->post('token', true);
+		$password = (string) $this->input->post('password', false);
+		$confirm = (string) $this->input->post('password_confirm', false);
+		if ($password !== $confirm || !$this->isStrongPassword($password)) {
+			echo json_encode(array('rs' => false, 'msg' => 'รหัสผ่านไม่ตรงกัน หรือไม่ผ่านเงื่อนไขความปลอดภัย'));
+			return;
+		}
+		$this->load->model('User_model', 'login', false);
+		$this->login->loadDB();
+		if (!$this->login->consumePasswordResetToken($token, $password)) {
+			echo json_encode(array('rs' => false, 'msg' => 'ลิงก์ไม่ถูกต้อง หมดอายุ หรือถูกใช้แล้ว'));
+			return;
+		}
+		$this->session->sess_destroy();
+		echo json_encode(array('rs' => true, 'redirect_val' => base_url() . 'home'));
 	}
 
 	public function resetPassSubmit_page()
@@ -1425,6 +1559,32 @@ class Dashboard extends CI_Controller
 	}
 	public function chk_login()
 	{
+		$this->output->set_content_type('application/json');
+		$username = strtolower(trim((string) $this->input->post('inpUname', true)));
+		$password = (string) $this->input->post('inpPwd', false);
+		$dest = trim((string) $this->input->post('dest', true), '/');
+		if ($dest === '' || preg_match('#^(?:https?:)?//#i', $dest) || strpos($dest, '..') !== false) {
+			$dest = 'dashboard';
+		}
+
+		$this->load->model('User_model', 'login', true);
+		$this->login->loadDB();
+		$result = $this->login->authenticate($username, $password);
+		$status = $result['status'];
+		$response = array('status_msg' => $status);
+		if ($status === 'complete') {
+			$response['redirect_val'] = base_url() . $dest;
+		} elseif ($status === 'first_login') {
+			$response['redirect_val'] = base_url() . 'dashboard/firsttime';
+		} elseif ($status === 'password_expired') {
+			$response['redirect_val'] = base_url() . 'dashboard/passexpire';
+		} elseif ($status === 'rate_limited') {
+			$response['retry_after'] = isset($result['retry_after']) ? $result['retry_after'] : 900;
+		}
+		log_message($status === 'complete' ? 'info' : 'error', 'Authentication result: ' . $status . ' for ' . $username);
+		echo json_encode($response);
+		return;
+
 		$lang = $this->session->userdata("lang") == null ? "english" : $this->session->userdata("lang");
 		$this->lang->load($lang, $lang);
 		$username = $_REQUEST['inpUname'];
@@ -1669,21 +1829,50 @@ class Dashboard extends CI_Controller
 			$this->db->update('lms_usp', $arr_update);
 		}
 
-		$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'dashboard';
+		$redirect = isset($_GET['redirect']) ? trim((string) $_GET['redirect'], '/') : 'dashboard';
+		if ($redirect === '' || preg_match('#^(?:https?:)?//#i', $redirect) || strpos($redirect, '..') !== false) {
+			$redirect = 'dashboard';
+		}
 		$this->login->logout($emp_c);
 		$this->load->helper('cookie');
-		setcookie("emp_id", "", time() - 3600);
 
 		$this->load->model('Log_model', 'lg', false);
 		$this->lg->loadDB();
 		$this->lg->record('home', 'user id ' . $emp_c . 'logged out.');
 		$this->lg->closeDB();
 
-		session_destroy();
-		unset($_SESSION);
+		// CI must destroy its own session file and cookie. Native
+		// session_destroy() alone can leave the CI cookie reusable.
+		$this->session->unset_userdata(array(
+			'user', 'name', 'login', 'firsttime', 'passexpire',
+			'username_firsttime', 'password_change_reason',
+			'password_change_issued_at', 'p0_last_activity', 'p0_session_started'
+		));
+		$this->session->sess_destroy();
 
-		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
+		$cookieSecure = filter_var(getenv('LMS_COOKIE_SECURE') ?: false, FILTER_VALIDATE_BOOLEAN);
+		setcookie('emp_id', '', array(
+			'expires' => time() - 3600,
+			'path' => '/',
+			'secure' => $cookieSecure,
+			'httponly' => true,
+			'samesite' => 'Lax'
+		));
+		$sessionCookie = (string) $this->config->item('sess_cookie_name');
+		if ($sessionCookie !== '') {
+			setcookie($sessionCookie, '', array(
+				'expires' => time() - 3600,
+				'path' => (string) ($this->config->item('cookie_path') ?: '/'),
+				'domain' => (string) $this->config->item('cookie_domain'),
+				'secure' => $cookieSecure,
+				'httponly' => true,
+				'samesite' => 'Lax'
+			));
+		}
+
+		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, private, max-age=0");
 		$this->output->set_header("Pragma: no-cache");
-		redirect(base_url() . 'home?redirect=' . $redirect, 'refresh');
+		$this->output->set_header("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
+		redirect(base_url() . 'home?redirect=' . rawurlencode($redirect), 'location', 303);
 	}
 }

@@ -29,10 +29,11 @@
                         <h2 style="color:#555;padding: 10px 0;font-size: 16px; width:100%;text-align:center;"><?php echo label('login_firsttime'); ?></h2>
                       <?php } ?>
                     <form class="form-horizontal form-material" id="form_updatepass" autocomplete="off" method="POST">
+						<input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                         <div class="form-group ">
                             <div class="col-sm-12" id="newpass_div">
                                 <label for="newpass"><b style="color: #FF2D00">*</b><?php echo label('newpass'); ?>:</label>
-                                <input class="form-control" id="newpass" name="newpass" onkeyup="validPassRechk()" type="text" required> 
+								<input class="form-control" id="newpass" name="newpass" onkeyup="validPassRechk()" type="password" minlength="10" autocomplete="new-password" required>
                                 <span toggle="#newpass" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                 <span id="txt_newpass" style="color: #c0392b;"></span>
                             </div>
@@ -40,7 +41,7 @@
                         <div class="form-group">
                             <div class="col-sm-12" id="confirm_div">
                                 <label for="confirmpass"><b style="color: #FF2D00">*</b><?php echo label('confirmpass'); ?>:</label>
-                                <input class="form-control" id="confirmpass" name="confirmpass" onkeyup="validPassRechk()" type="text" required> 
+								<input class="form-control" id="confirmpass" name="confirmpass" onkeyup="validPassRechk()" type="password" minlength="10" autocomplete="new-password" required>
                                 <span toggle="#confirmpass" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                 <span id="txt_confirmpass" style="color: #c0392b;"></span>
                             </div>
@@ -102,7 +103,10 @@
                 $.ajax( '<?php echo base_url();?>'+'dashboard/updatePass', {
                     type: 'POST',
                     dataType: 'json',
-                    data:  { newpass : $('input[name="newpass"]').val() } ,
+					data:  {
+					  newpass : $('input[name="newpass"]').val(),
+					  '<?php echo $this->security->get_csrf_token_name(); ?>' : '<?php echo $this->security->get_csrf_hash(); ?>'
+					},
                     success: function(result){
                       if(result.rs){
                         swal(
@@ -148,7 +152,7 @@
           if( $newpass.val() == "" ){
             $newpass.css({border:'1px solid red'});
             check = false;
-          }else if( $newpass.val().length < 8 ){
+		  }else if( $newpass.val().length < 10 ){
             $newpass.css({border:'1px solid red'});
             check = false;
           }else if( !checkCase( $newpass.val() ) ){
@@ -237,11 +241,12 @@
           return check;
         }
         function checkCase( str ){
-          var upperCase= new RegExp('[A-Z]');
-          //var lowerCase= new RegExp('[a-z]');
+		  var upperCase= new RegExp('[A-Z]');
+		  var lowerCase= new RegExp('[a-z]');
           var numbers = new RegExp('[0-9]');
+		  var special = new RegExp('[^A-Za-z0-9]');
 
-          if( str.match(upperCase) &&  str.match(numbers) )
+		  if( str.match(upperCase) && str.match(lowerCase) && str.match(numbers) && str.match(special) )
           {
             return true;
               //$("#passwordErrorMsg").html("OK")

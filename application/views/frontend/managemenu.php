@@ -72,15 +72,22 @@
     </div>
     <?php $this->load->view('frontend/inc/inc-footer.php'); ?>
 
-    <div class="modal fade bs-example-modal-lg" id="modal-default" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
-      <div class="modal-dialog modal-lg">
+    <div class="modal fade bs-example-modal-lg app-focus-modal" id="modal-default" role="dialog" aria-labelledby="myLargeModalLabel" aria-describedby="menu-modal-description" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
           <div class="modal-content">
               <div class="modal-header">
-                  <h4 class="modal-title" id="myLargeModalLabel">Large modal</h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <div class="modal-heading">
+                    <span class="modal-heading-accent" aria-hidden="true"></span>
+                    <div>
+                      <h4 class="modal-title" id="myLargeModalLabel">Large modal</h4>
+                      <p class="modal-description" id="menu-modal-description"><?php echo label('m_menu'); ?> — TH / EN / JP</p>
+                    </div>
+                  </div>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="mdi mdi-close" aria-hidden="true"></i></button>
               </div>
               <form method="post" id="menu_form" autocomplete="off" name="menu_form" enctype="multipart/form-data"  class="form-horizontal" role="form">
-              <div class="modal-body row">
+              <div class="modal-body">
+                <div class="row menu-form-grid">
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="mu_name_th"><b style="color: #FF2D00">*</b><?php echo label('m_menu')." TH"; ?>:</label>
@@ -116,20 +123,21 @@
                     <input type="text" id="mu_path" name="mu_path" required class="form-control"> 
                   </div>
                 </div>
-                <div class="col-md-4"><br>
-                  <div class="form-group">
+                <div class="col-md-4 menu-customer-column">
+                  <div class="form-group menu-customer-group">
                     <div class="checkbox checkbox-success">
                       <input type="checkbox" id="mu_customer" name="mu_customer" value="1">
                       <label for="mu_customer"><?php echo label('menu_customer'); ?></label>
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
               <input type="hidden" id="operation" name="operation" value="Add">
               <input type="hidden" id="mu_id" name="mu_id">
               <div class="modal-footer">
-                  <button type="submit" class="btn btn-outline-success btn-flat pull-left" name="action" id="action"><i class="mdi mdi-content-save"></i> <?php echo label('saveR'); ?></button>
-                  <button type="button" class="btn btn-outline-danger btn-flat" data-dismiss="modal"><i class="mdi mdi-window-close"></i> <?php echo label('m_cancel'); ?></button>
+                  <button type="button" class="btn btn-modal-secondary btn-flat" data-dismiss="modal"><i class="mdi mdi-close"></i> <?php echo label('m_cancel'); ?></button>
+                  <button type="submit" class="btn btn-modal-primary btn-flat" name="action" id="action"><i class="mdi mdi-content-save"></i> <?php echo label('saveR'); ?></button>
               </div>
               </form>
           </div>
@@ -139,12 +147,15 @@
     </div>
     <!-- /.modal -->
 
-    <div class="modal fade bs-example-modal-lg" id="modal-order_menu" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
-      <div class="modal-dialog modal-lg">
+    <div class="modal fade bs-example-modal-lg app-focus-modal" id="modal-order_menu" role="dialog" aria-labelledby="menuOrderModalLabel" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
           <div class="modal-content">
               <div class="modal-header">
-                  <h4 id="myLargeModalLabel"><i class="mdi mdi-lead-pencil"></i> <?php echo label('edit_menu_sequences'); ?></h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <div class="modal-heading">
+                    <span class="modal-heading-accent" aria-hidden="true"></span>
+                    <div><h4 class="modal-title" id="menuOrderModalLabel"><i class="mdi mdi-lead-pencil"></i> <?php echo label('edit_menu_sequences'); ?></h4></div>
+                  </div>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="mdi mdi-close" aria-hidden="true"></i></button>
               </div>
               <div class="modal-body">
                                                 <div class="card">
@@ -157,7 +168,7 @@
                                                 </div>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-danger btn-flat" data-dismiss="modal"><i class="mdi mdi-window-close"></i> <?php echo label('close'); ?></button>
+                  <button type="button" class="btn btn-modal-secondary btn-flat" data-dismiss="modal"><i class="mdi mdi-close"></i> <?php echo label('close'); ?></button>
               </div>
           </div>
           <!-- /.modal-content -->
@@ -176,6 +187,25 @@
     <script src="<?php echo REAL_PATH; ?>/assets/plugins/nestable/jquery.nestable.js"></script>
     <script src="<?php echo REAL_PATH; ?>/assets/js/instascan.min.js"></script>
     <script type="text/javascript">
+        (function ($) {
+            var csrfName = <?php echo json_encode($this->security->get_csrf_token_name()); ?>;
+            var csrfToken = <?php echo json_encode($this->security->get_csrf_hash()); ?>;
+
+            $.ajaxPrefilter(function (settings) {
+                if ((settings.type || 'GET').toUpperCase() === 'GET') return;
+
+                if (window.FormData && settings.data instanceof window.FormData) {
+                    if (!settings.data.has(csrfName)) settings.data.append(csrfName, csrfToken);
+                } else if (typeof settings.data === 'string' &&
+                    settings.data.indexOf(encodeURIComponent(csrfName) + '=') < 0) {
+                    settings.data += (settings.data ? '&' : '') +
+                        encodeURIComponent(csrfName) + '=' + encodeURIComponent(csrfToken);
+                } else if (!settings.data) {
+                    settings.data = encodeURIComponent(csrfName) + '=' + encodeURIComponent(csrfToken);
+                }
+            });
+        })(jQuery);
+
         $.fn.dataTable.ext.errMode = "none";
         $(document).ready(function() {
             function iformat(icon) {

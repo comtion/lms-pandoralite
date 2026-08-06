@@ -557,7 +557,18 @@ class Manage_model extends CI_Model
 	}
 	public function chkbox_col_groupuser($data_chk)
 	{
+		$allowed_fields = array('rgu_view', 'rgu_add', 'rgu_edit', 'rgu_del', 'rgu_print');
+		$field = isset($data_chk['field_sql_ug']) ? $data_chk['field_sql_ug'] : '';
+		$ug_id = isset($data_chk['ug_idonrole_ug']) ? intval($data_chk['ug_idonrole_ug']) : 0;
+		$permission_value = isset($data_chk['value_chk_ug']) && intval($data_chk['value_chk_ug']) === 1 ? 1 : 0;
+		$menu_ids = isset($data_chk['mu_ids_ug']) ? array_values(array_unique(array_filter(array_map('intval', (array) $data_chk['mu_ids_ug'])))) : array();
+
+		if (!in_array($field, $allowed_fields, true) || $ug_id <= 0 || count($menu_ids) === 0) {
+			return json_encode(array('success' => false));
+		}
+
 		$this->db->from('lms_menu');
+		$this->db->where_in('mu_id', $menu_ids);
 		$this->db->order_by('mu_num', 'ASC');
 		$query = $this->db->get();
 		$row = $query->result();
@@ -565,25 +576,25 @@ class Manage_model extends CI_Model
 		$num = 1;
 		foreach ($result_ques as $key => $value) {
 			$this->db->from('lms_role_gp');
-			$this->db->where('ug_id', $data_chk['ug_idonrole_ug']);
+			$this->db->where('ug_id', $ug_id);
 			$this->db->where('mu_id', $value['mu_id']);
 			$query = $this->db->get();
 			if ($query->num_rows() == 0) {
 				$data = array(
-					'ug_id' => $data_chk['ug_idonrole_ug'],
+					'ug_id' => $ug_id,
 					'mu_id' => $value['mu_id'],
-					$data_chk['field_sql_ug'] => $data_chk['value_chk_ug']
+					$field => $permission_value
 				);
 				$this->db->insert('lms_role_gp', $data);
 
-				$this->db->where('ug_id', $data_chk['ug_idonrole_ug']);
+				$this->db->where('ug_id', $ug_id);
 				$this->db->from('lms_usp');
 				$query_usp = $this->db->get();
 				$num_usp = $query_usp->num_rows();
 				if ($num_usp > 0) {
 					$fetch_usp = $query_usp->result_array();
 					foreach ($fetch_usp as $key_usp => $value_usp) {
-						$field_usp = str_replace("g", "", $data_chk['field_sql_ug']);
+						$field_usp = str_replace("g", "", $field);
 						$this->db->where('u_id', $value_usp['u_id']);
 						$this->db->where('mu_id', $value['mu_id']);
 						$this->db->from('lms_role_usp');
@@ -591,7 +602,7 @@ class Manage_model extends CI_Model
 						$num_chk = $query->num_rows();
 						if ($num_chk > 0) {
 							$data_usp = array(
-								$field_usp => $data_chk['value_chk_ug']
+								$field_usp => $permission_value
 							);
 							$this->db->where('u_id', $value_usp['u_id']);
 							$this->db->where('mu_id', $value['mu_id']);
@@ -600,7 +611,7 @@ class Manage_model extends CI_Model
 							$data_usp = array(
 								'u_id' => $value_usp['u_id'],
 								'mu_id' => $value['mu_id'],
-								$field_usp => $data_chk['value_chk_ug']
+								$field_usp => $permission_value
 							);
 							$this->db->insert('lms_role_usp', $data_usp);
 						}
@@ -608,20 +619,20 @@ class Manage_model extends CI_Model
 				}
 			} else {
 				$data = array(
-					$data_chk['field_sql_ug'] => $data_chk['value_chk_ug']
+					$field => $permission_value
 				);
-				$this->db->where('ug_id', $data_chk['ug_idonrole_ug']);
+				$this->db->where('ug_id', $ug_id);
 				$this->db->where('mu_id', $value['mu_id']);
 				$this->db->update('lms_role_gp', $data);
 
-				$this->db->where('ug_id', $data_chk['ug_idonrole_ug']);
+				$this->db->where('ug_id', $ug_id);
 				$this->db->from('lms_usp');
 				$query_usp = $this->db->get();
 				$num_usp = $query_usp->num_rows();
 				if ($num_usp > 0) {
 					$fetch_usp = $query_usp->result_array();
 					foreach ($fetch_usp as $key_usp => $value_usp) {
-						$field_usp = str_replace("g", "", $data_chk['field_sql_ug']);
+						$field_usp = str_replace("g", "", $field);
 						$this->db->where('u_id', $value_usp['u_id']);
 						$this->db->where('mu_id', $value['mu_id']);
 						$this->db->from('lms_role_usp');
@@ -629,7 +640,7 @@ class Manage_model extends CI_Model
 						$num_chk = $query->num_rows();
 						if ($num_chk > 0) {
 							$data_usp = array(
-								$field_usp => $data_chk['value_chk_ug']
+								$field_usp => $permission_value
 							);
 							$this->db->where('u_id', $value_usp['u_id']);
 							$this->db->where('mu_id', $value['mu_id']);
@@ -638,7 +649,7 @@ class Manage_model extends CI_Model
 							$data_usp = array(
 								'u_id' => $value_usp['u_id'],
 								'mu_id' => $value['mu_id'],
-								$field_usp => $data_chk['value_chk_ug']
+								$field_usp => $permission_value
 							);
 							$this->db->insert('lms_role_usp', $data_usp);
 						}
@@ -646,6 +657,7 @@ class Manage_model extends CI_Model
 				}
 			}
 		}
+		return json_encode(array('success' => true));
 	}
 	public function chkbox_groupuser($data_chk)
 	{

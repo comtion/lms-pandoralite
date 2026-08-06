@@ -42,8 +42,12 @@ class Course_model extends CI_model {
       }else{
         $this->db->where('lms_cos.com_id', '2' );
       }
-      $where_au = "(lms_cos.cname_th like '%".$search_txt."%' OR lms_cos.cname_en like '%".$search_txt."%')";
-      $this->db->where($where_au);
+      $search_txt = trim((string) $search_txt);
+      $this->db->group_start();
+      $this->db->like('lms_cos.cname_th', $search_txt);
+      $this->db->or_like('lms_cos.cname_en', $search_txt);
+      $this->db->group_end();
+      $this->db->limit(12);
       $query_loop = $this->db->get();
       $fetch_loop = $query_loop->result_array();
       return $fetch_loop;

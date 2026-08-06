@@ -1,9 +1,13 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed'); 
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+$title = (isset($lang) && $lang === 'thai')
+    ? 'โปรไฟล์ของฉัน | ISUZU E-Learning'
+    : 'My Profile | ISUZU E-Learning';
 ?>
 <?php $this->load->view('frontend/inc/inc-meta-dashboard.php'); ?>
     <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/plugins/datatables/media/css/dataTables.bootstrap4.css">
 <!-- Page CSS -->
 <link href="<?php echo REAL_PATH; ?>/assets/css/pages/contact-app-page.css" rel="stylesheet">
+<link href="<?php echo REAL_PATH; ?>/assets/css/profile-luxury.css?v=20260806-5" rel="stylesheet">
     <style type="text/css">
         .transparent {
           color: rgb(0, 0, 0);
@@ -206,7 +210,7 @@
     </style>
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
+<body class="fix-header fix-sidebar card-no-border profile-luxury-page">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
@@ -225,12 +229,12 @@
         <!-- Page wrapper  -->
         <!-- ============================================================== -->
         <div class="page-wrapper">
-            <div class="container-fluid">
+            <div class="container-fluid profile-luxury-shell">
 
-                <div class="row">
+                <div class="row profile-luxury-layout">
                     <!-- Column -->
-                    <div class="col-lg-4 col-xlg-4 col-md-4">
-                        <div class="card"> 
+                    <div class="col-lg-4 col-xlg-4 col-md-4 profile-identity-column">
+                        <div class="card profile-identity-card">
                         <!-- <?php if($profile['bgpic_user']!=""){ ?>
                             <div class="card-inverse" <?php if($profile['bgpic_user']!=""){ ?>style="
                               width: auto;
@@ -247,11 +251,16 @@
                         <!-- <?php } ?> -->
                             <div class="card-body">
                                 <center>
-                                  <?php if(isset($profile['img_profile'])&&$profile['img_profile']!=""){ ?>
-                                    <img src="<?php echo media_url('uploads/profile/'.$profile['img_profile'], 'uploads/profile/default_profile.jpg'); ?>" class="img-circle" width="140" style="height: 140px;"/>
-                                  <?php }else{ ?>
-                                    <img src="<?php echo media_url('uploads/profile/default_profile.jpg'); ?>" class="img-circle" width="140" style="height: 140px;"/>
-                                  <?php } ?>
+                                  <div class="profile-portrait-wrap">
+                                    <?php if(isset($profile['img_profile'])&&$profile['img_profile']!=""){ ?>
+                                      <img id="profilePortraitPreview" src="<?php echo media_url('uploads/profile/'.$profile['img_profile']); ?>" onerror="this.onerror=null;this.src='<?php echo REAL_PATH; ?>/assets/images/profile-fallback-premium.webp'" class="profile-portrait" alt="Profile"/>
+                                    <?php }else{ ?>
+                                      <img id="profilePortraitPreview" src="<?php echo REAL_PATH; ?>/assets/images/profile-fallback-premium.webp" class="profile-portrait" alt="Profile"/>
+                                    <?php } ?>
+                                    <label class="profile-camera-button" for="img_profile" title="<?php echo label('m_profile'); ?>">
+                                      <i class="mdi mdi-camera"></i><span class="sr-only"><?php echo label('m_profile'); ?></span>
+                                    </label>
+                                  </div>
                                     <h4 class="card-title m-t-10">
                                       <?php 
                                         if($lang=="thai"){
@@ -261,7 +270,7 @@
                                         }
                                       ?>
                                     </h4>
-                                    <h6 class="card-title"><?php 
+                                    <h6 class="card-title profile-role"><?php
                                                   if($lang=="thai"){
                                                     $ugname = $profile['ug_name_th'];
                                                   }else{
@@ -270,15 +279,18 @@
                                                   echo $ugname; ?>
                                     </h6>
                                 </center>
-                                <?php if($profile['email']!=""||$profile['work_phone']!=""){ ?>
-                                  <hr>
-                                <?php } ?>
+                                <div class="profile-signature"></div>
                                 <?php if($profile['email']!=""){ ?>
-                                    <h6 class="card-title text-left"><i class="mdi mdi-email-outline"></i>: <?php echo $profile['email']; ?></h6> 
+                                    <h6 class="card-title profile-contact"><i class="mdi mdi-email-outline"></i><span><?php echo $profile['email']; ?></span></h6>
                                 <?php } ?>
                                 <?php if($profile['work_phone']!=""){ ?>
-                                    <h6 class="card-title text-left"><i class="mdi mdi-phone"></i>: <?php echo $profile['work_phone']; ?></h6> 
+                                    <h6 class="card-title profile-contact"><i class="mdi mdi-phone"></i><span><?php echo $profile['work_phone']; ?></span></h6>
                                 <?php } ?>
+                                <div class="profile-account-meta">
+                                  <h5><?php echo $lang == 'thai' ? 'เกี่ยวกับบัญชี' : 'Account details'; ?></h5>
+                                  <p><i class="mdi mdi-account-outline"></i><span><?php echo $lang == 'thai' ? 'บทบาท' : 'Role'; ?></span><strong><?php echo $ugname; ?></strong></p>
+                                  <p><i class="mdi mdi-shield"></i><span><?php echo $lang == 'thai' ? 'สถานะ' : 'Status'; ?></span><strong><?php echo $lang == 'thai' ? 'เปิดใช้งาน' : 'Active'; ?></strong></p>
+                                </div>
                                 <!-- <?php if($profile['bgpic_user']!=""){ ?>
                                   </div>
                                 <?php } ?> -->
@@ -287,8 +299,8 @@
                     </div>
                     <!-- Column -->
                     <!-- Column -->
-                    <div class="col-lg-8 col-xlg-8 col-md-8">
-                        <div class="card">
+                    <div class="col-lg-8 col-xlg-8 col-md-8 profile-form-column">
+                        <div class="card profile-workspace-card">
                             <!-- Nav tabs -->
                             <ul class="nav nav-tabs profile-tab" role="tablist"><!-- 
                               <?php if($user['Is_admin']=="0"){ ?>
@@ -301,7 +313,7 @@
                             <div class="tab-content">
 
                                 <div class="tab-pane active" id="certificate" role="tabpanel">
-                                    <div class="card-body">
+                                    <div class="card-body certificate-gallery-panel">
                                         <?php if($user['Is_admin']!="0"&&$user['ug_for']=="OWNER"){ ?>
                                         <form  enctype="multipart/form-data" id="certificate_form" name="certificate_form" autocomplete="off" method="POST" accept-charset="utf-8"  class="form-horizontal p-t-20">
                                               <div class="card-body row">
@@ -325,8 +337,19 @@
                                               </div>
                                         </form>
                                         <?php }else{ ?>
+                                            <div class="certificate-gallery-head">
+                                              <div>
+                                                <span class="certificate-gallery-kicker"><?php echo $lang == 'thai' ? 'ความสำเร็จของคุณ' : 'Your achievements'; ?></span>
+                                                <h3><?php echo $lang == 'thai' ? 'ใบประกาศนียบัตร' : 'Certificates'; ?></h3>
+                                                <p><?php echo $lang == 'thai' ? 'รวบรวมหลักสูตรที่คุณผ่านและใบประกาศที่ได้รับทั้งหมด' : 'A collection of your completed courses and earned certificates.'; ?></p>
+                                              </div>
+                                              <div class="certificate-count" aria-label="<?php echo countArray($certshow); ?> certificates">
+                                                <strong><?php echo countArray($certshow); ?></strong>
+                                                <span><?php echo $lang == 'thai' ? 'ใบประกาศ' : 'earned'; ?></span>
+                                              </div>
+                                            </div>
                                             <?php if(countArray($certshow)>0){ ?>
-                                            <div class="row card-deck">
+                                            <div class="certificate-gallery-grid">
                                                 <?php foreach ($certshow as $key_cert => $value_cert) { 
 
                                                         if($lang=="thai"){ 
@@ -340,42 +363,41 @@
                                                           $cname = $cname!=""?$cname:$value_cert['cname_th'];
                                                         }
                                                   ?>
-                                                        <div class="col-md-4">
-                                                            <div class="card" style="border: 1px solid #e5e5e5;">
-                                                                <img class="card-img-top img-responsive" src="<?php  echo base_url()."uploads/badges/".$value_cert['badges_img']; ?>" onerror="this.src='<?php echo REAL_PATH;?>/uploads/certificate/certificate_original.jpg';">
-                                                                <div class="card-body">
-                                                                    <h6 class="card-title"><?php echo $cname; ?></h6>
-                                                                    <p class="card-text" align="center"><button type="button" name="cert_view" id="<?php echo $value_cert['cos_id']; ?>" title="Certificate View" class="btn btn-info btn-xs cert_view"><i class="mdi mdi-magnify"></i> <?php echo label('r_viewDetail'); ?></button></p>
-                                                                </div>
+                                                        <article class="certificate-card">
+                                                          <div class="certificate-card-media">
+                                                            <img class="certificate-badge-image" src="<?php echo REAL_PATH; ?>/assets/images/certificate-fallback.jpg" data-certificate-src="<?php echo base_url()."uploads/badges/".$value_cert['badges_img']; ?>" onerror="this.onerror=null;this.src='<?php echo REAL_PATH; ?>/assets/images/certificate-fallback.jpg';" alt="<?php echo htmlspecialchars($cname, ENT_QUOTES, 'UTF-8'); ?>">
+                                                            <span class="certificate-earned-badge"><i class="mdi mdi-certificate"></i><?php echo $lang == 'thai' ? 'ได้รับแล้ว' : 'Earned'; ?></span>
+                                                          </div>
+                                                          <div class="certificate-card-body">
+                                                            <div class="certificate-card-meta">
+                                                              <span><i class="mdi mdi-check-circle-outline"></i><?php echo $lang == 'thai' ? 'ผ่านหลักสูตร' : 'Course completed'; ?></span>
                                                             </div>
-                                                        </div>
+                                                            <h4><?php echo $cname; ?></h4>
+                                                            <button type="button" name="cert_view" id="<?php echo $value_cert['cos_id']; ?>" class="certificate-view-button cert_view">
+                                                              <span><?php echo $lang == 'thai' ? 'ดูใบประกาศ' : 'View certificate'; ?></span>
+                                                              <i class="mdi mdi-arrow-right"></i>
+                                                            </button>
+                                                          </div>
+                                                        </article>
                                                 <?php } ?>
                                             </div>
                                             <?php }else{ ?>
-                                                <center><h5><i class="mdi mdi-alert-circle-outline"></i> <?php echo label('wg_datanotfound'); ?></h5></center>
+                                                <div class="certificate-empty-state"><i class="mdi mdi-certificate"></i><h4><?php echo label('wg_datanotfound'); ?></h4><p><?php echo $lang == 'thai' ? 'เมื่อเรียนผ่านหลักสูตร ใบประกาศจะปรากฏที่นี่' : 'Your certificates will appear here after you complete a course.'; ?></p></div>
                                             <?php } ?>
                                         <?php } ?>
                                     </div>
                                 </div>
 
                                 <div class="tab-pane" id="setting" role="tabpanel">
-                                    <div class="card card-body">
+                                    <div class="card card-body profile-settings-panel">
                                         <form method="post" id="userprofile_form" autocomplete="off" name="userprofile_form" enctype="multipart/form-data"  class="form-horizontal form-material" role="form">
-                                          <div class="row">
-                                            <div class="col-md-12">
-                                                          <div class="form-group">
-                                                                <label class="control-label text-right"><?php echo label('m_profile'); ?></label>
-                                                                <input type="file" name="img_profile" id="img_profile" class="dropify" accept="image/png, image/jpeg, image/gif" />
-                                                                <input type="hidden" id="img_profile_ori" name="img_profile_ori" value="<?php echo $profile['img_profile']; ?>">
-                                                          </div>
-                                            </div>
-                                           <!--  <div class="col-md-6">
-                                                          <div class="form-group">
-                                                                <label class="control-label text-right"><?php echo label('m_profilebg'); ?></label>
-                                                                <input type="file" name="bgpic_user" id="bgpic_user" class="dropify_bg" accept="image/png, image/jpeg, image/gif" />
-                                                                <input type="hidden" id="bgpic_user_ori" name="bgpic_user_ori" value="<?php echo $profile['bgpic_user']; ?>">
-                                                          </div>
-                                            </div> -->
+                                          <div class="profile-upload-field" aria-hidden="true">
+                                            <input type="file" name="img_profile" id="img_profile" accept="image/png, image/jpeg, image/gif" tabindex="-1" />
+                                            <input type="hidden" id="img_profile_ori" name="img_profile_ori" value="<?php echo $profile['img_profile']; ?>">
+                                          </div>
+                                          <div class="profile-form-heading">
+                                            <h3><?php echo $lang == 'thai' ? 'ข้อมูลส่วนตัว' : 'Personal information'; ?></h3>
+                                            <p><?php echo $lang == 'thai' ? 'ตรวจสอบข้อมูลชื่อและช่องทางการติดต่อของคุณ' : 'Review your identity and contact information'; ?></p>
                                           </div>
                                                       <input type="hidden" name="prefix_th" id="prefix_th">
                                                       <input type="hidden" name="prefix_en" id="prefix_en">
@@ -448,15 +470,43 @@
                                                                   <input type="email" class="form-control" <?php if($user['email']==""){?>required <?php }else{?> readonly <?php } ?> id="email" name="email" value="<?php echo $user['email']; ?>"> </div>
                                                           </div>
                                                       </div>
+                                                      <div class="row profile-detail-row">
+                                                          <div class="col-md-6">
+                                                              <div class="form-group">
+                                                                  <label for="work_phone"><b style="color: #FF2D00">*</b><?php echo $lang == 'thai' ? 'เบอร์โทรศัพท์' : 'Phone number'; ?>: </label>
+                                                                  <input type="text" class="form-control" id="work_phone" name="work_phone" value="<?php echo $user['work_phone']; ?>">
+                                                              </div>
+                                                          </div>
+                                                          <div class="col-md-6">
+                                                              <div class="form-group">
+                                                                  <label for="profile_role"><?php echo $lang == 'thai' ? 'ตำแหน่ง' : 'Role'; ?>: </label>
+                                                                  <input type="text" class="form-control" id="profile_role" readonly value="<?php echo $ugname; ?>">
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                      <div class="row profile-detail-row">
+                                                          <div class="col-md-12">
+                                                              <div class="form-group">
+                                                                  <label for="profile_language"><?php echo $lang == 'thai' ? 'ภาษาเริ่มต้นของระบบ' : 'Default system language'; ?>: </label>
+                                                                  <div class="profile-language-select">
+                                                                    <select class="form-control" id="profile_language" name="profile_language">
+                                                                      <option value="thai" <?php echo $lang == 'thai' ? 'selected' : ''; ?>>ไทย</option>
+                                                                      <option value="english" <?php echo $lang == 'english' ? 'selected' : ''; ?>>English</option>
+                                                                      <option value="japan" <?php echo $lang == 'japan' ? 'selected' : ''; ?>>日本語</option>
+                                                                    </select>
+                                                                    <i class="mdi mdi-chevron-down" aria-hidden="true"></i>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
                                                       <input type="hidden" id="com_id" name="com_id" value="<?php echo $user['com_id']; ?>">
                                                       <input type="hidden" id="emp_id" name="emp_id" value="<?php echo $user['emp_id']; ?>">
-                                                      <input type="hidden" id="work_phone" name="work_phone" value="<?php echo $user['work_phone']; ?>">
                                                       <input type="hidden" id="phone" name="phone" value="<?php echo $user['phone']; ?>">
                                                       <input type="hidden" id="address_th" name="address_th" value="<?php echo $user['address_th']; ?>">
                                                       <input type="hidden" id="address_en" name="address_en" value="<?php echo $user['address_en']; ?>">
                                                       <input type="hidden" id="u_id" name="u_id" value="<?php echo $user['u_id']; ?>">
                                                       <div class="row">
-                                                        <center class="col-md-12"><button type="submit" class="btn btn-outline-success btn-flat"><i class="mdi mdi-content-save"></i> <?php echo label('btn_saveprofile'); ?></button></center>
+                                                        <div class="col-md-12 profile-save-row"><button type="submit" class="btn profile-save-button"><i class="mdi mdi-content-save"></i> <?php echo label('btn_saveprofile'); ?></button></div>
                                                       </div>
                                         </form>
                                     </div>
@@ -578,12 +628,18 @@
         });
           $(document).on('submit', '#userprofile_form', function(event){
               event.preventDefault(); 
+                var $profileButton = $(this).find('.profile-save-button');
+                var profileButtonHtml = $profileButton.html();
                 $.ajax({
                   url:"<?=base_url()?>index.php/manage/update_profile",
                   method:'POST',
                   data:new FormData(this),
                   contentType:false,
                   processData:false,
+                  beforeSend:function()
+                  {
+                    $profileButton.prop('disabled', true).html('<i class="mdi mdi-content-save"></i> <?php echo $lang == "thai" ? "กำลังบันทึก..." : "Saving..."; ?>');
+                  },
                   success:function(data)
                   {
                     if(data=="2"){
@@ -594,7 +650,11 @@
                             '',
                             'success'
                         ).then(function () {
-                          window.location.href = "<?php echo base_url(); ?>dashboard/profile";
+                          var selectedLanguage = $('#profile_language').val();
+                          var currentLanguage = <?php echo json_encode($lang); ?>;
+                          window.location.href = selectedLanguage !== currentLanguage
+                            ? "<?php echo base_url(); ?>home/change_lang/" + selectedLanguage
+                            : "<?php echo base_url(); ?>dashboard/profile";
                            // $('.nav-tabs a[href="#setting"]').tab('show');
                         })
                     }else{
@@ -605,13 +665,43 @@
                             showCancelButton: false,
                             confirmButtonClass: 'btn btn-primary',
                             confirmButtonText: '<?php echo label("m_ok"); ?>'
-                        })
+                      })
                     }
-                   
+                  },
+                  error:function(xhr)
+                  {
+                    var uploadMessage = xhr.responseText === 'upload_error'
+                      ? '<?php echo $lang == "thai" ? "กรุณาเลือกไฟล์รูปภาพ JPG, PNG หรือ GIF ที่ถูกต้อง" : "Please choose a valid JPG, PNG, or GIF image."; ?>'
+                      : '<?php echo $lang == "thai" ? "ไม่สามารถบันทึกรูปโปรไฟล์ได้ กรุณาลองใหม่อีกครั้ง" : "The profile image could not be saved. Please try again."; ?>';
+                    swal({
+                      title: '<?php echo label('com_msg_error_save'); ?>',
+                      text: uploadMessage,
+                      type: 'warning',
+                      showCancelButton: false,
+                      confirmButtonClass: 'btn btn-primary',
+                      confirmButtonText: '<?php echo label("m_ok"); ?>'
+                    });
+                  },
+                  complete:function()
+                  {
+                    $profileButton.prop('disabled', false).html(profileButtonHtml);
                   }
                 });
             });
-        fetch_data_cert();
+        var certificateImagesLoaded = false;
+        function loadCertificateImages()
+        {
+          if (certificateImagesLoaded) return;
+          certificateImagesLoaded = true;
+          $('.certificate-badge-image').each(function () {
+            var source = $(this).attr('data-certificate-src');
+            if (source) $(this).attr('src', source);
+          });
+        }
+
+        $('a[data-toggle="tab"][href="#certificate"]').on('shown.bs.tab', loadCertificateImages);
+        if (tab === 'certificate') loadCertificateImages();
+
         function clear_dropify(id){
             var drEvent = $(id).dropify(
                     {
@@ -778,6 +868,16 @@
                     //document.getElementById('obj_pdf_cert').data = "<?php echo REAL_PATH."/uploads/certificate/"; ?>"+data;
                   }
             });
+          });
+
+          $('#img_profile').on('change', function () {
+            var input = this;
+            if (!input.files || !input.files[0]) return;
+            var reader = new FileReader();
+            reader.onload = function (event) {
+              $('#profilePortraitPreview').attr('src', event.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
           });
     </script>
 </body>

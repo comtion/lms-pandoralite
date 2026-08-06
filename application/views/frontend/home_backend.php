@@ -31,7 +31,8 @@
                 <div class="card">
                   <div class="card-body">
                     
-                        <form class="form-horizontal form-material" autocomplete="off" id="loginform" method="POST">
+						<form class="form-horizontal form-material" autocomplete="off" id="loginform" method="POST">
+							<input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                             <h3 class="box-title m-b-20" style="font-family: 'Prompt', sans-serif;">
                                 <?php echo label('login'); ?>
                             </h3>
@@ -57,7 +58,10 @@
                                 </div>
                             </div>
                             <div class="form-group text-center">
-                                    <button class="btn btn-thai_h" type="submit"><i class="icon-login"></i> <?php echo label('login') ?></button>
+									<button class="btn btn-thai_h" id="btnlogin" type="submit"><i class="icon-login"></i> <?php echo label('login') ?></button>
+									<div id="login-processing" role="status" aria-live="polite" style="display:none;margin-top:12px;color:#315b86;font-weight:600;">
+										<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Processing, please wait...
+									</div>
                             </div>
                         </form>
                         <?php 
@@ -194,7 +198,8 @@
               $output = json_decode($arr,true);
               print_r($output);*/
                         ?>
-                        <form class="form-horizontal" id="recoverform" style="display: none;" autocomplete="off" method="POST">
+						<form class="form-horizontal" id="recoverform" style="display: none;" autocomplete="off" method="POST">
+							<input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                             <div class="form-group ">
                                 <div class="col-sm-12">
                                     <h3 style="font-family: 'Prompt', sans-serif;"><?php echo label('forgot_pass'); ?></h3>
@@ -525,6 +530,11 @@
               event.preventDefault(); 
               var username = $('#inpUname').val();
               var password = $('#inpPwd').val();
+			  var $loginButton = $('#btnlogin');
+			  var loginButtonHtml = $loginButton.html();
+			  $loginButton.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+			  $('#login-processing').stop(true, true).fadeIn(120);
+			  $('#inpUname, #inpPwd').prop('readonly', true);
                 $.ajax({
                   url:"<?=base_url()?>index.php/dashboard/chk_login",
                   method:'POST',
@@ -534,46 +544,34 @@
                   dataType:"json",
                   success:function(data)
                   {
+					$loginButton.prop('disabled', false).html(loginButtonHtml);
+					$('#login-processing').hide();
+					$('#inpUname, #inpPwd').prop('readonly', false);
                     if(data.status_msg=="complete"){
                         $('#loginform')[0].reset();
-                        $.ajax({
-                          url:"<?=base_url()?>index.php/dashboard/chk_firsttime_user",
-                          method:'POST',
-                          data:{username:username,password:password},
-                          dataType:"json",
-                          success:function(data_chk)
-                          {
-                                if(data_chk.status=="1"){
-                                    swal(
-                                        '<?php echo label("login_firsttime"); ?>!',
-                                        '',
-                                        'success'
-                                    ).then(function () {
-                                        window.location.href = data_chk.redirect_val;
-                                    })
-                                }else{
-                                    swal(
-                                        '<?php echo label("login_msg"); ?>!',
-                                        '',
-                                        'success'
-                                    ).then(function () {
-                                        window.location.href = data_chk.redirect_val;
-                                    })
-                                }
-                          }
-                        });
-                        
+						window.location.href = data.redirect_val;
+					}else if(data.status_msg==="first_login" || data.status_msg==="password_expired"){
+						swal({
+							title: data.status_msg === "password_expired" ? '<?php echo label("login_passexpire"); ?>' : '<?php echo label("login_firsttime"); ?>',
+							text: 'กรุณาตั้งรหัสผ่านใหม่เพื่อเข้าใช้งานต่อ', type: 'warning', confirmButtonText: '<?php echo label("m_ok"); ?>'
+						}).then(function(){ window.location.href = data.redirect_val; });
                     }else if(data.status_msg=="account_locked"){
                         swal({
                             title: '<?php echo label("account_locked"); ?>',
-                            text: "",
+							text: "บัญชีถูกล็อก กรุณาใช้เมนูลืมรหัสผ่านหรือติดต่อผู้ดูแลระบบ",
                             type: 'warning',
                             showCancelButton: false,
                             confirmButtonClass: 'btn btn-primary',
                             confirmButtonText: '<?php echo label("m_ok"); ?>'
                         }).then(function () {
-                            window.location.href = '<?php echo base_url()."contact/form_chk/"; ?>'+username+'/';
+							$("#loginform").hide(); $("#recoverform").fadeIn(); $("#useri").val(username);
                         })
+					}else if(data.status_msg==="rate_limited"){
+						swal('โปรดลองใหม่ภายหลัง', 'มีการลองเข้าสู่ระบบหลายครั้งเกินไป กรุณารอ 15 นาที', 'warning');
+					}else if(data.status_msg==="invalid_credentials"){
+						swal('เข้าสู่ระบบไม่สำเร็จ', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'warning');
+					}else if(data.status_msg==="inactive"){
+						swal('ไม่สามารถเข้าใช้งานได้', 'กรุณาติดต่อผู้ดูแลระบบ', 'warning');
                     }else if(data.status_msg=="login_failed_4_time"){
                         swal({
                             title: '<?php echo label("login_failed_4_time"); ?>',
@@ -598,7 +596,13 @@
                         })
                     }
                    
-                  }
+				  },
+				  error:function(){
+					$loginButton.prop('disabled', false).html(loginButtonHtml);
+					$('#login-processing').hide();
+					$('#inpUname, #inpPwd').prop('readonly', false);
+					swal('Login failed', 'Unable to connect to the server. Please try again.', 'error');
+				  }
                 });
             });
         $(function() {

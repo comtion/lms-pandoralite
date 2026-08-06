@@ -15,6 +15,9 @@ class Home extends CI_Controller {
 	}
 	public function index()
 	{
+		$this->output->set_header('Cache-Control: no-store, no-cache, must-revalidate, private, max-age=0');
+		$this->output->set_header('Pragma: no-cache');
+		$this->output->set_header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 		$arr['page'] = 'home';
 		$lang = $this->session->userdata("lang") == null ? "english" : $this->session->userdata("lang") ;
 		$this->lang->load($lang,$lang);
@@ -22,7 +25,7 @@ class Home extends CI_Controller {
 		$sess = $this->session->userdata("user");
     	date_default_timezone_set("Asia/Bangkok");
     	if(!empty($sess) && $sess["firsttime"] == 0){
-    		redirect(base_url().'dashboard', 'refresh');
+			redirect(base_url().'dashboard', 'location', 302);
     	}
 		$arr['dest'] = isset( $_GET['redirect'] ) ? $_GET['redirect'] : 'dashboard';
 		$arr['emp_c'] = isset($sess['emp_c']) ? $sess['emp_c'] : "";

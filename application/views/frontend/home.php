@@ -74,6 +74,7 @@
                     <div class="card-body">
                       
                           <form class="form-horizontal form-material" autocomplete="off" id="loginform" method="POST">
+							  <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                               <div class="premium-auth-heading">
                                 <span class="premium-auth-eyebrow">ISUZU E-LEARNING</span>
                                 <h3 class="box-title"><?php echo label('login'); ?></h3>
@@ -110,11 +111,16 @@
                                         <span><?php echo label('login') ?></span>
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M14 7l5 5-5 5"/></svg>
                                       </button>
+									  <div id="login-processing" role="status" aria-live="polite" style="display:none;margin-top:12px;color:#315b86;font-weight:600;">
+										<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+										<span><?php echo $lang === 'thai' ? 'กำลังตรวจสอบข้อมูล กรุณารอสักครู่...' : 'Processing, please wait...'; ?></span>
+									  </div>
                                   </div>
                               </div>
                           </form>
 
                           <form class="form-horizontal" id="recoverform" autocomplete="off" method="POST">
+							  <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
                               <div class="form-group ">
                                   <div class="col-md-12">
                                       <h3><?php echo label('forgot_pass'); ?></h3>
@@ -418,6 +424,11 @@
               var username = $('#inpUname').val();
               var password = $('#inpPwd').val();
               var dest = $('#dest').val();
+			  var $loginButton = $('#btnlogin');
+			  var loginButtonHtml = $loginButton.html();
+			  $loginButton.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> <?php echo $lang === "thai" ? "กำลังเข้าสู่ระบบ..." : "Signing in..."; ?>');
+			  $('#login-processing').stop(true, true).fadeIn(120);
+			  $('#inpUname, #inpPwd').prop('readonly', true);
                 $.ajax({
                   url:"<?=base_url()?>index.php/dashboard/chk_login",
                   method:'POST',
@@ -443,64 +454,39 @@
                   },
                   success:function(data)
                   {
-                    $("#btnlogin").attr("disabled", false);
+					$loginButton.prop('disabled', false).html(loginButtonHtml);
+					$('#login-processing').hide();
+					$('#inpUname, #inpPwd').prop('readonly', false);
                     if(data.status_msg=="complete"){
                         $('#loginform')[0].reset();
-                        $.ajax({
-                          url:"<?=base_url()?>index.php/dashboard/chk_firsttime_user",
-                          method:'POST',
-                          data:{username:username,password:password,dest:dest},
-                          dataType: 'json',
-                          success:function(data_chk)
-                          {
-                            if(data_chk.status=="0"){
-                                swal({
-                                    title: '<?php echo label("login_msg"); ?>',
-                                    text: "",
-                                    type: 'success',
-                                    showCancelButton: false,
-                                    confirmButtonClass: 'btn btn-primary',
-                                    confirmButtonText: '<?php echo label("m_ok"); ?>'
-                                }).then(function () {
-                                  window.location.href = data_chk.redirect_val;
-                                })
-                            }else if(data_chk.status=="4"){
-                                swal({
-                                    title: '<?php echo label("login_passexpire"); ?>',
-                                    text: "",
-                                    type: 'warning',
-                                    showCancelButton: false,
-                                    confirmButtonClass: 'btn btn-primary',
-                                    confirmButtonText: '<?php echo label("m_ok"); ?>'
-                                }).then(function () {
-                                  window.location.href = data_chk.redirect_val;
-                                })
-                            }else{
-                                swal({
-                                    title: '<?php echo label("login_firsttime"); ?>',
-                                    text: "",
-                                    type: 'success',
-                                    showCancelButton: false,
-                                    confirmButtonClass: 'btn btn-primary',
-                                    confirmButtonText: '<?php echo label("m_ok"); ?>'
-                                }).then(function () {
-                                  window.location.href = data_chk.redirect_val;
-                                })
-                            }
-                          }
-                        });
-                        
+						window.location.href = data.redirect_val;
+					}else if(data.status_msg==="first_login" || data.status_msg==="password_expired"){
+						var isExpired = data.status_msg === "password_expired";
+						swal({
+							title: isExpired ? '<?php echo label("login_passexpire"); ?>' : '<?php echo label("login_firsttime"); ?>',
+							text: isExpired ? 'กรุณาตั้งรหัสผ่านใหม่เพื่อเข้าใช้งานต่อ' : 'เพื่อความปลอดภัย กรุณาตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน',
+							type: 'warning',
+							allowOutsideClick: false,
+							confirmButtonText: '<?php echo label("m_ok"); ?>'
+						}).then(function(){ window.location.href = data.redirect_val; });
                     }else if(data.status_msg=="account_locked"){
                         swal({
                             title: '<?php echo label("account_locked"); ?>',
-                            text: "",
+							text: "บัญชีถูกล็อกเพื่อความปลอดภัย กรุณาขอรีเซ็ตรหัสผ่านหรือติดต่อผู้ดูแลระบบ",
                             type: 'warning',
-                            showCancelButton: false,
+							showCancelButton: true,
                             confirmButtonClass: 'btn btn-primary',
-                            confirmButtonText: '<?php echo label("m_ok"); ?>'
+							confirmButtonText: '<?php echo label("forgot_pass"); ?>',
+							cancelButtonText: '<?php echo label("m_ok"); ?>'
                         }).then(function () {
-                            window.location.href = '<?php echo base_url()."contact/form_chk/"; ?>'+data.emp_id+'/<?php echo $lang; ?>/';
+							$("#loginform").hide(); $("#recoverform").fadeIn(); $("#useri").val(username);
                         })
+					}else if(data.status_msg==="rate_limited"){
+						swal('โปรดลองใหม่ภายหลัง', 'มีการลองเข้าสู่ระบบหลายครั้งเกินไป กรุณารอ 15 นาที หรือใช้เมนูลืมรหัสผ่าน', 'warning');
+					}else if(data.status_msg==="inactive"){
+						swal('ไม่สามารถเข้าใช้งานได้', 'บัญชีนี้ไม่ได้เปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบขององค์กร', 'warning');
+					}else if(data.status_msg==="invalid_credentials"){
+						swal('เข้าสู่ระบบไม่สำเร็จ', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'warning').then(function(){ $('#inpPwd').val('').focus(); });
                     }else if(data.status_msg=="login_failed_4_time"){
                         swal({
                             html: '<div class="align-left"><?php echo label("login_failed_4_time"); ?></div>',
@@ -609,7 +595,13 @@
                         })
                     }
                    
-                  }
+				  },
+				  error:function(){
+					$loginButton.prop('disabled', false).html(loginButtonHtml);
+					$('#login-processing').hide();
+					$('#inpUname, #inpPwd').prop('readonly', false);
+					swal('ไม่สามารถเข้าสู่ระบบได้', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง', 'error');
+				  }
                 });
             });
         $(function() {

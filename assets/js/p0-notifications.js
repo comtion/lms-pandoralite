@@ -9,6 +9,7 @@
   var csrfName = meta('lms-csrf-name');
   var csrfToken = meta('lms-csrf-token');
   var isThai = meta('lms-language') === 'thai';
+  var jqueryCsrfAttached = false;
 
   function updateCsrf(response) {
     var name = response.headers.get('X-CSRF-Name');
@@ -39,17 +40,25 @@
   };
 
   function attachJqueryCsrf() {
-    if (!window.jQuery) return;
-    window.jQuery(document).ajaxSend(function (_event, xhr, settings) {
-      if ((settings.type || 'GET').toUpperCase() !== 'GET' && csrfName && csrfToken) {
-        xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
-        if (window.FormData && settings.data instanceof window.FormData) {
-          if (!settings.data.has(csrfName)) settings.data.append(csrfName, csrfToken);
-        } else if (typeof settings.data === 'string' &&
-            settings.data.indexOf(encodeURIComponent(csrfName) + '=') < 0) {
+    if (!window.jQuery || jqueryCsrfAttached) return false;
+    jqueryCsrfAttached = true;
+    window.jQuery.ajaxPrefilter(function (settings) {
+      if ((settings.type || 'GET').toUpperCase() === 'GET' || !csrfName || !csrfToken) return;
+
+      if (window.FormData && settings.data instanceof window.FormData) {
+        if (!settings.data.has(csrfName)) settings.data.append(csrfName, csrfToken);
+      } else if (typeof settings.data === 'string') {
+        if (settings.data.indexOf(encodeURIComponent(csrfName) + '=') < 0) {
           settings.data += (settings.data ? '&' : '') +
             encodeURIComponent(csrfName) + '=' + encodeURIComponent(csrfToken);
         }
+      } else if (!settings.data) {
+        settings.data = encodeURIComponent(csrfName) + '=' + encodeURIComponent(csrfToken);
+      }
+    });
+    window.jQuery(document).ajaxSend(function (_event, xhr, settings) {
+      if ((settings.type || 'GET').toUpperCase() !== 'GET' && csrfName && csrfToken) {
+        xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
       }
     }).ajaxComplete(function (_event, xhr) {
       var name = xhr.getResponseHeader('X-CSRF-Name');
@@ -59,6 +68,17 @@
         csrfToken = token;
       }
     });
+    return true;
+  }
+
+  function attachJqueryCsrfWhenReady() {
+    if (attachJqueryCsrf()) return;
+
+    var attempts = 0;
+    var timer = window.setInterval(function () {
+      attempts += 1;
+      if (attachJqueryCsrf() || attempts >= 100) window.clearInterval(timer);
+    }, 50);
   }
 
   function escapeHtml(value) {
@@ -113,6 +133,6 @@
     }
   });
 
-  attachJqueryCsrf();
+  attachJqueryCsrfWhenReady();
   document.addEventListener('DOMContentLoaded', load);
 }());

@@ -1,0 +1,113 @@
+/* Shared focused modal treatment across the application. */
+.app-focus-modal { padding: 24px !important; }
+.app-focus-modal.show, .app-focus-modal.in { display: flex !important; align-items: center; justify-content: center; }
+.app-focus-modal .modal-dialog { width: min(720px, calc(100vw - 48px)); max-width: 720px; margin: 0 auto; }
+.app-focus-modal .modal-dialog.modal-sm { width: min(480px, calc(100vw - 48px)); max-width: 480px; }
+.app-focus-modal .modal-dialog.modal-lg { width: min(1180px, calc(100vw - 48px)); max-width: 1180px; }
+.app-focus-modal .modal-dialog.modal-xl { width: min(1180px, calc(100vw - 48px)); max-width: 1180px; }
+.app-focus-modal .modal-content {
+  overflow: hidden; border: 0; border-radius: 18px; background: #fff;
+  box-shadow: 0 28px 80px rgba(12, 21, 38, .28), 0 8px 24px rgba(12, 21, 38, .14);
+}
+.app-focus-modal .modal-header {
+  position: relative;
+  min-height: 122px; padding: 28px 34px; align-items: center;
+  border-bottom: 1px solid #e8edf3; background: #fff;
+}
+.app-focus-modal .modal-header::before {
+  content: ""; flex: 0 0 8px; width: 8px; height: 68px; margin-right: 24px;
+  border-radius: 99px; background: #ed1c24; box-shadow: 0 7px 16px rgba(237, 28, 36, .22);
+}
+.app-focus-modal .modal-heading { display: flex; align-items: stretch; gap: 24px; }
+.app-focus-modal .modal-heading-accent {
+  display: none;
+}
+.app-focus-modal .modal-title {
+  margin: 3px 0 4px; color: #101828; font-size: 24px; font-weight: 700; line-height: 1.35;
+}
+.app-focus-modal .modal-description { margin: 0; color: #7a8495; font-size: 14px; line-height: 1.6; }
+.app-focus-modal .close {
+  display: inline-flex; width: 44px; height: 44px; margin: 0; padding: 0;
+  align-items: center; justify-content: center; border: 1px solid #dbe2ea;
+  border-radius: 10px; color: #667085; background: #fff; font-size: 25px;
+  opacity: 1; text-shadow: none;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+.app-focus-modal .close:hover, .app-focus-modal .close:focus {
+  border-color: #f1aeb2; color: #d71920; background: #fff5f5; outline: 0; transform: translateY(-1px);
+}
+.app-focus-modal .modal-body { padding: 28px 34px 22px; max-height: min(58vh, 520px); overflow-y: auto; background: #fff; }
+.app-focus-modal .modal-body.row { margin-right: 0; margin-left: 0; }
+.app-focus-modal .menu-form-grid { margin-right: -10px; margin-left: -10px; }
+.app-focus-modal .menu-form-grid > [class*="col-"] { padding-right: 10px; padding-left: 10px; }
+.app-focus-modal .form-group { margin-bottom: 22px; }
+.app-focus-modal .form-group label { margin-bottom: 8px; color: #475467; font-size: 14px; font-weight: 600; }
+.app-focus-modal .form-control, .app-focus-modal .select2-container .select2-selection--single {
+  min-height: 46px; border: 1px solid #d6deea; border-radius: 9px; color: #1d2939;
+  background: #fff; box-shadow: 0 1px 2px rgba(16, 24, 40, .03);
+}
+.app-focus-modal .form-control { padding: 10px 13px; font-size: 15px; }
+.app-focus-modal .form-control:hover, .app-focus-modal .select2-container .select2-selection--single:hover { border-color: #aeb9c8; }
+.app-focus-modal .form-control:focus,
+.app-focus-modal .select2-container--focus .select2-selection--single,
+.app-focus-modal .select2-container--open .select2-selection--single {
+  border-color: #ed1c24; box-shadow: 0 0 0 3px rgba(237, 28, 36, .1);
+}
+.app-focus-modal .select2-container .select2-selection--single .select2-selection__rendered { padding: 9px 38px 9px 13px; line-height: 26px; }
+.app-focus-modal .select2-container .select2-selection--single .select2-selection__arrow { top: 9px; right: 9px; }
+.app-focus-modal .menu-customer-column { display: flex; align-items: flex-end; }
+.app-focus-modal .menu-customer-group {
+  width: 100%; min-height: 46px; margin-bottom: 22px; padding: 12px 14px;
+  border: 1px solid #ccebd9; border-radius: 9px; background: #f3fbf6;
+}
+.app-focus-modal .menu-customer-group .checkbox { margin: 0; }
+.app-focus-modal .menu-customer-group label { margin: 0; color: #238353; }
+.app-focus-modal .modal-footer {
+  min-height: 92px; padding: 20px 34px; justify-content: flex-end; gap: 12px;
+  border-top: 1px solid #e8edf3; background: #fbfcfe;
+}
+.app-focus-modal .modal-footer > :not(:first-child), .app-focus-modal .modal-footer > :not(:last-child) { margin: 0; }
+.app-focus-modal .modal-footer .btn, .app-focus-modal .btn-modal-primary, .app-focus-modal .btn-modal-secondary {
+  min-width: 112px; min-height: 46px; padding: 10px 18px; border-radius: 9px;
+  font-size: 15px; font-weight: 700;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.app-focus-modal .btn-modal-primary, .app-focus-modal .modal-footer .btn-modal-primary {
+  border: 1px solid #ed1c24; color: #fff; background: #ed1c24;
+  box-shadow: 0 8px 18px rgba(237, 28, 36, .2);
+}
+.app-focus-modal .btn-modal-primary:hover, .app-focus-modal .btn-modal-primary:focus,
+.app-focus-modal .modal-footer .btn-modal-primary:hover, .app-focus-modal .modal-footer .btn-modal-primary:focus {
+  border-color: #cf141b; color: #fff; background: #cf141b;
+  box-shadow: 0 10px 22px rgba(207, 20, 27, .26); transform: translateY(-1px);
+}
+.app-focus-modal .btn-modal-secondary, .app-focus-modal .modal-footer .btn-modal-secondary {
+  border: 1px solid #d7dee8; color: #344054; background: #fff;
+  box-shadow: 0 2px 5px rgba(16, 24, 40, .05);
+}
+.app-focus-modal .btn-modal-secondary:hover, .app-focus-modal .btn-modal-secondary:focus,
+.app-focus-modal .modal-footer .btn-modal-secondary:hover, .app-focus-modal .modal-footer .btn-modal-secondary:focus {
+  border-color: #b9c3d0; color: #101828; background: #f8fafc; transform: translateY(-1px);
+}
+.modal-backdrop.show, .modal-backdrop.in { opacity: .62; background: #172033; }
+@supports ((-webkit-backdrop-filter: blur(3px)) or (backdrop-filter: blur(3px))) {
+  .modal-backdrop.show, .modal-backdrop.in { -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+}
+@media (max-width: 991.98px) {
+  .app-focus-modal { padding: 16px !important; }
+  .app-focus-modal .modal-dialog { width: calc(100vw - 32px); }
+  .app-focus-modal .modal-header, .app-focus-modal .modal-body, .app-focus-modal .modal-footer { padding-right: 22px; padding-left: 22px; }
+  .app-focus-modal .menu-customer-column { display: block; }
+}
+@media (max-width: 575.98px) {
+  .app-focus-modal { padding: 8px !important; }
+  .app-focus-modal .modal-dialog { width: calc(100vw - 16px); }
+  .app-focus-modal .modal-header { min-height: 96px; padding: 18px; }
+  .app-focus-modal .modal-heading { gap: 14px; }
+  .app-focus-modal .modal-heading-accent { width: 6px; min-height: 56px; }
+  .app-focus-modal .modal-title { font-size: 20px; }
+  .app-focus-modal .modal-description { display: none; }
+  .app-focus-modal .modal-body { padding: 20px 18px 10px; max-height: 64vh; }
+  .app-focus-modal .modal-footer { min-height: auto; padding: 14px 18px; }
+  .app-focus-modal .modal-footer .btn { flex: 1 1 0; min-width: 0; }
+}

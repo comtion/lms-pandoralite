@@ -9,6 +9,44 @@
             }
 ?>
     <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/plugins/datatables/media/css/dataTables.bootstrap4.css">
+    <style>
+      /* Keep the permission matrix inside the viewport. */
+      #modal-license .modal-dialog {
+        width: calc(100% - 30px);
+        max-width: 1680px;
+        margin: 15px auto;
+      }
+
+      #modal-license .modal-content {
+        max-height: calc(100vh - 30px);
+        overflow: hidden;
+      }
+
+      #modal-license .modal-body {
+        min-height: 0;
+        overflow: auto;
+      }
+
+      #modal-license .table-responsive {
+        margin-bottom: 0;
+      }
+
+      #modal-license #datatable {
+        min-width: 900px;
+        margin-bottom: 0;
+      }
+
+      @media (max-width: 575.98px) {
+        #modal-license .modal-dialog {
+          width: calc(100% - 16px);
+          margin: 8px auto;
+        }
+
+        #modal-license .modal-content {
+          max-height: calc(100vh - 16px);
+        }
+      }
+    </style>
 </head>
 
 <body class="fix-header fix-sidebar card-no-border">
@@ -325,26 +363,28 @@
                   mode = "chkcolall_print";
                 }
                 var value_chk = 0;
-                $('.chkcol_'+field).prop('checked',false);
+                var $columnCheckboxes = $('#load_detailgroup .chkcol_'+field);
+                $columnCheckboxes.prop('checked',false);
                 var remember = document.getElementById(mode);
                 if (remember.checked){
                     value_chk = 1;
-                    $('.chkcol_'+field).prop('checked',true);
+                    $columnCheckboxes.prop('checked',true);
+                }
+                updateRowSelectAll();
+                checkAllFunc();
+
+                var menuIds = $columnCheckboxes.map(function () {
+                  return this.id.substring(this.id.lastIndexOf('_') + 1);
+                }).get();
+
+                if (!menuIds.length) {
+                  return;
                 }
 
-              var $checkboxheader = $('.checkboxheader');
-              var countCheckedcheckboxheader = $checkboxheader.filter(':checked').length;
-              var count_menu = 5;
-
-                  if(count_menu==countCheckedcheckboxheader){
-                    $('.chkall_row').prop('checked',true);
-                  }else{
-                    $('.chkall_row').prop('checked',false);
-                  }
                       $.ajax({
                         url:"<?=base_url()?>index.php/manage/chk_chkboxcol_groupuser",
                         method:"POST",
-                        data:{field_sql_ug:field,value_chk_ug:value_chk,ug_idonrole_ug:ug_id},
+                        data:{field_sql_ug:field,value_chk_ug:value_chk,ug_idonrole_ug:ug_id,mu_ids_ug:menuIds},
                         dataType:"json",
                         success:function(data_boxcol)
                         {         
@@ -411,48 +451,24 @@
 								checkAllFunc();
             }
 						function checkAllFunc() {
+							var fields = ['rgu_view','rgu_add','rgu_edit','rgu_del','rgu_print'];
+							$.each(fields, function (_, field) {
+								var $items = $('#load_detailgroup .chkcol_' + field);
+								var checkedCount = $items.filter(':checked').length;
+								var $header = $('.chkcolall_' + field.replace('rgu_', ''));
 
+								$header
+									.prop('checked', $items.length > 0 && checkedCount === $items.length)
+									.prop('indeterminate', checkedCount > 0 && checkedCount < $items.length);
+							});
+						}
 
-              var $chkcol_rgu_view = $('.chkcol_rgu_view');
-              var countCheckedchkcol_rgu_view = $chkcol_rgu_view.filter(':checked').length;
-              var $chkcol_rgu_add = $('.chkcol_rgu_add');
-              var countCheckedchkcol_rgu_add = $chkcol_rgu_add.filter(':checked').length;
-              var $chkcol_rgu_edit = $('.chkcol_rgu_edit');
-              var countCheckedchkcol_rgu_edit = $chkcol_rgu_edit.filter(':checked').length;
-              var $chkcol_rgu_del = $('.chkcol_rgu_del');
-              var countCheckedchkcol_rgu_del = $chkcol_rgu_del.filter(':checked').length;
-              var $chkcol_rgu_print = $('.chkcol_rgu_print');
-              var countCheckedchkcol_rgu_print = $chkcol_rgu_print.filter(':checked').length;
-              var count_menu = $('#count_menu').val();
-                  if(count_menu==countCheckedchkcol_rgu_print){
-                    $('.chkcolall_print').prop('checked',true);
-                  }else{
-                    $('.chkcolall_print').prop('checked',false);
-                  }
-
-                  if(count_menu==countCheckedchkcol_rgu_view){
-                    $('.chkcolall_view').prop('checked',true);
-                  }else{
-                    $('.chkcolall_view').prop('checked',false);
-                  }
-
-                  if(count_menu==countCheckedchkcol_rgu_add){
-                    $('.chkcolall_add').prop('checked',true);
-                  }else{
-                    $('.chkcolall_add').prop('checked',false);
-                  }
-
-                  if(count_menu==countCheckedchkcol_rgu_edit){
-                    $('.chkcolall_edit').prop('checked',true);
-                  }else{
-                    $('.chkcolall_edit').prop('checked',false);
-                  }
-
-                  if(count_menu==countCheckedchkcol_rgu_del){
-                    $('.chkcolall_del').prop('checked',true);
-                  }else{
-                    $('.chkcolall_del').prop('checked',false);
-                  }
+						function updateRowSelectAll() {
+							$('#load_detailgroup .chkall_row').each(function () {
+								var menuId = this.id.substring(this.id.lastIndexOf('_') + 1);
+								var $rowCheckboxes = $('#load_detailgroup .chkrow_' + menuId);
+								$(this).prop('checked', $rowCheckboxes.length > 0 && $rowCheckboxes.filter(':checked').length === $rowCheckboxes.length);
+							});
 						}
            $('#add_button').click(function(){
                 $('.modal-title').text('<?php echo label("create_managegroupuser"); ?>');
@@ -626,7 +642,7 @@
           var widthdivv = '<?php echo $widthdivv; ?>';
           $(document).on('click', '.license', function(){
             var ug_id = $(this).attr("id");
-            $("#modal-license").modal({backdrop: false});
+            $("#modal-license").modal({backdrop: true, keyboard: true});
             $('#ug_id').val(ug_id);
             // $.ajax({
             //   url: '<?=base_url()?>index.php/manage/rechk_headcol',

@@ -915,14 +915,39 @@ class Manage extends CI_Controller
 		if (countArray($_REQUEST) > 0) {
 			$datas = $_REQUEST;
 			$data_user = array();
-			if (isset($_FILES['img_profile']) && $_FILES['img_profile'] != "") {
-				if (isset($_FILES['img_profile'])) {
-					$imageSourcePath = $_FILES['img_profile']['tmp_name'];
-					$imageTargetPath = ROOT_DIR . "uploads/profile/" . $_REQUEST['u_id'] . "_" . date('YmdHis') . ".jpg";
-					if (audit_move_uploaded_file($imageSourcePath, $imageTargetPath)) {
-						$data_user['img_profile'] = $_REQUEST['u_id'] . "_" . date('YmdHis') . ".jpg";
-					}
+			if (isset($_FILES['img_profile']) && (int) $_FILES['img_profile']['error'] !== UPLOAD_ERR_NO_FILE) {
+				$profileUpload = $_FILES['img_profile'];
+				$profileImageInfo = $profileUpload['error'] === UPLOAD_ERR_OK
+					? @getimagesize($profileUpload['tmp_name'])
+					: false;
+				$allowedProfileTypes = array(
+					'image/jpeg' => 'jpg',
+					'image/png' => 'png',
+					'image/gif' => 'gif'
+				);
+
+				if (!$profileImageInfo || !isset($allowedProfileTypes[$profileImageInfo['mime']])) {
+					http_response_code(422);
+					echo 'upload_error';
+					return;
 				}
+
+				$profileDirectory = ROOT_DIR . 'uploads/profile/';
+				if (!is_dir($profileDirectory) && !mkdir($profileDirectory, DIR_WRITE_MODE, true)) {
+					http_response_code(500);
+					echo 'upload_directory_error';
+					return;
+				}
+
+				$profileFilename = $_REQUEST['u_id'] . '_' . date('YmdHis') . '.' . $allowedProfileTypes[$profileImageInfo['mime']];
+				$imageTargetPath = $profileDirectory . $profileFilename;
+				if (!audit_move_uploaded_file($profileUpload['tmp_name'], $imageTargetPath)) {
+					http_response_code(500);
+					echo 'upload_save_error';
+					return;
+				}
+
+				$data_user['img_profile'] = $profileFilename;
 			}
 			if (isset($_FILES['bgpic_user']) && $_FILES['bgpic_user'] != "") {
 				if (isset($_FILES['bgpic_user'])) {

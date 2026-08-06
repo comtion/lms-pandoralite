@@ -566,7 +566,10 @@ class CI_Input {
 				$which = FILTER_FLAG_IPV6;
 				break;
 			default:
-				$which = NULL;
+				// Passing NULL as filter_var()'s options argument is deprecated
+				// as of PHP 8.4. Zero preserves the default (IPv4 or IPv6)
+				// validation behavior while satisfying the array|int type.
+				$which = 0;
 				break;
 		}
 
