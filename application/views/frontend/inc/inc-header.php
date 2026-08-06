@@ -8,11 +8,19 @@ $precision_swal_locale = array(
 	'japan' => array('code' => 'ja', 'confirm' => '確認', 'cancel' => 'キャンセル', 'close' => '閉じる')
 );
 $precision_swal_text = isset($precision_swal_locale[$lang]) ? $precision_swal_locale[$lang] : $precision_swal_locale['english'];
+$precision_csrf_name = (string) ($this->security->get_csrf_token_name() ?? '');
+$precision_csrf_token = (string) ($this->security->get_csrf_hash() ?? '');
 ?>
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-premium.css?v=20260720-2">
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-20">
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-18">
-<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260721-36">
+<link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260724-38">
+<script src="<?php echo REAL_PATH; ?>/assets/js/precision-selects.js?v=20260724-2" defer></script>
+<meta name="lms-base-url" content="<?php echo htmlspecialchars(rtrim(REAL_PATH, '/'), ENT_QUOTES, 'UTF-8'); ?>">
+<meta name="lms-csrf-name" content="<?php echo htmlspecialchars($precision_csrf_name, ENT_QUOTES, 'UTF-8'); ?>">
+<meta name="lms-csrf-token" content="<?php echo htmlspecialchars($precision_csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+<meta name="lms-language" content="<?php echo htmlspecialchars($lang, ENT_QUOTES, 'UTF-8'); ?>">
+<script src="<?php echo REAL_PATH; ?>/assets/js/p0-notifications.js?v=20260724-1" defer></script>
 <script>
 document.body.classList.add('lms-premium-dashboard','precision-app-shell');
 (function (locale) {
@@ -145,7 +153,7 @@ document.body.classList.add('lms-premium-dashboard','precision-app-shell');
         </div>
         <span class="precision-command-divider"></span>
         <div class="precision-command-menu precision-notification-menu">
-          <button type="button" class="precision-notification" aria-label="Notifications" aria-haspopup="true"><i class="mdi mdi-bell-outline"></i><span>3</span></button>
+          <button type="button" class="precision-notification" id="lms-notification-button" aria-label="Notifications" aria-haspopup="true"><i class="mdi mdi-bell-outline"></i><span id="lms-notification-count" hidden>0</span></button>
           <div class="precision-command-popover" role="menu">
             <div class="precision-popover-head"><strong><?php echo $lang === 'thai' ? 'การแจ้งเตือน' : 'Notifications'; ?></strong><small>3 <?php echo $lang === 'thai' ? 'รายการใหม่' : 'new'; ?></small></div>
             <a href="<?php echo REAL_PATH; ?>/course/ongoing"><i class="mdi mdi-play-circle-outline"></i><span><strong><?php echo $lang === 'thai' ? 'เรียนหลักสูตรต่อ' : 'Continue learning'; ?></strong><small><?php echo $lang === 'thai' ? 'หลักสูตรของคุณยังเรียนไม่จบ' : 'Your course is still in progress'; ?></small></span></a>

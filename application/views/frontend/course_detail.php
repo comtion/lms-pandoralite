@@ -25,7 +25,7 @@ $lang_select = isset($lang_select) ? $lang_select : '';
 <link href="<?php echo REAL_PATH; ?>/assets/css/pages/tab-page.css" rel="stylesheet">
 <link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">
 <link href="<?php echo REAL_PATH; ?>/assets/css/bootstrap-select.min.css" rel="stylesheet">
-<link href="<?php echo REAL_PATH; ?>/assets/css/course-detail-premium.css?v=20260721-21" rel="stylesheet">
+<link href="<?php echo REAL_PATH; ?>/assets/css/course-detail-premium.css?v=20260724-25" rel="stylesheet">
 
 <link href="<?php echo REAL_PATH; ?>/assets/video/video-js.css" rel="stylesheet" type="text/css">
 <script src="<?php echo REAL_PATH; ?>/assets/video/video.js"></script>
@@ -180,24 +180,17 @@ margin : 3px;
     <!-- ============================================================== -->
     <div class="page-wrapper">
       <div class="container-fluid course-detail-container">
-        <div class="row col-12 page-titles course-detail-toolbar">
-          <div class="col-md-1 align-self-center">
-            <button class="btn btn-outline-info btn-sm course-detail-back"
-              onclick="window.location.href='<?php echo REAL_PATH . '/coursemain/my_course'; ?>'"><i
-                class="mdi mdi-keyboard-return"></i> <?php echo ucwords(label('m_previous')); ?></button>
-          </div>
-          <div class="col-md-11 align-self-right" style="word-break: break-all;">
-            <ol class="breadcrumb d-inline">
-              <li class="breadcrumb-item d-inline"><a
-                  href="<?php echo REAL_PATH; ?>/dashboard"><?php echo ucwords(label('dashboard')); ?></a></li>
-              <li class="breadcrumb-item d-inline"><a class="text-danger"
-                  href="<?php echo REAL_PATH; ?>/coursemain/my_course"><?php echo ucwords(label('my_course')); ?></a>
-              </li>
-              <li class="breadcrumb-item active d-inline">
-                <?php echo isset($course_main['cname']) ? ucwords($course_main['cname']) : ""; ?></li>
-            </ol>
-          </div>
-        </div>
+        <nav class="course-detail-toolbar" aria-label="Course navigation">
+          <a class="course-detail-back" href="<?php echo REAL_PATH; ?>/coursemain/my_course">
+            <i class="mdi mdi-arrow-left"></i><span><?php echo ucwords(label('m_previous')); ?></span>
+          </a>
+          <span class="course-toolbar-divider" aria-hidden="true"></span>
+          <ol class="course-toolbar-trail">
+            <li><a href="<?php echo REAL_PATH; ?>/dashboard"><i class="mdi mdi-home-outline"></i><span><?php echo ucwords(label('dashboard')); ?></span></a></li>
+            <li><a href="<?php echo REAL_PATH; ?>/coursemain/my_course"><?php echo ucwords(label('my_course')); ?></a></li>
+            <li aria-current="page"><?php echo isset($course_main['cname']) ? $course_main['cname'] : ""; ?></li>
+          </ol>
+        </nav>
         <?php
         if ($lang_select == "") {
           $lang_select = $lang;
@@ -358,17 +351,27 @@ margin : 3px;
         ?>
         <div class="row course-detail-overview">
           <div class="course-detail-cover">
-            <img class="card-img-top img-responsive"
-              src="<?php echo REAL_PATH; ?>/uploads/course/<?php echo $course_main['cos_pic']; ?>"
-              onerror="this.src='<?php echo REAL_PATH; ?>/images/cover_course.jpg';" alt="Card image cap">
+            <div class="course-cover-card">
+              <div class="course-cover-card__glow" aria-hidden="true"></div>
+              <img class="card-img-top img-responsive"
+                src="<?php echo REAL_PATH; ?>/uploads/course/<?php echo $course_main['cos_pic']; ?>"
+                onerror="this.src='<?php echo REAL_PATH; ?>/images/cover_course.jpg';"
+                alt="<?php echo htmlspecialchars(isset($course_main['cname']) ? $course_main['cname'] : 'Course cover', ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
           </div>
 
           <div class="course-detail-info">
-            <span class="course-detail-eyebrow"><i class="mdi mdi-book-open-page-variant"></i> ISUZU E-LEARNING</span>
+            <div class="course-hero-labels">
+              <span class="course-detail-eyebrow"><i class="mdi mdi-book-open-page-variant"></i> ISUZU E-LEARNING</span>
+              <span class="course-hero-format"><i class="mdi mdi-monitor-play"></i><?php echo $lang_select == 'thai' ? 'หลักสูตรออนไลน์' : 'Online course'; ?></span>
+            </div>
             <h1><?php echo isset($course_main['cname']) ? $course_main['cname'] : ""; ?></h1>
+            <p class="course-hero-summary"><?php echo $lang_select == 'thai' ? 'เรียนรู้ตามลำดับ ทำแบบประเมิน และติดตามความสำเร็จได้ในหน้าเดียว' : 'Follow each step, complete assessments, and track your progress in one place.'; ?></p>
             <div class="course-detail-meta-bar">
               <span><i class="mdi mdi-calendar-clock"></i><small><?php echo $periodtxt; ?></small><strong><?php echo $course_main['txt_period_course']; ?></strong></span>
               <span><i class="mdi mdi-domain"></i><small><?php echo $createBy; ?></small><strong><?php echo isset($course_main['com_name']) ? $course_main['com_name'] : ''; ?></strong></span>
+              <span><i class="mdi mdi-format-list-numbers"></i><small><?php echo $lang_select == 'thai' ? 'เนื้อหาทั้งหมด' : 'Learning items'; ?></small><strong id="courseHeroItemCount">—</strong></span>
+              <span><i class="mdi mdi-chart-line"></i><small><?php echo $premium_ui['progress']; ?></small><strong id="courseHeroProgress">0%</strong></span>
             </div>
             <div class="d-block position-relative">
 
@@ -453,12 +456,24 @@ margin : 3px;
           </section>
 
           <section class="course-learning-path">
-        <header class="course-learning-path__header">
-          <i class="mdi mdi-format-list-numbers course-section-icon" aria-hidden="true"></i>
-          <strong><span class="course-progress-label"><?php echo $premium_ui['progress']; ?></span> <span id="courseProgressText">0%</span></strong>
-          <span>COURSE CONTENT</span>
-          <h2><?php echo $premium_ui['learning_path']; ?></h2>
-        </header>
+            <header class="course-learning-path__header">
+              <div class="course-path-heading">
+                <span class="course-path-heading__icon"><i class="mdi mdi-format-list-numbers" aria-hidden="true"></i></span>
+                <div>
+                  <span>COURSE JOURNEY</span>
+                  <h2><?php echo $premium_ui['learning_path']; ?></h2>
+                  <small><?php echo $lang_select == 'thai' ? 'เรียนตามลำดับเพื่อปลดล็อกขั้นตอนถัดไป' : 'Complete each step to unlock the next'; ?></small>
+                </div>
+              </div>
+              <div class="course-progress-ring" id="courseProgressRing" style="--course-progress:0" aria-label="<?php echo htmlspecialchars($premium_ui['progress'], ENT_QUOTES, 'UTF-8'); ?>">
+                <div><strong id="courseProgressText">0%</strong><span><?php echo $premium_ui['progress']; ?></span></div>
+              </div>
+            </header>
+            <div class="course-path-summary" aria-live="polite">
+              <div><i class="mdi mdi-format-list-numbers"></i><span><?php echo $lang_select == 'thai' ? 'ทั้งหมด' : 'Total'; ?><strong id="coursePathTotal">0</strong></span></div>
+              <div><i class="mdi mdi-checkbox-marked-circle-outline"></i><span><?php echo $lang_select == 'thai' ? 'สำเร็จแล้ว' : 'Completed'; ?><strong id="coursePathCompleted">0</strong></span></div>
+              <div><i class="mdi mdi-play-circle-outline"></i><span><?php echo $lang_select == 'thai' ? 'ขั้นตอนถัดไป' : 'Up next'; ?><strong id="coursePathNext"><?php echo $lang_select == 'thai' ? 'ครบทั้งหมด' : 'All done'; ?></strong></span></div>
+            </div>
             <div class="course-learning-progress" aria-hidden="true"><span id="courseProgressBar"></span></div>
             <div class="course-learning-steps">
               <?php $this->load->view('frontend/tab/course_option.php'); ?>
@@ -488,8 +503,145 @@ margin : 3px;
     var progress = steps.length ? Math.round((completed / steps.length) * 100) : 0;
     var text = document.getElementById('courseProgressText');
     var bar = document.getElementById('courseProgressBar');
+    var ring = document.getElementById('courseProgressRing');
+    var totalText = document.getElementById('coursePathTotal');
+    var completedText = document.getElementById('coursePathCompleted');
+    var nextText = document.getElementById('coursePathNext');
+    var heroCount = document.getElementById('courseHeroItemCount');
+    var heroProgress = document.getElementById('courseHeroProgress');
     if (text) text.textContent = progress + '%';
     if (bar) bar.style.width = progress + '%';
+    if (ring) ring.style.setProperty('--course-progress', progress);
+    if (totalText) totalText.textContent = steps.length;
+    if (completedText) completedText.textContent = completed;
+    if (heroCount) heroCount.textContent = steps.length + ' <?php echo $lang_select == 'thai' ? 'รายการ' : 'items'; ?>';
+    if (heroProgress) heroProgress.textContent = progress + '%';
+    var nextStepLabel = '';
+    for (var stepIndex = 0; stepIndex < steps.length; stepIndex += 1) {
+      var step = steps[stepIndex];
+      var stepShell = step.closest('.container-fluid');
+      if (stepShell) {
+        stepShell.classList.add('learning-step-shell');
+        if (stepShell.parentElement && stepShell.parentElement.tagName === 'FORM') {
+          stepShell.parentElement.classList.add('learning-step-form');
+        }
+      }
+      var isComplete = step.getAttribute('data-statustc') === '1';
+      var isLocked = step.classList.contains('disable') || step.style.pointerEvents === 'none';
+      var stepLabel = (step.textContent || '').replace(/\s+/g, ' ').trim();
+      var kind = 'lesson';
+      var kindLabel = '<?php echo $lang_select == 'thai' ? 'บทเรียน' : 'Lesson'; ?>';
+      var kindIcon = 'mdi-play-circle-outline';
+      if (/แบบทดสอบ|test|quiz|exam/i.test(stepLabel)) {
+        kind = 'quiz';
+        kindLabel = '<?php echo $lang_select == 'thai' ? 'แบบทดสอบ' : 'Assessment'; ?>';
+        kindIcon = 'mdi-clipboard-text';
+      } else if (/แบบสำรวจ|survey/i.test(stepLabel)) {
+        kind = 'survey';
+        kindLabel = '<?php echo $lang_select == 'thai' ? 'แบบสำรวจ' : 'Survey'; ?>';
+        kindIcon = 'mdi-file-document';
+      }
+      step.classList.add('step-kind-' + kind);
+      var typeBadge = document.createElement('span');
+      typeBadge.className = 'learning-step-kind';
+      typeBadge.innerHTML = '<i class="mdi ' + kindIcon + '"></i>' + kindLabel;
+      step.appendChild(typeBadge);
+      step.classList.toggle('is-complete', isComplete);
+      step.classList.toggle('is-locked', !isComplete && isLocked);
+      if (!isComplete && !isLocked && !path.querySelector('.onclickrechk.is-current')) {
+        step.classList.add('is-current');
+        nextStepLabel = kindLabel;
+      }
+      var status = document.createElement('span');
+      status.className = 'learning-step-status';
+      status.innerHTML = isComplete
+        ? '<i class="mdi mdi-check"></i><em><?php echo $lang_select == 'thai' ? 'สำเร็จ' : 'Complete'; ?></em>'
+        : (isLocked
+          ? '<i class="mdi mdi-lock-outline"></i><em><?php echo $lang_select == 'thai' ? 'ล็อก' : 'Locked'; ?></em>'
+          : '<i class="mdi mdi-play"></i><em><?php echo $lang_select == 'thai' ? 'เริ่มเรียน' : 'Start'; ?></em>');
+      step.appendChild(status);
+    }
+    if (nextText && nextStepLabel) nextText.textContent = nextStepLabel;
+
+    function renderCourseProgress() {
+      var liveSteps = path.querySelectorAll('.onclickrechk');
+      var liveCompleted = 0;
+      var currentAssigned = false;
+      var liveNextLabel = '';
+
+      for (var liveIndex = 0; liveIndex < liveSteps.length; liveIndex += 1) {
+        var liveStep = liveSteps[liveIndex];
+        var liveComplete = liveStep.getAttribute('data-statustc') === '1';
+        var liveLocked = !liveComplete && (
+          liveStep.classList.contains('disable') ||
+          liveStep.disabled ||
+          liveStep.getAttribute('aria-disabled') === 'true'
+        );
+        if (liveComplete) liveCompleted += 1;
+        liveStep.classList.toggle('is-complete', liveComplete);
+        liveStep.classList.toggle('is-locked', liveLocked);
+        liveStep.classList.remove('is-current');
+
+        if (!liveComplete && !liveLocked && !currentAssigned) {
+          liveStep.classList.add('is-current');
+          currentAssigned = true;
+          var liveKind = liveStep.querySelector('.learning-step-kind');
+          liveNextLabel = liveKind ? liveKind.textContent.trim() : '<?php echo $lang_select == 'thai' ? 'รายการถัดไป' : 'Next item'; ?>';
+        }
+
+        var liveStatus = liveStep.querySelector('.learning-step-status');
+        if (!liveStatus) {
+          liveStatus = document.createElement('span');
+          liveStatus.className = 'learning-step-status';
+          liveStep.appendChild(liveStatus);
+        }
+        liveStatus.innerHTML = liveComplete
+          ? '<i class="mdi mdi-check"></i><em><?php echo $lang_select == 'thai' ? 'สำเร็จ' : 'Complete'; ?></em>'
+          : (liveLocked
+            ? '<i class="mdi mdi-lock-outline"></i><em><?php echo $lang_select == 'thai' ? 'ล็อก' : 'Locked'; ?></em>'
+            : '<i class="mdi mdi-play"></i><em><?php echo $lang_select == 'thai' ? 'เริ่มเรียน' : 'Start'; ?></em>');
+      }
+
+      var liveProgress = liveSteps.length ? Math.round((liveCompleted / liveSteps.length) * 100) : 0;
+      if (text) text.textContent = liveProgress + '%';
+      if (bar) bar.style.width = liveProgress + '%';
+      if (ring) ring.style.setProperty('--course-progress', liveProgress);
+      if (totalText) totalText.textContent = liveSteps.length;
+      if (completedText) completedText.textContent = liveCompleted;
+      if (heroCount) heroCount.textContent = liveSteps.length + ' <?php echo $lang_select == 'thai' ? 'รายการ' : 'items'; ?>';
+      if (heroProgress) heroProgress.textContent = liveProgress + '%';
+      if (nextText) nextText.textContent = liveNextLabel || '<?php echo $lang_select == 'thai' ? 'ครบทั้งหมด' : 'All done'; ?>';
+      path.dispatchEvent(new CustomEvent('courseprogresschange', {
+        detail: { completed: liveCompleted, total: liveSteps.length, progress: liveProgress }
+      }));
+      return liveProgress;
+    }
+
+    window.refreshCourseProgress = renderCourseProgress;
+    window.completeCourseStep = function (target) {
+      var completedStep = typeof target === 'string' ? document.querySelector(target) : target;
+      if (!completedStep) return renderCourseProgress();
+      completedStep.setAttribute('data-statustc', '1');
+      completedStep.setAttribute('aria-disabled', 'false');
+      completedStep.disabled = false;
+      completedStep.classList.remove('disable', 'is-locked');
+      return renderCourseProgress();
+    };
+
+    var progressObserver = new MutationObserver(function (mutations) {
+      if (mutations.some(function (mutation) {
+        return mutation.type === 'attributes' &&
+          (mutation.attributeName === 'data-statustc' || mutation.attributeName === 'disabled');
+      })) {
+        window.requestAnimationFrame(renderCourseProgress);
+      }
+    });
+    progressObserver.observe(path, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-statustc', 'disabled']
+    });
+    renderCourseProgress();
 
     var activePanel = null;
     var panelPlaceholder = null;
@@ -1290,13 +1442,20 @@ margin : 3px;
           success: function(data) {
             if (data.status == "1") {
               $('#survey_form')[0].reset();
+              var completedSurveyStep = document.querySelector('.course-learning-path .onclickrechk[id="' + $('#sv_id').val() + '"]');
+              if (completedSurveyStep && typeof window.completeCourseStep === 'function') {
+                completedSurveyStep.setAttribute('status_tc', '1');
+                window.completeCourseStep(completedSurveyStep);
+              }
+              if (typeof runlooprechk === 'function') {
+                runlooprechk();
+              }
               swal(
                 '<?php echo $save_complete; ?>!',
                 '',
                 'success'
               ).then(function() {
                 $('#surveyModal').modal('hide');
-                location.reload();
               })
             } else {
               swal({

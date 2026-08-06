@@ -171,6 +171,10 @@ class User_model extends CI_Model
 
     public function checkLogin($username, $password)
     { //checklogin
+      if ($this->loginRateLimited($username)) {
+        log_message('error', 'Login rate limit exceeded for IP ' . $this->input->ip_address());
+        return false;
+      }
       $this->db->from('lms_usp');
       $this->db->join('lms_emp', 'lms_usp.emp_id = lms_emp.emp_id');
       //$this->db->join('lms_depart','lms_usp.dep_id = lms_depart.dep_id');
@@ -178,7 +182,6 @@ class User_model extends CI_Model
       $this->db->join('lms_usp_gp', 'lms_usp.ug_id = lms_usp_gp.ug_id');
       //$this->db->join('lms_position','lms_usp.posi_id = lms_position.posi_id');
       $this->db->where('lms_usp.useri', $username);
-      $this->db->where('lms_usp.userp', $password);
       $this->db->where('lms_emp.status', '1');
       $this->db->where('lms_emp.emp_isDelete', '0');
       $this->db->where('lms_usp.u_isDelete', '0');
@@ -186,6 +189,21 @@ class User_model extends CI_Model
 
       if ($query->num_rows() > 0) {
         $result = $query->row_array();
+        $storedPassword = isset($result['userp']) ? (string) $result['userp'] : '';
+        $isModernHash = preg_match('/^\$(2[ayb]|argon2i|argon2id)\$/', $storedPassword) === 1;
+        $passwordValid = $isModernHash
+          ? password_verify((string) $password, $storedPassword)
+          : hash_equals($storedPassword, (string) $password);
+        if (!$passwordValid) {
+          $this->recordFailedLogin($username);
+          return false;
+        }
+        $this->clearLoginRateLimit($username);
+        if (!$isModernHash || password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
+          $this->db->where('u_id', $result['u_id'])->update('lms_usp', array(
+            'userp' => password_hash((string) $password, PASSWORD_DEFAULT)
+          ));
+        }
 
         if ($result['status'] == "1") {
           $locked = $result['login'];
@@ -205,6 +223,7 @@ class User_model extends CI_Model
           $this->session->set_userdata('passexpire', false);
 
           $session_data = $result;
+          unset($session_data['userp']);
           $lang_last = $result['lang_last'] != "" ? $result['lang_last'] : "english";
           $lang = $this->session->userdata("lang") == null ? "english" : $this->session->userdata("lang");
 
@@ -213,6 +232,7 @@ class User_model extends CI_Model
           }
 
           $this->session->set_userdata('user', $session_data);
+          $this->session->sess_regenerate(TRUE);
           $this->session->set_userdata('lang', $lang_last);
           $this->changeLogs($session_data['useri']);
           if ($session_data['lang'] == "thai") {
@@ -223,7 +243,13 @@ class User_model extends CI_Model
 
           $this->session->set_userdata('name', $name);
           $this->load->helper('cookie');
-          setcookie("emp_id", $session_data["emp_id"]);
+          setcookie("emp_id", $session_data["emp_id"], array(
+            'expires' => 0,
+            'path' => '/',
+            'secure' => filter_var(getenv('LMS_COOKIE_SECURE') ?: false, FILTER_VALIDATE_BOOLEAN),
+            'httponly' => true,
+            'samesite' => 'Lax'
+          ));
 
           return true;
         } else {
@@ -231,6 +257,50 @@ class User_model extends CI_Model
         }
       } else {
         return false;
+      }
+    }
+
+    private function loginRateKey($username)
+    {
+      return hash('sha256', 'login|' . strtolower(trim((string) $username)) . '|' . $this->input->ip_address());
+    }
+
+    private function loginRateLimited($username)
+    {
+      if (!$this->db->table_exists('lms_rate_limits')) {
+        return false;
+      }
+      $key = $this->loginRateKey($username);
+      $row = $this->db->get_where('lms_rate_limits', array('rate_key' => $key))->row_array();
+      if (!$row) return false;
+      if (strtotime($row['expires_at']) <= time()) {
+        $this->db->delete('lms_rate_limits', array('rate_key' => $key));
+        return false;
+      }
+      return (int) $row['hit_count'] >= 10;
+    }
+
+    private function recordFailedLogin($username)
+    {
+      if (!$this->db->table_exists('lms_rate_limits')) return;
+      $key = $this->loginRateKey($username);
+      $row = $this->db->get_where('lms_rate_limits', array('rate_key' => $key))->row_array();
+      if (!$row || strtotime($row['expires_at']) <= time()) {
+        $this->db->replace('lms_rate_limits', array(
+          'rate_key' => $key,
+          'hit_count' => 1,
+          'window_started_at' => time(),
+          'expires_at' => date('Y-m-d H:i:s', time() + 900)
+        ));
+        return;
+      }
+      $this->db->where('rate_key', $key)->set('hit_count', 'hit_count + 1', false)->update('lms_rate_limits');
+    }
+
+    private function clearLoginRateLimit($username)
+    {
+      if ($this->db->table_exists('lms_rate_limits')) {
+        $this->db->delete('lms_rate_limits', array('rate_key' => $this->loginRateKey($username)));
       }
     }
 

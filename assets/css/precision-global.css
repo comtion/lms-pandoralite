@@ -2114,3 +2114,61 @@
   .swal2-popup .swal2-styled { width:100%; }
   .swal2-popup .swal2-validationerror { margin-inline:-20px; }
 }
+
+/* Join an open Select2 menu to its field as one continuous control. */
+.precision-app-shell .modal-dialog > .select2-container {
+  pointer-events:auto;
+  z-index:1065;
+}
+.precision-app-shell .select2-container--open.select2-container--below .select2-selection--single {
+  border-bottom-right-radius:0 !important;
+  border-bottom-left-radius:0 !important;
+}
+.precision-app-shell .select2-container--open.select2-container--above .select2-selection--single {
+  border-top-right-radius:0 !important;
+  border-top-left-radius:0 !important;
+}
+.select2-container--open .select2-dropdown--below {
+  margin-top:-1px !important;
+  border-top-right-radius:0 !important;
+  border-top-left-radius:0 !important;
+}
+.select2-container--open .select2-dropdown--above {
+  margin-top:0 !important;
+  margin-bottom:-1px !important;
+  border-bottom-right-radius:0 !important;
+  border-bottom-left-radius:0 !important;
+}
+
+.precision-notification-menu .lms-notification-items {
+  max-height: 360px;
+  overflow-y: auto;
+}
+.precision-notification-menu a.is-unread {
+  background: #fff7f5;
+}
+.precision-notification-menu a.is-unread strong::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-left: 7px;
+  border-radius: 50%;
+  background: #e7332b;
+}
+.precision-notification-empty {
+  display: block;
+  padding: 24px 18px;
+  color: #748094;
+  text-align: center;
+}
+.precision-notification-read-all {
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-top: 1px solid #edf0f4;
+  background: #fff;
+  color: #d62f29;
+  font-weight: 700;
+  cursor: pointer;
+}

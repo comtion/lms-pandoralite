@@ -908,6 +908,14 @@ $lang_select = isset($lang_select) ? $lang_select : '';
 							dataType: "json",
 							success: function (data) {
 								if (data.status == "2") {
+									var completedQuizStep = document.getElementById('quizheader' + qiz_id) ||
+										document.getElementById('pretestlink' + qiz_id);
+									if (completedQuizStep && typeof window.completeCourseStep === 'function') {
+										window.completeCourseStep(completedQuizStep);
+									}
+									if (typeof runlooprechk === 'function') {
+										runlooprechk();
+									}
 									if (parseInt(data.isSaSub) === 0) {
 										if (data.is_last == "1") {
 											var isCert = 'col-lg-6';
@@ -982,13 +990,19 @@ $lang_select = isset($lang_select) ? $lang_select : '';
 												}
 												let quizLabel = data.quiz_type == 1 ? "<?php echo $preExam_label; ?>" : "<?php echo $finalExam_label; ?>";
 												let quizName = data.quiz_name;
+												let quizStepNumber = $quizHeader.find('.learning-step-index').first().text();
 
 												$quizHeader.html(`
+													<span class="learning-step-index">${quizStepNumber}</span>
 													<span id="txtstatus_quiz${qiz_id}"><i class="fa fas fa-check mr-2"></i></span>
 													${quizLabel}: ${quizName} ${statusText}
+													<span class="learning-step-kind"><i class="mdi mdi-clipboard-check-outline"></i><em><?php echo $lang_select == 'thai' ? 'แบบทดสอบ' : 'Quiz'; ?></em></span>
 													<i class="fa fa-chevron-right float-right"></i>
 													<i class="fa fa-chevron-down float-right"></i>
 												`);
+												if (typeof window.completeCourseStep === 'function') {
+													window.completeCourseStep($quizHeader[0]);
+												}
 												$('.btn-save-answer-quiz-' + qiz_id).hide();
 												$('.btn-send-answer-quiz-' + qiz_id).hide();
 												if (data.isCert == "1") {

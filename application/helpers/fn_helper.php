@@ -158,6 +158,27 @@ function audit_new_mysqli($ci)
 
 function audit_move_uploaded_file($source, $target)
 {
+  $extension = strtolower(pathinfo((string) $target, PATHINFO_EXTENSION));
+  $blockedExtensions = array('php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'pht', 'phar', 'cgi', 'pl', 'sh', 'exe', 'dll', 'com', 'bat', 'cmd', 'htaccess');
+  $maxBytes = (int) (getenv('LMS_UPLOAD_MAX_BYTES') ?: 536870912);
+  $uploadRoot = defined('ROOT_DIR') ? realpath(ROOT_DIR . 'uploads') : false;
+  $imageRoot = defined('ROOT_DIR') ? realpath(ROOT_DIR . 'images') : false;
+  $targetDirectory = realpath(dirname((string) $target));
+  $isAllowedRoot = $targetDirectory && (
+    ($uploadRoot && strpos($targetDirectory, $uploadRoot) === 0) ||
+    ($imageRoot && strpos($targetDirectory, $imageRoot) === 0 && in_array($extension, array('jpg', 'jpeg', 'png', 'gif', 'webp'), true))
+  );
+
+  if (strpos((string) $target, "\0") !== false ||
+      in_array($extension, $blockedExtensions, true) ||
+      !is_uploaded_file($source) ||
+      !is_file($source) ||
+      filesize($source) > $maxBytes ||
+      !$isAllowedRoot) {
+    log_message('error', 'Blocked unsafe upload target: ' . basename((string) $target));
+    return false;
+  }
+
   $result = move_uploaded_file($source, $target);
   if ($result) {
     audit_file_action('upload', $target, null, audit_file_snapshot($target), array('source' => basename((string) $source)));
