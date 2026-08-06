@@ -9,6 +9,7 @@
     ':not(.selectpicker)',
     ':not(.multiselect)',
     ':not(.multi-select)',
+    ':not(.swal2-select)',
     ':not([data-native-select])'
   ].join('');
   var observerTimer = null;

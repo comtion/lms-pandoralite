@@ -1140,14 +1140,26 @@ class Setting extends CI_Controller
 		$lang = $this->session->userdata("lang") == null ? "english" : $this->session->userdata("lang");
 		$this->lang->load($lang, $lang);
 		$sess = $this->session->userdata("user");
-		$emp_c = $sess['emp_c'];
 		$this->load->model('Setting_model', 'setting', false);
 		$this->setting->loadDB();
-		if (countArray($_REQUEST) > 0) {
+		$msg = "3";
+		$post = $this->input->post(NULL, false);
+		$allowed_fields = array(
+			'sm_host',
+			'sm_port',
+			'sm_smtpauth',
+			'sm_username',
+			'sm_password',
+			'sm_sender',
+			'sm_emailsender'
+		);
+		$data = array_intersect_key((array) $post, array_flip($allowed_fields));
+
+		if (countArray($data) > 0) {
 			$this->load->model('Log_model', 'lg', false);
 			$this->lg->loadDB();
 			$this->lg->record('Setting', 'Setting Send Mail By ' . $sess['fullname_th']);
-			$msg = $this->setting->insert_settingemail($_REQUEST, '1');
+			$msg = $this->setting->insert_settingemail($data, '1');
 		}
 		echo $msg;
 	}

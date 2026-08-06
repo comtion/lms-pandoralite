@@ -13,25 +13,29 @@
         input { width: 100%; box-sizing: border-box; border: 1px solid #c9d2dc; border-radius: 6px; padding: 12px; font-size: 15px; }
         button { width: 100%; margin-top: 22px; border: 0; border-radius: 6px; padding: 12px 16px; background: #111827; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
         .error { margin-bottom: 16px; padding: 10px 12px; border-radius: 6px; background: #fff1f2; color: #b42318; font-size: 14px; }
+        :focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+        .skip-link { position: absolute; left: -9999px; }
+        .skip-link:focus { left: 12px; top: 12px; z-index: 10; background: #fff; padding: 10px; }
     </style>
     <link href="<?= base_url('css/enterprise-pages.css?v=20260701-2') ?>" rel="stylesheet">
 </head>
 <body>
-<main>
+<a class="skip-link" href="#login-form">Skip to sign in</a>
+<main id="login-form">
     <h1>LMS Login</h1>
     <p>Sign in with your existing LMS account.</p>
 
     <?php if (! empty($error)): ?>
-        <div class="error"><?= esc($error) ?></div>
+        <div class="error" role="alert"><?= esc($error) ?></div>
     <?php endif; ?>
 
     <form method="post" action="<?= site_url('login') ?>">
         <?= csrf_field() ?>
         <label for="username">Username</label>
-        <input id="username" name="username" value="<?= old('username') ?>" autocomplete="username" required>
+        <input id="username" name="username" value="<?= esc(old('username')) ?>" autocomplete="username" required aria-required="true">
 
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <input id="password" name="password" type="password" autocomplete="current-password" required aria-required="true">
 
         <button type="submit">Sign In</button>
     </form>

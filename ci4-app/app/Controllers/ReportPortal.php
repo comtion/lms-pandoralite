@@ -47,7 +47,7 @@ class ReportPortal extends BaseController
         $sheet->fromArray($headers, null, 'A1');
         $line = 2;
         foreach ($rows as $row) {
-            $sheet->fromArray([
+            $sheet->fromArray(\App\Libraries\ExportSanitizer::row([
                 $row['company_name'],
                 $row['emp_c'],
                 $row['learner_name'],
@@ -59,7 +59,7 @@ class ReportPortal extends BaseController
                 $row['cosen_grade'],
                 $this->cleanDate((string) $row['cosen_firsttime']),
                 $this->cleanDate((string) $row['cosen_finishtime']),
-            ], null, 'A' . $line);
+            ]), null, 'A' . $line);
             $line++;
         }
         foreach (range('A', 'K') as $column) {
@@ -125,6 +125,21 @@ class ReportPortal extends BaseController
         }
 
         return $this->xlsxDownload('scorm_tracking', $headers, $data);
+    }
+
+    public function scormReport()
+    {
+        $context = $this->context('report/learnerReport');
+        if (! is_array($context)) {
+            return $context;
+        }
+        $filters = $this->filters();
+        return view('reports/scorm', [
+            'rows' => (new ReportModel())->scormSummaryRows($context['user'], $context['lang'], $filters),
+            'companies' => (new ReportModel())->companies($context['user']),
+            'courses' => (new ReportModel())->courses(),
+            'filters' => $filters,
+        ]);
     }
 
     public function certificateExport()
@@ -193,7 +208,7 @@ class ReportPortal extends BaseController
         $sheet->fromArray($headers, null, 'A1');
         $line = 2;
         foreach ($rows as $row) {
-            $sheet->fromArray($row, null, 'A' . $line);
+            $sheet->fromArray(\App\Libraries\ExportSanitizer::row($row), null, 'A' . $line);
             $line++;
         }
 

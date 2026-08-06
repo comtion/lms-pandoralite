@@ -72,7 +72,7 @@
       <div class="col-sm-6 col-lg-2 position-relative mt-auto mb-auto">
         <div style="text-align:left;">
           <div style="padding:15px; padding-left: 0px;">
-            <img src="<?php echo $foote[0]['da_logo_footer']; ?>" alt="" class="dark-logo img-fluid" />
+            <img src="<?php echo $foote[0]['da_logo_footer']; ?>" alt="Isuzu Motors Asia (Thailand)" class="dark-logo img-fluid" />
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 <?php $this->load->view('frontend/inc/inc-meta.php'); ?>
 
     <link href="<?php echo HTTP_CSS_PATH; ?>home.css" rel="stylesheet">
-    <link href="<?php echo REAL_PATH; ?>/assets/css/home-auth-premium.css?v=20260720-7" rel="stylesheet">
+    <link href="<?php echo REAL_PATH; ?>/assets/css/home-auth-premium.css?v=20260804-6" rel="stylesheet">
 
     <style>
       @media screen and (max-height: 600px) {
@@ -139,7 +139,7 @@
                 <div class="premium-auth-visual-column <?php if (empty($emp_c)){ ?>col-lg-8 col-md-12<?php }else{ ?>col-lg-12<?php } ?>">
 
                     <div class="card premium-auth-visual-card">
-                      <div id="carouselExampleIndicators3" class="carousel slide" data-ride="carousel">
+                      <div id="carouselExampleIndicators3" class="carousel slide carousel-fade" data-ride="carousel">
                         <ol class="carousel-indicators">
                           <?php if(isset($pic)&&countArray($pic)>0){
                                   if($pic != null&&$page=='home'){?>
@@ -158,7 +158,7 @@
                                   if($pic != null&&$page=='home'){?>
                                       <?php $n=1;foreach ($pic as $row) {
                                         if($n==1){ ?>
-                                        <div class="carousel-item active premium-auth-banner-item" style="width: 100%; text-align: center; max-height:350px;"> <img class="img-fluid" width="100%" style="max-height:350px;" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" onerror="this.style.display='none';this.parentNode.classList.add('premium-auth-image-missing');" alt="">
+                                        <div class="carousel-item active premium-auth-banner-item"> <img class="img-fluid" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" onerror="this.style.display='none';this.parentNode.classList.add('premium-auth-image-missing');" alt="">
                                           <div class="premium-auth-banner-copy"><span>ISUZU E-LEARNING</span><strong><?php echo $lang === 'thai' ? 'ก้าวสู่การเรียนรู้ที่เหนือกว่า' : 'Learning that moves you forward'; ?></strong></div>
                                           <!--<div class="carousel-caption d-none d-md-block">
                                             <h3 class="text-white">First title goes here</h3>
@@ -166,7 +166,7 @@
                                           </div>-->
                                         </div>
                                         <?php }else{?>
-                                        <div class="carousel-item premium-auth-banner-item" style="width: 100%; text-align: center; max-height:350px;"> <img class="img-fluid" width="100%" style="max-height:350px;" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" onerror="this.style.display='none';this.parentNode.classList.add('premium-auth-image-missing');" alt="">
+                                        <div class="carousel-item premium-auth-banner-item"> <img class="img-fluid" src="<?php echo media_url('uploads/banner/'.$row['banner'], 'uploads/banner/banner_default.png'); ?>" onerror="this.style.display='none';this.parentNode.classList.add('premium-auth-image-missing');" alt="">
                                           <div class="premium-auth-banner-copy"><span>ISUZU E-LEARNING</span><strong><?php echo $lang === 'thai' ? 'ก้าวสู่การเรียนรู้ที่เหนือกว่า' : 'Learning that moves you forward'; ?></strong></div>
                                           <!--<div class="carousel-caption d-none d-md-block">
                                             <h3 class="text-white">Second title goes here</h3>

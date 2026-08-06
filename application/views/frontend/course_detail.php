@@ -25,7 +25,7 @@ $lang_select = isset($lang_select) ? $lang_select : '';
 <link href="<?php echo REAL_PATH; ?>/assets/css/pages/tab-page.css" rel="stylesheet">
 <link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">
 <link href="<?php echo REAL_PATH; ?>/assets/css/bootstrap-select.min.css" rel="stylesheet">
-<link href="<?php echo REAL_PATH; ?>/assets/css/course-detail-premium.css?v=20260724-25" rel="stylesheet">
+<link href="<?php echo REAL_PATH; ?>/assets/css/course-detail-premium.css?v=20260731-28" rel="stylesheet">
 
 <link href="<?php echo REAL_PATH; ?>/assets/video/video-js.css" rel="stylesheet" type="text/css">
 <script src="<?php echo REAL_PATH; ?>/assets/video/video.js"></script>
@@ -427,7 +427,21 @@ margin : 3px;
               <h2><?php echo $premium_ui['course_overview']; ?></h2>
             </header>
             <div class="course-detail-description">
-              <?php echo  isset($course_main['cdetail']) ? str_replace('../uploads/texteditor/', base_url() . '/uploads/texteditor/', $course_main['cdetail']) : ""; ?>
+              <?php
+              $course_detail_html = isset($course_main['cdetail']) ? trim($course_main['cdetail']) : '';
+              $course_detail_text = trim(preg_replace('/\x{00A0}/u', ' ', html_entity_decode(strip_tags($course_detail_html), ENT_QUOTES, 'UTF-8')));
+              if ($course_detail_text !== '' || preg_match('/<(img|video|iframe)\b/i', $course_detail_html)) {
+                echo str_replace('../uploads/texteditor/', base_url() . '/uploads/texteditor/', $course_detail_html);
+              } else {
+                $empty_detail_text = $lang_select == 'thai'
+                  ? 'ยังไม่มีรายละเอียดหลักสูตร'
+                  : ($lang_select == 'japan' ? 'コースの詳細はまだありません' : 'No course details are available yet.');
+              ?>
+              <div class="course-detail-empty">
+                <i class="mdi mdi-text-box-outline" aria-hidden="true"></i>
+                <p><?php echo $empty_detail_text; ?></p>
+              </div>
+              <?php } ?>
             </div>
             <?php if (isset($document_cos) && countArray($document_cos) > 0) { ?>
             <div class="course-materials">
@@ -803,6 +817,9 @@ margin : 3px;
         </div>
         <form enctype="multipart/form-data" id="lang_form" name="lang_form" autocomplete="off" method="POST"
           accept-charset="utf-8" class="form-horizontal p-t-20">
+          <input type="hidden"
+            name="<?php echo $this->security->get_csrf_token_name(); ?>"
+            value="<?php echo $this->security->get_csrf_hash(); ?>">
           <div class="course-entry-heading">
             <span class="course-entry-kicker"><?php echo $lang_select == 'thai' ? 'พร้อมเริ่มการเรียนรู้' : ($lang_select == 'japan' ? '学習を始める準備ができました' : 'READY TO LEARN'); ?></span>
             <h2 id="courseEntryTitle" data-toggle="tooltip"
@@ -959,6 +976,16 @@ margin : 3px;
                 <span class="survey-experience-intro-label"><?php echo $survey_txt; ?></span>
                 <h5 id="txt_infosurvey"></h5>
               </div>
+              <span class="survey-experience-time"><i class="mdi mdi-clock-outline"></i>
+                <?php echo $lang_select == 'thai' ? 'ใช้เวลา 1–2 นาที' : ($lang_select == 'japan' ? '所要時間 1〜2分' : 'Takes 1–2 min'); ?>
+              </span>
+            </div>
+            <div class="survey-progress" aria-live="polite">
+              <div class="survey-progress-copy">
+                <span><?php echo $lang_select == 'thai' ? 'ความคืบหน้า' : ($lang_select == 'japan' ? '進捗' : 'Progress'); ?></span>
+                <strong id="surveyProgressText">0 / 0</strong>
+              </div>
+              <div class="survey-progress-track"><span id="surveyProgressBar"></span></div>
             </div>
             <div id="survey_data" class="survey-experience-data" aria-live="polite"></div>
           </div>
@@ -1399,9 +1426,48 @@ margin : 3px;
       },
       success: function(data_cg) {
         $('#survey_data').html('<div class="survey-table-scroll">' + data_cg + '</div>');
+        initSurveyExperience();
       }
     });
   });
+
+  function updateSurveyProgress() {
+    var $questions = $('#survey_data tbody tr').filter(function() {
+      return $(this).find('input[type="radio"]').length > 0;
+    });
+    var answered = $questions.filter(function() {
+      return $(this).find('input[type="radio"]:checked').length > 0;
+    }).length;
+    var total = $questions.length;
+    var percent = total ? Math.round((answered / total) * 100) : 0;
+    $('#surveyProgressText').text(answered + ' / ' + total);
+    $('#surveyProgressBar').css('width', percent + '%');
+  }
+
+  function initSurveyExperience() {
+    var questionNumber = 0;
+    $('#survey_data tbody tr').each(function() {
+      if ($(this).find('input[type="radio"]').length > 0) {
+        questionNumber++;
+        $(this).attr('data-question-number', questionNumber);
+        $(this).toggleClass('survey-question-answered', $(this).find('input[type="radio"]:checked').length > 0);
+      }
+    });
+    updateSurveySuggestionCount();
+    updateSurveyProgress();
+  }
+
+  function updateSurveySuggestionCount() {
+    var value = $('#qnu_suggestion').val() || '';
+    $('#surveySuggestionCount').text(value.length);
+  }
+
+  $(document).on('change', '#survey_data input[type="radio"]', function() {
+    $(this).closest('tr').addClass('survey-question-answered');
+    updateSurveyProgress();
+  });
+
+  $(document).on('input', '#qnu_suggestion', updateSurveySuggestionCount);
 
   function rechk_onclick(id) {
     $.ajax({

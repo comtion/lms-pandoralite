@@ -86,7 +86,32 @@ body.premium-auth-page.lms-premium-dashboard.precision-sidebar-collapsed .page-w
 .premium-auth-page .premium-auth-visual-card .carousel,
 .premium-auth-page .premium-auth-visual-card .carousel-inner,
 .premium-auth-page .premium-auth-visual-card .carousel-item { height:100%; min-height:410px; }
-.premium-auth-page .premium-auth-visual-card .carousel-item img { width:100%; height:410px; max-height:none !important; object-fit:cover; }
+.premium-auth-page .premium-auth-visual-card .carousel-item { overflow:hidden; }
+#carouselExampleIndicators3.carousel-fade .carousel-item {
+  transform:none !important;
+  transition:opacity .35s ease !important;
+}
+#carouselExampleIndicators3.carousel-fade .carousel-item-next,
+#carouselExampleIndicators3.carousel-fade .carousel-item-prev {
+  position:absolute;
+  inset:0;
+  opacity:0;
+}
+#carouselExampleIndicators3.carousel-fade .carousel-item-next.carousel-item-left,
+#carouselExampleIndicators3.carousel-fade .carousel-item-prev.carousel-item-right {
+  opacity:1;
+}
+#carouselExampleIndicators3.carousel-fade .active.carousel-item-left,
+#carouselExampleIndicators3.carousel-fade .active.carousel-item-right {
+  opacity:0;
+}
+.premium-auth-page .premium-auth-visual-card .carousel-item img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-height:none !important;
+  object-fit:cover;
+}
 .premium-auth-page .premium-auth-banner-item { position:relative; background:linear-gradient(142deg,#182130 0%,#111827 58%,#1d2532 100%); }
 .premium-auth-page .premium-auth-banner-item::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(8,14,24,.2),transparent 55%),linear-gradient(transparent 45%,rgba(8,14,24,.7)); pointer-events:none; }
 .premium-auth-page .premium-auth-banner-item.premium-auth-image-missing::before {
@@ -141,6 +166,20 @@ body.premium-auth-page .page-wrapper ~ .hidden-lg-up {
   margin-top:24px !important;
 }
 
+/* Keep incoming carousel images from changing the desktop row height. */
+@media (min-width:992px) {
+  .premium-auth-page .premium-auth-visual-column {
+    position:relative;
+    min-height:410px;
+  }
+  .premium-auth-page .premium-auth-visual-card {
+    position:absolute;
+    inset:0 0 0 10px;
+    width:auto;
+    height:auto;
+  }
+}
+
 /* Guest pages do not render the application sidebar, so the footer must not
    inherit the dashboard's reserved sidebar offset. */
 body.premium-auth-page.lms-premium-dashboard .precision-footer-main,
@@ -165,7 +204,7 @@ body.premium-auth-page.lms-premium-dashboard.precision-sidebar-collapsed .precis
   .premium-auth-page .premium-auth-card .card-body { min-height:0; padding:30px 26px; }
   .premium-auth-page .premium-auth-visual-column { order:-1; }
   .premium-auth-page .premium-auth-visual-card .carousel,.premium-auth-page .premium-auth-visual-card .carousel-inner,.premium-auth-page .premium-auth-visual-card .carousel-item { min-height:270px; }
-  .premium-auth-page .premium-auth-visual-card .carousel-item img { height:270px; }
+  .premium-auth-page .premium-auth-visual-card .carousel-item img { height:100%; }
   .premium-auth-page .premium-auth-fallback { padding:30px; }
   .premium-auth-page .premium-auth-banner-copy { left:30px; right:30px; bottom:28px; }
   .premium-auth-page .premium-auth-orbit { width:180px; height:180px; opacity:.7; }
@@ -183,7 +222,7 @@ body.premium-auth-page.lms-premium-dashboard.precision-sidebar-collapsed .precis
   .premium-auth-page .premium-auth-card .card-body { padding:25px 20px; }
   .premium-auth-page .premium-auth-heading h3 { font-size:25px; }
   .premium-auth-page .premium-auth-visual-card .carousel,.premium-auth-page .premium-auth-visual-card .carousel-inner,.premium-auth-page .premium-auth-visual-card .carousel-item { min-height:220px; }
-  .premium-auth-page .premium-auth-visual-card .carousel-item img { height:220px; }
+  .premium-auth-page .premium-auth-visual-card .carousel-item img { height:100%; }
   .premium-auth-page .premium-auth-fallback { padding:24px; }
   .premium-auth-page .premium-auth-banner-copy { left:24px; right:24px; bottom:24px; }
   .premium-auth-page .premium-auth-visual-copy h2 { font-size:25px; }

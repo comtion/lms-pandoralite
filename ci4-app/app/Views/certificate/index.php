@@ -78,11 +78,12 @@
                 <div class="muted"><?= count($certificates ?? []) ?> certificate records</div>
             </div>
         </div>
+        <?php if($canSeeAll): ?><form method="post" action="<?= site_url('certificate/bulk-regenerate') ?>"><?= csrf_field() ?><div style="padding:0 22px 16px"><button class="btn" type="submit">Regenerate selected</button></div><?php endif ?>
         <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th>Issued</th>
+                        <?php if($canSeeAll): ?><th><input type="checkbox" onclick="document.querySelectorAll('[name=&quot;certificate_ids[]&quot;]').forEach(x=>x.checked=this.checked)"></th><?php endif ?><th>Issued</th>
                         <th>Course</th>
                         <th>Learner</th>
                         <th>Company</th>
@@ -93,6 +94,7 @@
                 <tbody>
                     <?php foreach (($certificates ?? []) as $certificate): ?>
                         <tr>
+                            <?php if($canSeeAll): ?><td><input type="checkbox" name="certificate_ids[]" value="<?= esc($certificate['cert_id']) ?>"></td><?php endif ?>
                             <td><?= esc($certificate['cert_date']) ?><div class="muted"><?= esc($certificate['cert_createtime']) ?></div></td>
                             <td><strong><?= esc($certificate['course_title']) ?></strong><div class="muted"><?= esc($certificate['ccode'] ?? '-') ?></div></td>
                             <td><?= esc($certificate['learner_name']) ?><div class="muted"><?= esc($certificate['emp_c'] ?? '-') ?></div></td>
@@ -101,19 +103,18 @@
                             <td>
                                 <?php if (! empty($certificate['file_exists'])): ?><a class="btn primary" href="<?= site_url('certificate/download/' . $certificate['cert_id']) ?>">Download</a><?php endif; ?>
                                 <?php if (! empty($canSeeAll)): ?>
-                                    <form method="post" action="<?= site_url('certificate/regenerate/' . $certificate['cert_id']) ?>" style="display:inline"><?= csrf_field() ?>
-                                        <button class="btn" type="submit">Regenerate</button>
-                                    </form>
+                                    <button class="btn" type="submit" formaction="<?= site_url('certificate/regenerate/' . $certificate['cert_id']) ?>">Regenerate</button>
                                 <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                     <?php if (empty($certificates)): ?>
-                        <tr><td colspan="6" class="muted">No certificates found.</td></tr>
+                        <tr><td colspan="<?= $canSeeAll ? 7 : 6 ?>" class="muted">No certificates found.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
+        <?php if($canSeeAll): ?></form><?php endif ?>
     </section>
 </main>
     <script src="<?= base_url('js/enterprise-pages.js?v=20260701-3') ?>"></script>

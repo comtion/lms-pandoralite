@@ -5,6 +5,9 @@ namespace App\Commands;
 use App\Models\DashboardModel;
 use App\Models\PermissionModel;
 use App\Models\UserModel;
+use App\Models\PublicSurveyModel;
+use App\Models\ReportModel;
+use App\Libraries\ParityService;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
@@ -50,7 +53,22 @@ class MigrationSmoke extends BaseCommand
         CLI::write('Approval course groups: ' . count($dashboard['approval_course_groups']));
         CLI::write('Public surveys: ' . count($dashboard['public_surveys']));
         CLI::write('Allowed pages: ' . count($allowed));
+        if (CLI::getOption('list')) {
+            foreach ($allowed as $path) {
+                CLI::write(' - ' . $path);
+            }
+        }
         CLI::write('Top-level menus: ' . count($menus));
+        $parity = (new ParityService())->report();
+        $publicSurveys = (new PublicSurveyModel())->available($row, $row['lang_last'] ?: 'english');
+        $scormSummary = (new ReportModel())->scormSummaryRows($row, $row['lang_last'] ?: 'english', [], 10);
+        CLI::write('Explicit menu parity: ' . $parity['explicit'] . '/' . $parity['total']);
+        CLI::write('Available public surveys: ' . count($publicSurveys));
+        CLI::write('SCORM summary sample: ' . count($scormSummary));
+        if ($parity['missing'] !== []) {
+            CLI::error('CI4 menu parity is incomplete.');
+            return EXIT_ERROR;
+        }
 
         return EXIT_SUCCESS;
     }

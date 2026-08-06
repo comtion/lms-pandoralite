@@ -147,6 +147,24 @@ class ReportModel extends Model
         return $rows;
     }
 
+    public function scormSummaryRows(array $user, string $lang, array $filters = [], int $limit = 1000): array
+    {
+        $rows = $this->scormRows($user, $lang, $filters, 10000);
+        $summary = [];
+        foreach ($rows as $row) {
+            $key = $row['scm_id'].'|'.$row['emp_id'];
+            $summary[$key] ??= $row + ['status'=>'incomplete','score'=>'','location'=>'','session_time'=>'','updated_values'=>0];
+            $name = str_replace('_', '.', strtolower((string)$row['var_name']));
+            $value = (string)$row['var_value'];
+            if (str_contains($name, 'lesson.status') || str_contains($name, 'completion.status')) $summary[$key]['status']=$value;
+            if (str_contains($name, 'score.raw')) $summary[$key]['score']=$value;
+            if (str_contains($name, 'lesson.location')) $summary[$key]['location']=$value;
+            if (str_contains($name, 'session.time')) $summary[$key]['session_time']=$value;
+            $summary[$key]['updated_values']++;
+        }
+        return array_slice(array_values($summary), 0, $limit);
+    }
+
     public function certificateRows(array $user, string $lang, array $filters = [], int $limit = 5000): array
     {
         $builder = $this->db->table('lms_certificate')

@@ -91,4 +91,26 @@ class CertificatePortal extends BaseController
             ->to(site_url('certificate/certificateall'))
             ->with($result ? 'module_notice' : 'module_error', $result ? 'Certificate regenerated.' : 'Certificate regeneration failed.');
     }
+
+    public function bulkRegenerate()
+    {
+        $user = $this->session->get('user');
+        $permissions = new PermissionModel();
+        if (! is_array($user) || (! $permissions->can($user, 'certificate/certificateall', 'ru_print') && (string)($user['u_id'] ?? '') !== '1')) {
+            return redirect()->to(site_url('dashboard'));
+        }
+        $ids = array_values(array_unique(array_filter(array_map('intval', (array)$this->request->getPost('certificate_ids')))));
+        if ($ids === [] || count($ids) > 200) {
+            return redirect()->back()->with('module_error', 'Select 1-200 certificates.');
+        }
+        $model = new CertificateModel();
+        $ok = 0;
+        foreach ($ids as $id) {
+            $certificate = $model->certificate($id);
+            if ($certificate && $model->ensureCertificate((int)$certificate['cos_id'], (int)$certificate['emp_id'], $this->session->get('lang') ?? 'english', true)) {
+                $ok++;
+            }
+        }
+        return redirect()->to(site_url('certificate/certificateall'))->with('module_notice', "Regenerated {$ok} of ".count($ids).' certificates.');
+    }
 }

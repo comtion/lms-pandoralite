@@ -107,8 +107,8 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 								<div class="precision-progress-meta"><span><?php echo $lang === 'thai' ? 'เรียนไปแล้ว 6 จาก 9 บทเรียน' : '6 of 9 lessons completed'; ?></span><span><?php echo $lang === 'thai' ? 'ใช้เวลาเรียน 2 ชม. 45 นาที' : '2h 45m learning time'; ?></span></div>
 							</div>
 							<div class="precision-course-actions">
-								<a class="precision-primary" href="<?php echo REAL_PATH; ?>/course/ongoing"><?php echo $lang === 'thai' ? 'เรียนต่อ' : 'Continue'; ?><i class="mdi mdi-arrow-right"></i></a>
-								<a class="precision-secondary" href="<?php echo REAL_PATH; ?>/course/ongoing"><i class="mdi mdi-bookmark-outline"></i><?php echo $lang === 'thai' ? 'ดูหลักสูตรของฉัน' : 'My courses'; ?></a>
+								<a class="precision-primary" href="<?php echo REAL_PATH; ?>/coursemain/my_course"><?php echo $lang === 'thai' ? 'เรียนต่อ' : 'Continue'; ?><i class="mdi mdi-arrow-right"></i></a>
+								<a class="precision-secondary" href="<?php echo REAL_PATH; ?>/coursemain/my_course"><i class="mdi mdi-bookmark-outline"></i><?php echo $lang === 'thai' ? 'ดูหลักสูตรของฉัน' : 'My courses'; ?></a>
 							</div>
 						</div>
 					</section>
@@ -134,7 +134,7 @@ $arrMonthThaiTextFull = array("", "มกราคม", "กุมภาพั�
 					</div>
 					<nav class="precision-shortcuts" aria-label="<?php echo $lang === 'thai' ? 'ทางลัด' : 'Shortcuts'; ?>">
 						<strong><?php echo $lang === 'thai' ? 'ทางลัด' : 'Shortcuts'; ?></strong>
-						<div><a href="<?php echo REAL_PATH; ?>/course/available"><i class="mdi mdi-magnify"></i><span><?php echo $lang === 'thai' ? 'ค้นหาหลักสูตร' : 'Find courses'; ?></span><i class="mdi mdi-chevron-right"></i></a><a href="<?php echo REAL_PATH; ?>/course/ongoing"><i class="mdi mdi-book-open-outline"></i><span><?php echo $lang === 'thai' ? 'แผนการเรียนของฉัน' : 'My learning plan'; ?></span><i class="mdi mdi-chevron-right"></i></a><a href="<?php echo REAL_PATH; ?>/dashboard/profile/certificate"><i class="mdi mdi-certificate"></i><span><?php echo $lang === 'thai' ? 'ดาวน์โหลดใบประกาศ' : 'Certificates'; ?></span><i class="mdi mdi-chevron-right"></i></a><a href="<?php echo REAL_PATH; ?>/faq"><i class="mdi mdi-headset"></i><span><?php echo $lang === 'thai' ? 'ช่วยเหลือ' : 'Help'; ?></span><i class="mdi mdi-chevron-right"></i></a></div>
+						<div><a href="<?php echo REAL_PATH; ?>/course/available"><i class="mdi mdi-magnify"></i><span><?php echo $lang === 'thai' ? 'ค้นหาหลักสูตร' : 'Find courses'; ?></span><i class="mdi mdi-chevron-right"></i></a><a href="<?php echo REAL_PATH; ?>/coursemain/my_course"><i class="mdi mdi-book-open-outline"></i><span><?php echo $lang === 'thai' ? 'แผนการเรียนของฉัน' : 'My learning plan'; ?></span><i class="mdi mdi-chevron-right"></i></a><a href="<?php echo REAL_PATH; ?>/dashboard/profile/certificate"><i class="mdi mdi-certificate"></i><span><?php echo $lang === 'thai' ? 'ดาวน์โหลดใบประกาศ' : 'Certificates'; ?></span><i class="mdi mdi-chevron-right"></i></a><a href="<?php echo REAL_PATH; ?>/faq"><i class="mdi mdi-headset"></i><span><?php echo $lang === 'thai' ? 'ช่วยเหลือ' : 'Help'; ?></span><i class="mdi mdi-chevron-right"></i></a></div>
 					</nav>
 				</section>
 				<div class="row page-titles">

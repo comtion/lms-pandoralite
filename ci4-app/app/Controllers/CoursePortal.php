@@ -417,9 +417,30 @@ class CoursePortal extends BaseController
         }
 
         $courses = new CourseModel();
-        $result = $action === 'start'
-            ? $courses->startCourse($courseId, $user, $lang)
-            : $courses->enrollCourse($courseId, $user, $lang);
+        $hasPolicy = db_connect()->table('lms_enrollment_policies')->where('cos_id', $courseId)->countAllResults() > 0;
+        $hasEnrollment = db_connect()->table('lms_cos_enroll')->where(['cos_id' => $courseId, 'emp_id' => (int) $user['emp_id'], 'cosen_isDelete' => '0'])->countAllResults() > 0;
+        if ($action === 'start' && $hasPolicy && ! $hasEnrollment) {
+            $workflow = (new \App\Models\EnrollmentWorkflowModel())->request($courseId, $user, (int) $user['emp_id']);
+            if (! $workflow['ok'] || $workflow['status'] !== 'approved') {
+                $result = ['ok' => $workflow['ok'], 'message' => $workflow['ok'] ? ($workflow['status'] === 'waitlisted' ? 'Course is full. You have joined the waitlist.' : 'Enrollment request submitted for approval.') : $workflow['message']];
+            } else {
+                $result = $courses->startCourse($courseId, $user, $lang);
+            }
+        } elseif ($action === 'start') {
+            $result = $courses->startCourse($courseId, $user, $lang);
+        } elseif ($hasPolicy) {
+            $workflow = (new \App\Models\EnrollmentWorkflowModel())->request($courseId, $user, (int) $user['emp_id']);
+            $result = [
+                'ok' => $workflow['ok'],
+                'message' => $workflow['ok'] ? match ($workflow['status']) {
+                    'approved' => 'Enrolled',
+                    'waitlisted' => 'Course is full. You have joined the waitlist.',
+                    default => 'Enrollment request submitted for approval.',
+                } : $workflow['message'],
+            ];
+        } else {
+            $result = $courses->enrollCourse($courseId, $user, $lang);
+        }
 
         return redirect()
             ->to(site_url('coursemain/detail/' . $courseId))

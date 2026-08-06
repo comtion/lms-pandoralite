@@ -6,7 +6,8 @@
     <link href="<?php echo REAL_PATH; ?>/assets/css/pages/tab-page.css" rel="stylesheet">
     <link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">
     <link href="<?php echo REAL_PATH; ?>/assets/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="<?php echo REAL_PATH; ?>/assets/css/course-demo-premium.css?v=20260721-01" rel="stylesheet">
+    <link href="<?php echo REAL_PATH; ?>/assets/css/course-detail-premium.css?v=20260731-28" rel="stylesheet">
+    <link href="<?php echo REAL_PATH; ?>/assets/css/course-demo-premium.css?v=20260731-04" rel="stylesheet">
     <style type="text/css">
       .disable {
          pointer-events: none;
@@ -62,7 +63,7 @@ hyphens: auto;
     </style>
 </head>
 
-<body class="fix-header fix-sidebar card-no-border demo-course-detail">
+<body class="fix-header fix-sidebar card-no-border premium-course-detail demo-course-detail">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
@@ -75,29 +76,26 @@ hyphens: auto;
     <!-- ============================================================== -->
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
-    <div id="">
+    <div id="main-wrapper">
         <?php $this->load->view('frontend/inc/inc-header.php'); ?>
         <?php $this->load->view('frontend/inc/inc-sidemenu.php'); ?>
         <!-- Page wrapper  -->
         <!-- ============================================================== -->
         <div class="page-wrapper demo-course-page">
 
-            <div class="container-fluid demo-course-shell">
-                <div class="row col-12 page-titles">
-                    <!-- <div class="col-md-auto">
-                        <b><?php echo ucwords($course_main['cname']); ?></b>
-                    </div> -->
-                    <div class="col-md-12 align-self-right">
-                        <ol class="breadcrumb d-inline">
-                            <li class="breadcrumb-item d-inline"><a href="<?php echo REAL_PATH;?>/dashboard"><?php echo ucwords(label('dashboard')); ?></a></li>
-                            <?php if($title_main!=""){ ?>
-                            <li class="breadcrumb-item active d-inline"><?php echo ucwords(strtolower($title_main)); ?></li>
-                            <?php } ?>
-                            <li class="breadcrumb-item active d-inline"><?php echo ucwords($course_main['cname']); ?></li>
-                        </ol>
-                    </div>
-                </div>  
-              <div class="row">
+            <div class="container-fluid course-detail-container demo-course-shell">
+                <nav class="course-detail-toolbar" aria-label="Course navigation">
+                  <a class="course-detail-back" href="<?php echo $isDashboard == "1" ? REAL_PATH.'/dashboard' : REAL_PATH.'/managecourse/courses_all'; ?>">
+                    <i class="mdi mdi-arrow-left"></i><span><?php echo ucwords(label('m_previous')); ?></span>
+                  </a>
+                  <span class="course-toolbar-divider" aria-hidden="true"></span>
+                  <ol class="course-toolbar-trail">
+                    <li><a href="<?php echo REAL_PATH; ?>/dashboard"><i class="mdi mdi-home-outline"></i><span><?php echo ucwords(label('dashboard')); ?></span></a></li>
+                    <li><a href="<?php echo REAL_PATH; ?>/managecourse/courses_all"><?php echo $title_main != "" ? ucwords(strtolower($title_main)) : ucwords(label('my_course')); ?></a></li>
+                    <li aria-current="page"><?php echo $course_main['cname']; ?></li>
+                  </ol>
+                </nav>
+              <div class="row demo-admin-actions">
                 <div class="card card-body">
                 <div class="row">
                     <div class="col-md-4" align="left">
@@ -273,14 +271,27 @@ hyphens: auto;
                 }
                 ?>
                 <section class="demo-course-hero">
-                <div class="row demo-course-overview">
-                  <div class="col-auto col-md-12 col-lg-4 mb-0 card card-body demo-course-cover">
-                    <img class="card-img-top img-responsive" src="<?php echo REAL_PATH;?>/uploads/course/<?php echo $course_main['cos_pic']; ?>" onerror="this.src='<?php echo REAL_PATH;?>/images/cover_course.jpg';" alt="Card image cap">
+                <div class="row course-detail-overview demo-course-overview">
+                  <div class="col-auto col-md-12 col-lg-4 mb-0 card card-body course-detail-cover demo-course-cover">
+                    <div class="course-cover-card">
+                      <div class="course-cover-card__glow" aria-hidden="true"></div>
+                      <img class="card-img-top img-responsive" src="<?php echo REAL_PATH;?>/uploads/course/<?php echo $course_main['cos_pic']; ?>" onerror="this.src='<?php echo REAL_PATH;?>/images/cover_course.jpg';" alt="<?php echo htmlspecialchars($course_main['cname'], ENT_QUOTES, 'UTF-8'); ?>">
+                    </div>
                   </div>
 
-                  <div class="col-md-12 col-lg-8 mb-0 card card-body demo-course-info">
-                    <span class="demo-course-eyebrow"><i class="mdi mdi-eye-outline"></i> <?php echo $lang_select == 'thai' ? 'ตัวอย่างหลักสูตร' : ($lang_select == 'japan' ? 'コースプレビュー' : 'COURSE PREVIEW'); ?></span>
+                  <div class="col-md-12 col-lg-8 mb-0 card card-body course-detail-info demo-course-info">
+                    <div class="course-hero-labels">
+                      <span class="course-detail-eyebrow"><i class="mdi mdi-book-open-page-variant"></i> ISUZU E-LEARNING</span>
+                      <span class="course-hero-format"><i class="mdi mdi-eye-outline"></i><?php echo $lang_select == 'thai' ? 'ตัวอย่างหลักสูตร' : ($lang_select == 'japan' ? 'コースプレビュー' : 'Course preview'); ?></span>
+                    </div>
                     <h1><?php echo $course_main['cname']; ?></h1>
+                    <p class="course-hero-summary"><?php echo $lang_select == 'thai' ? 'ดูโครงสร้าง เนื้อหา และลำดับการเรียนรู้ก่อนเปิดใช้งานหลักสูตร' : ($lang_select == 'japan' ? '公開前にコースの内容と学習順序を確認できます。' : 'Preview the course content and learning sequence before publishing.'); ?></p>
+                    <div class="course-detail-meta-bar">
+                      <span><i class="mdi mdi-calendar-clock"></i><small><?php echo $periodtxt; ?></small><strong><?php echo $course_main['txt_period_course']; ?></strong></span>
+                      <span><i class="mdi mdi-domain"></i><small><?php echo $createBy; ?></small><strong><?php echo $course_main['com_name']; ?></strong></span>
+                      <span><i class="mdi mdi-format-list-numbers"></i><small><?php echo $lang_select == 'thai' ? 'เนื้อหาทั้งหมด' : 'Learning items'; ?></small><strong id="courseHeroItemCount">—</strong></span>
+                      <span><i class="mdi mdi-eye-outline"></i><small><?php echo $lang_select == 'thai' ? 'สถานะ' : 'Mode'; ?></small><strong><?php echo $lang_select == 'thai' ? 'ตัวอย่าง' : ($lang_select == 'japan' ? 'プレビュー' : 'Preview'); ?></strong></span>
+                    </div>
                     <div class="d-block position-relative">
 
                         <div class="row">
@@ -317,23 +328,44 @@ hyphens: auto;
                         </div>
 
                     </div>
-                    <hr>
-                    <?php echo  str_replace('../uploads/texteditor/', base_url().'/uploads/texteditor/',$course_main['cdetail']); ?>
                   </div>
                 </div>
                 </section>
 
             </div>
-            
-            <section class="demo-learning-workspace">
-              <div class="demo-learning-heading">
-                <div>
-                  <span><?php echo $lang_select == 'thai' ? 'โหมดสาธิต' : ($lang_select == 'japan' ? 'デモモード' : 'DEMO MODE'); ?></span>
-                  <h2><?php echo $lang_select == 'thai' ? 'เส้นทางการเรียนรู้' : ($lang_select == 'japan' ? '学習パス' : 'Learning path'); ?></h2>
-                </div>
-                <div class="demo-mode-badge"><i class="mdi mdi-eye-outline"></i> <?php echo $lang_select == 'thai' ? 'ดูตัวอย่างเท่านั้น' : ($lang_select == 'japan' ? 'プレビューのみ' : 'Preview only'); ?></div>
+            <div class="course-workspace-grid">
+            <section class="course-detail-description-panel">
+              <header>
+                <i class="mdi mdi-clipboard-text course-section-icon" aria-hidden="true"></i>
+                <span>ABOUT THIS COURSE</span>
+                <h2><?php echo $lang_select == 'thai' ? 'รายละเอียดหลักสูตร' : ($lang_select == 'japan' ? 'コース概要' : 'Course overview'); ?></h2>
+              </header>
+              <div class="course-detail-description">
+                <?php echo str_replace('../uploads/texteditor/', base_url().'/uploads/texteditor/', $course_main['cdetail']); ?>
               </div>
-              <div class="demo-learning-list">
+            </section>
+
+            <section class="course-learning-path demo-learning-workspace">
+              <header class="course-learning-path__header">
+                <div class="course-path-heading">
+                  <span class="course-path-heading__icon"><i class="mdi mdi-format-list-numbers" aria-hidden="true"></i></span>
+                  <div>
+                    <span>COURSE JOURNEY</span>
+                    <h2><?php echo $lang_select == 'thai' ? 'เส้นทางการเรียนรู้' : ($lang_select == 'japan' ? '学習パス' : 'Learning path'); ?></h2>
+                    <small><?php echo $lang_select == 'thai' ? 'ดูตัวอย่างเนื้อหาและลำดับการเรียนรู้' : ($lang_select == 'japan' ? 'コース内容と学習順序をプレビューします' : 'Preview the course content and learning sequence'); ?></small>
+                  </div>
+                </div>
+                <div class="course-progress-ring" id="courseProgressRing" style="--course-progress:0">
+                  <div><strong id="courseProgressText">0%</strong><span><?php echo $lang_select == 'thai' ? 'ความคืบหน้า' : ($lang_select == 'japan' ? '進捗' : 'Progress'); ?></span></div>
+                </div>
+              </header>
+              <div class="course-path-summary" aria-live="polite">
+                <div><i class="mdi mdi-format-list-numbers"></i><span><?php echo $lang_select == 'thai' ? 'ทั้งหมด' : ($lang_select == 'japan' ? '合計' : 'Total'); ?><strong id="coursePathTotal">0</strong></span></div>
+                <div><i class="mdi mdi-checkbox-marked-circle-outline"></i><span><?php echo $lang_select == 'thai' ? 'สำเร็จแล้ว' : ($lang_select == 'japan' ? '完了' : 'Completed'); ?><strong>0</strong></span></div>
+                <div><i class="mdi mdi-eye-outline"></i><span><?php echo $lang_select == 'thai' ? 'โหมด' : ($lang_select == 'japan' ? 'モード' : 'Mode'); ?><strong><?php echo $lang_select == 'thai' ? 'ตัวอย่าง' : ($lang_select == 'japan' ? 'プレビュー' : 'Preview'); ?></strong></span></div>
+              </div>
+              <div class="course-learning-progress" aria-hidden="true"><span id="courseProgressBar"></span></div>
+              <div class="course-learning-steps demo-learning-list">
                 <?php $this->load->view('frontend/tab/course_demo.php'); ?>
 
             <?php if(countArray($survey_arr)>0){
@@ -360,32 +392,103 @@ hyphens: auto;
                   } ?> 
               </div>
             </section>
+            </div>
 
         </div>
     </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var path = document.querySelector('.course-learning-path');
+      if (!path) return;
+
+      var steps = path.querySelectorAll(
+        '.demo-learning-list > .container-fluid > a.btn-block, ' +
+        '.demo-learning-list > form > .container-fluid > a.btn-block'
+      );
+      var total = steps.length;
+      var totalText = document.getElementById('coursePathTotal');
+      var heroCount = document.getElementById('courseHeroItemCount');
+      if (totalText) totalText.textContent = total;
+      if (heroCount) heroCount.textContent = total + ' <?php echo $lang_select == 'thai' ? 'รายการ' : ($lang_select == 'japan' ? '項目' : 'items'); ?>';
+
+      for (var i = 0; i < total; i += 1) {
+        var step = steps[i];
+        var shell = step.parentElement;
+        var label = (step.textContent || '').replace(/\s+/g, ' ').trim();
+        var kind = 'lesson';
+        var kindLabel = '<?php echo $lang_select == 'thai' ? 'บทเรียน' : ($lang_select == 'japan' ? 'レッスン' : 'Lesson'); ?>';
+        var kindIcon = 'mdi-play-circle-outline';
+
+        if (/แบบทดสอบ|test|quiz|exam|テスト/i.test(label)) {
+          kind = 'quiz';
+          kindLabel = '<?php echo $lang_select == 'thai' ? 'แบบทดสอบ' : ($lang_select == 'japan' ? 'テスト' : 'Assessment'); ?>';
+          kindIcon = 'mdi-clipboard-text';
+        } else if (/แบบสำรวจ|survey|アンケート/i.test(label)) {
+          kind = 'survey';
+          kindLabel = '<?php echo $lang_select == 'thai' ? 'แบบสำรวจ' : ($lang_select == 'japan' ? 'アンケート' : 'Survey'); ?>';
+          kindIcon = 'mdi-file-document';
+        }
+
+        step.classList.add('onclickrechk', 'step-kind-' + kind);
+        step.classList.remove('rounded-0', 'disable');
+        step.style.backgroundColor = '';
+        step.style.borderColor = '';
+        step.style.color = '';
+        step.style.pointerEvents = '';
+        step.setAttribute('data-statustc', '0');
+        if (shell) shell.classList.add('learning-step-shell');
+        if (i === 0) step.classList.add('timeline-first', 'is-current');
+        if (i === total - 1) step.classList.add('timeline-last');
+
+        var index = document.createElement('span');
+        index.className = 'learning-step-index';
+        index.textContent = i + 1;
+        step.insertBefore(index, step.firstChild);
+
+        var typeBadge = document.createElement('span');
+        typeBadge.className = 'learning-step-kind';
+        typeBadge.innerHTML = '<i class="mdi ' + kindIcon + '"></i><em>' + kindLabel + '</em>';
+        step.appendChild(typeBadge);
+
+        var status = document.createElement('span');
+        status.className = 'learning-step-status';
+        status.innerHTML = i === 0
+          ? '<i class="mdi mdi-play"></i><em><?php echo $lang_select == 'thai' ? 'เริ่มดู' : ($lang_select == 'japan' ? '表示' : 'Preview'); ?></em>'
+          : '<i class="mdi mdi-eye-outline"></i><em><?php echo $lang_select == 'thai' ? 'ดูตัวอย่าง' : ($lang_select == 'japan' ? 'プレビュー' : 'Preview'); ?></em>';
+        step.appendChild(status);
+      }
+    });
+    </script>
+
     <!-- SELECT LANGUAGE MODAL -->
-    <div id="select_lang_modal" class="modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+    <div id="select_lang_modal" class="modal course-entry-modal-wrap" role="dialog" aria-labelledby="courseEntryTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered course-entry-dialog">
+        <div class="modal-content course-entry-modal">
           <div class="modal-header">
+            <div class="course-entry-brand"><span>ISUZU</span><small>E-LEARNING</small></div>
             <button type="button" class="close" onclick="window.location.replace('<?php echo REAL_PATH;?>/managecourse/courses_all');">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <form  enctype="multipart/form-data" id="lang_form" name="lang_form" autocomplete="off" method="POST" accept-charset="utf-8" class="form-horizontal p-t-20">
-            <div class="col-lg-12 mb-0">
-              <h4 class="text-truncate" data-toggle="tooltip" title="<?php echo $course_main['cname']; ?>"><?php echo $course_main['cname']; ?></h4>
+            <input type="hidden"
+              name="<?php echo $this->security->get_csrf_token_name(); ?>"
+              value="<?php echo $this->security->get_csrf_hash(); ?>">
+            <div class="course-entry-heading">
+              <span class="course-entry-kicker"><?php echo $lang_select == 'thai' ? 'พร้อมเริ่มการเรียนรู้' : ($lang_select == 'japan' ? '学習を始める準備ができました' : 'READY TO LEARN'); ?></span>
+              <h2 id="courseEntryTitle" data-toggle="tooltip" title="<?php echo $course_main['cname']; ?>"><?php echo $course_main['cname']; ?></h2>
             </div>
-          <div class="modal-body row pt-0">
-            <div class="col-lg-6 pt-3">
-              <img class="card-img-top img-responsive" style="max-width: 300px;" src="<?php echo REAL_PATH;?>/uploads/course/<?php echo $course_main['cos_pic']; ?>" onerror="this.src='<?php echo REAL_PATH;?>/images/cover_course.jpg';" alt="Card image cap">
+          <div class="modal-body course-entry-body">
+            <div class="course-entry-cover">
+              <img class="card-img-top img-responsive" src="<?php echo REAL_PATH;?>/uploads/course/<?php echo $course_main['cos_pic']; ?>" onerror="this.src='<?php echo REAL_PATH;?>/images/cover_course.jpg';" alt="Card image cap">
             </div>
-            <div class="col-lg-6 pt-3">              
-              <p class="card-text"><?php echo $periodtxt.': '; ?>
-                <br><?php echo $course_main['txt_period_course']; ?>
-              </p>
-              <p class="mb-0"><?php echo $Chooselangtxt.': '; ?></p>
+            <div class="course-entry-options">
+              <div class="course-entry-meta">
+                <i class="mdi mdi-calendar-clock"></i>
+                <span><small><?php echo $periodtxt; ?></small><strong><?php echo $course_main['txt_period_course']; ?></strong></span>
+              </div>
+              <label for="course_lang"><?php echo $Chooselangtxt; ?></label>
 
               <select id="course_lang" name="course_lang" class="selectpicker">
                <?php if($course_main['isTH']=="1"){ ?><option value="thai" <?php if($course_main['select_lang']=="thai"){ echo "selected"; } ?> data-icon="flag-icon flag-icon-th"><?php echo $thailandtxt; ?></option><?php } ?>
@@ -396,11 +499,11 @@ hyphens: auto;
             </div>
 
           </div>
-          <div class="modal-footer">
-            <button type="submit" title="<?php echo $go_to_course; ?>" class="btn waves-effect waves-light btn-outline-danger btn-danger-hover float-right" name="action" id="action"><i class="mdi mdi-file-document-box"></i> <?php echo $go_to_course; ?></button>
+          <div class="modal-footer course-entry-footer">
+            <button type="submit" title="<?php echo $go_to_course; ?>" class="btn waves-effect waves-light course-entry-submit" name="action" id="action"><span><?php echo $go_to_course; ?></span><i class="mdi mdi-arrow-right"></i></button>
           </div>
-        </div>
         </form>
+        </div>
         <!-- /.modal-content -->
       </div>
       <!-- /.modal-dialog -->

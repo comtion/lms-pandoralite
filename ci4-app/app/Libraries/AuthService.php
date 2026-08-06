@@ -36,6 +36,38 @@ class AuthService
             return false;
         }
 
+        if ($this->users->mfaEnabled((int) $user['u_id'])) {
+            $this->session->regenerate(true);
+            $this->session->set('mfa_pending_user', $user);
+            return true;
+        }
+
+        $this->completeLogin($user);
+        return true;
+    }
+
+    public function completeMfa(string $code): bool
+    {
+        $user = $this->session->get('mfa_pending_user');
+        if (! is_array($user) || ! isset($user['u_id'])) {
+            return false;
+        }
+        if (! $this->users->verifyMfaCode((int) $user['u_id'], $code)) {
+            return false;
+        }
+        $this->session->remove('mfa_pending_user');
+        $this->completeLogin($user);
+        return true;
+    }
+
+    public function completeExternal(array $user): void
+    {
+        $this->completeLogin($user);
+    }
+
+    private function completeLogin(array $user): void
+    {
+        $username = (string) $user['useri'];
         $langLast = ! empty($user['lang_last']) ? $user['lang_last'] : 'english';
         $currentLang = $this->session->get('lang') ?? 'english';
 
@@ -58,8 +90,6 @@ class AuthService
         ]);
 
         $this->users->markOnline($username);
-
-        return true;
     }
 
     public function logout(): void
@@ -76,6 +106,7 @@ class AuthService
             'username_firsttime',
             'firsttime',
             'passexpire',
+            'mfa_pending_user',
         ]);
         $this->session->destroy();
     }

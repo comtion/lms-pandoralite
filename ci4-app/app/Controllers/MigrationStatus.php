@@ -11,6 +11,12 @@ class MigrationStatus extends BaseController
 
         return view('migration/status', [
             'content' => $content,
+            'inventory' => (new \App\Libraries\MigrationInventoryService())->report(),
         ]);
+    }
+
+    public function inventory()
+    {
+        return $this->response->setJSON((new \App\Libraries\MigrationInventoryService())->report());
     }
 }

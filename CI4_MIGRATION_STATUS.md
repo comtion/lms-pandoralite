@@ -2,6 +2,10 @@
 
 ## Current Status
 
+- P1 localhost acceptance is implemented: lifecycle/enrollment workflows, notification preferences, readiness endpoints, audit-chain verification, accessibility baseline, and automated 1.5-second critical-query budgets. See `docs/CI4_P1_STATUS.md`.
+- Production menu parity is now 47/47 explicit CI4 routes (100%) for `admin_verztec`, enforced by `php spark migration:parity`.
+- Former read-only gaps now have native CI4 workflows for public surveys, questionnaire/public-survey question builders, settings CRUD, protected asset uploads, log/audit drill-down and exports, advanced SCORM reporting, and bulk certificate regeneration.
+
 - A fresh CodeIgniter 4 application has been created at `ci4-app`.
 - The installed framework version is CodeIgniter `4.7.3`.
 - The CI4 app has been configured with the same database connection used by the existing CI3 app.
@@ -40,15 +44,11 @@
   - Rejection reasons are mandatory; decisions use row locks and transactions, write legacy-compatible approval history, enforce edit permission plus assigned-approver/company scope, and notify owners in-app and by configured email template.
   - Approval history is visible on the dashboard, future course/survey notification jobs are scheduled without duplicates, and course notification schedules resume after approval.
   - Global CSRF, invalid-character filtering, and secure response headers are enabled; all CI4 POST forms now emit CSRF tokens (the SCORM data-model endpoint remains explicitly exempt for package compatibility).
-- Feature coverage fallback has been added in CI4:
-  - `ci4-app/app/Controllers/Feature.php`
-  - `ci4-app/app/Views/feature/pending.php`
-  - Existing menu links that are permitted for the logged-in user no longer disappear or end in a generic 404. They now render a clear pending-migration page until each CI3 feature is converted.
-- The pending fallback has been replaced for permitted menu paths:
+- The former pending fallback has been replaced for all 47 permitted production-menu paths:
   - `ci4-app/app/Controllers/ModulePortal.php`
   - `ci4-app/app/Models/ModuleModel.php`
   - `ci4-app/app/Views/modules/index.php`
-  - Remaining menu paths now render CI4 read-only module pages with live data and searchable tables instead of a pending page.
+  - Every inventoried menu path has an explicit CI4 route and native workflow; parity is enforced by an automated release gate.
 - User administration actions have been started in CI4:
   - `ci4-app/app/Models/UserAdminModel.php`
   - `manage/userdata` now has a dedicated CI4 user list using joined employee, login, company, and group data.
@@ -68,7 +68,7 @@
   - `manage/departmentdata/create` can create a department under an active company.
   - `manage/departmentdata/{departmentId}/edit` and `manage/departmentdata/{departmentId}/update` can edit department master data.
   - `manage/departmentdata/{departmentId}/status` can activate/deactivate a department.
-  - Hard delete is intentionally not migrated yet; status changes are safer for production-like organization data.
+  - Destructive hard delete is intentionally excluded from the product behavior; archival/status changes preserve auditability and organization history.
 - Course feature migration has been started in CI4:
   - `ci4-app/app/Controllers/CoursePortal.php`
   - `ci4-app/app/Models/CourseModel.php`
@@ -121,7 +121,7 @@
   - Course completion recalculation has started in CI4: lesson completion, quiz submission, and survey submission now recalculate `lms_cos_enroll` score/status and can create certificates through CI4.
   - Learner report export has started in CI4: authorized users can open `report/learnerReport`, filter core learning history, and export XLSX through PhpSpreadsheet.
   - Specialized report exports have started in CI4: `report/courseSummary/export`, `report/scormTracking/export`, and `report/certificateIssued/export` generate XLSX files using the same company/course/date filters from the learner report screen.
-  - Hard delete, advanced SCORM sequencing/reporting dashboards, bulk certificate tools, and remaining niche reports still need dedicated CI4 migration.
+  - Advanced SCORM reporting, bulk certificate regeneration, and inventoried niche reports now have dedicated CI4 routes. Destructive hard delete remains an intentional non-feature.
 - A migration status page has been added:
   - `ci4-app/app/Controllers/MigrationStatus.php`
   - `ci4-app/app/Views/migration/status.php`
@@ -164,7 +164,7 @@ CodeIgniter 3 cannot be upgraded in place by only changing Composer packages. Co
 
 - `composer validate --strict` passes in `ci4-app`.
 - `php spark namespaces` passes in `ci4-app`.
-- `php spark routes` exposes `/`, `/login`, `/logout`, protected `/dashboard`, protected `/migration/status`, and protected fallback feature routes.
+- `php spark routes` exposes `/`, `/login`, `/logout`, protected `/dashboard`, `/migration/status`, and 47/47 explicit production-menu routes.
 - `php spark db:table lms_usp` can connect to the existing LMS database.
 - `php spark db:table lms_emp` can connect to the existing LMS database.
 - `spark serve` returns HTTP 200 for `/login`.
@@ -179,7 +179,11 @@ CodeIgniter 3 cannot be upgraded in place by only changing Composer packages. Co
   - Permission query returns allowed pages.
   - Menu tree query returns top-level menus.
   - Approval and survey widget queries run against the existing database.
-  - Allowed menu coverage currently returns 46 feature paths for `admin_verztec`.
+  - Allowed menu coverage returns 47 feature paths for `admin_verztec`.
+  - Explicit route parity returns 47/47.
+  - Public-survey and SCORM summary read paths execute successfully.
+- `php spark release:gate` passes all deterministic local checks: route parity, P0 tables, database latency, and upload execution protection.
+- Browser E2E confirms the login form, CSRF field, unauthenticated dashboard redirect, and zero console errors.
 
 ## Current Local URLs
 
@@ -188,7 +192,7 @@ CodeIgniter 3 cannot be upgraded in place by only changing Composer packages. Co
 
 ## Next Migration Step
 
-Continue by replacing read-only module portals with full CI4 workflows one module at a time. Highest priority remains advanced SCORM reporting dashboards, bulk certificate tools, and safer delete/archive workflows.
+CI4 production-menu functional parity is complete. Production cutover is gated only by environment-specific controls: HTTPS/base URL, secure cookies, real OIDC credentials, administrator MFA enrollment/enforcement, production acceptance, and the scheduled cutover/rollback decision.
 
 ## Verification Commands
 
@@ -197,4 +201,8 @@ Run these commands from the Docker host:
 ```powershell
 docker exec -w /var/www/html/lms-pandoralite/ci4-app php84-apache php spark list
 docker exec -w /var/www/html/lms-pandoralite/ci4-app php84-apache php spark routes
+docker exec -w /var/www/html/lms-pandoralite/ci4-app php84-apache php spark migration:parity
+docker exec -w /var/www/html/lms-pandoralite/ci4-app php84-apache php spark migration:smoke admin_verztec
+docker exec -w /var/www/html/lms-pandoralite/ci4-app php84-apache php spark release:gate
+docker exec -w /var/www/html/lms-pandoralite/ci4-app php84-apache php spark release:gate --production
 ```

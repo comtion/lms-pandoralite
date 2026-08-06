@@ -142,9 +142,15 @@ class DashboardModel extends Model
 
     public function deviceUsage(array $user): array
     {
-        $pc = $this->countDevice($user, 'PC');
-        $mobile = $this->countDevice($user, 'Mobile');
-        $tablet = $this->countDevice($user, 'Tablet');
+        $builder = $this->db->table('lms_lg')
+            ->select("SUM(device LIKE '%PC%') AS pc,SUM(device LIKE '%Mobile%') AS mobile,SUM(device LIKE '%Tablet%') AS tablet", false);
+        if (in_array((string) ($user['ug_id'] ?? ''), ['2', '6'], true) && ! empty($user['com_id'])) {
+            $builder->where('emp_id IN (SELECT emp_id FROM lms_emp WHERE com_id=' . $this->db->escape($user['com_id']) . ')', null, false);
+        }
+        $row = $builder->get()->getRowArray() ?: [];
+        $pc = (int) ($row['pc'] ?? 0);
+        $mobile = (int) ($row['mobile'] ?? 0);
+        $tablet = (int) ($row['tablet'] ?? 0);
         $total = $pc + $mobile + $tablet;
 
         return [
@@ -185,21 +191,18 @@ class DashboardModel extends Model
 
     public function companyAnalytics(): array
     {
-        $companies = $this->db->table('lms_company')
+        $now = $this->db->escape(date('Y-m-d H:i'));
+        return $this->db->table('lms_company')
+            ->select('lms_company.*')
+            ->select("(SELECT COUNT(*) FROM lms_emp e JOIN lms_usp u ON u.emp_id=e.emp_id WHERE e.com_id=lms_company.com_id AND e.emp_isDelete='0' AND (u.inactivedate > {$now} OR CAST(u.inactivedate AS CHAR)='0000-00-00')) AS usertotal", false)
+            ->select("(SELECT COUNT(*) FROM lms_cos c WHERE c.com_id=lms_company.com_id AND c.cos_approve='1' AND c.cos_public='1' AND c.cos_isDelete='0' AND EXISTS (SELECT 1 FROM lms_cosincg x JOIN lms_cog g ON g.cg_id=x.cg_id WHERE x.course_id=c.cos_id AND g.cg_status='1' AND g.cg_approve='1' AND g.cg_isDelete='0')) AS coursetotal", false)
+            ->select("(SELECT COUNT(*) FROM lms_sv s WHERE s.com_id=lms_company.com_id AND s.sv_public='1' AND s.sv_approve='1' AND s.sv_isDelete='0') AS surveytotal", false)
             ->where('com_isDelete', '0')
             ->where('com_status', '1')
             ->where('com_id !=', '2')
             ->orderBy('com_name_eng', 'ASC')
             ->get()
             ->getResultArray();
-
-        foreach ($companies as &$company) {
-            $company['usertotal'] = $this->activeUserCount((int) $company['com_id']);
-            $company['coursetotal'] = $this->approvedPublicCourseCount((int) $company['com_id']);
-            $company['surveytotal'] = $this->approvedPublicSurveyCount((int) $company['com_id']);
-        }
-
-        return $companies;
     }
 
     public function approvalCourses(array $user, string $lang): array
@@ -391,9 +394,12 @@ class DashboardModel extends Model
     private function globalCourseStatus(): array
     {
         $courses = $this->db->table('lms_cos')
+            ->select('lms_cos.cos_id,lms_cos_detail.date_start,lms_cos_detail.date_end')
+            ->join('lms_cos_detail', 'lms_cos_detail.cos_id=lms_cos.cos_id', 'left')
             ->where('cos_approve', '1')
             ->where('cos_public', '1')
             ->where('cos_isDelete', '0')
+            ->where("EXISTS (SELECT 1 FROM lms_cosincg x JOIN lms_cog g ON g.cg_id=x.cg_id WHERE x.course_id=lms_cos.cos_id AND g.cg_status='1' AND g.cg_approve='1' AND g.cg_isDelete='0')", null, false)
             ->get()
             ->getResultArray();
 
@@ -405,17 +411,8 @@ class DashboardModel extends Model
         ];
 
         foreach ($courses as $course) {
-            if (! $this->courseHasApprovedGroup((int) $course['cos_id'])) {
-                continue;
-            }
-
             $status['total']++;
-            $detail = $this->db->table('lms_cos_detail')
-                ->where('cos_id', $course['cos_id'])
-                ->get()
-                ->getRowArray();
-
-            $bucket = $this->courseDateBucket($detail);
+            $bucket = $this->courseDateBucket($course);
             $status[$bucket]++;
         }
 

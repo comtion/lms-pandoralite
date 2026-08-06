@@ -15,7 +15,7 @@ $precision_csrf_token = (string) ($this->security->get_csrf_hash() ?? '');
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-precision.css?v=20260720-20">
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/dashboard-sidebar-v2.css?v=20260720-18">
 <link rel="stylesheet" href="<?php echo REAL_PATH; ?>/assets/css/precision-global.css?v=20260724-38">
-<script src="<?php echo REAL_PATH; ?>/assets/js/precision-selects.js?v=20260724-2" defer></script>
+<script src="<?php echo REAL_PATH; ?>/assets/js/precision-selects.js?v=20260731-1" defer></script>
 <meta name="lms-base-url" content="<?php echo htmlspecialchars(rtrim(REAL_PATH, '/'), ENT_QUOTES, 'UTF-8'); ?>">
 <meta name="lms-csrf-name" content="<?php echo htmlspecialchars($precision_csrf_name, ENT_QUOTES, 'UTF-8'); ?>">
 <meta name="lms-csrf-token" content="<?php echo htmlspecialchars($precision_csrf_token, ENT_QUOTES, 'UTF-8'); ?>">

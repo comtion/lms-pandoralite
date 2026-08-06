@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Libraries\TotpService;
 use CodeIgniter\Model;
 
 class UserModel extends Model
@@ -63,5 +64,45 @@ class UserModel extends Model
             ->set('st_on', 'offline')
             ->where('useri', $username)
             ->update();
+    }
+
+    public function mfaEnabled(int $userId): bool
+    {
+        return $this->db->tableExists('lms_user_mfa')
+            && $this->db->table('lms_user_mfa')->where('user_id', $userId)->where('enabled_at IS NOT NULL', null, false)->countAllResults() === 1;
+    }
+
+    public function verifyMfaCode(int $userId, string $code): bool
+    {
+        if (! $this->db->tableExists('lms_user_mfa')) {
+            return false;
+        }
+        $row = $this->db->table('lms_user_mfa')->where('user_id', $userId)->get()->getRowArray();
+        if (! $row || empty($row['enabled_at'])) {
+            return false;
+        }
+        $secret = service('encrypter')->decrypt(base64_decode((string) $row['secret'], true));
+        $step = (new TotpService())->verify($secret, $code);
+        if ($step === null || $step <= (int) ($row['last_used_step'] ?? 0)) {
+            return false;
+        }
+        $this->db->table('lms_user_mfa')->where('id', $row['id'])->update([
+            'last_used_step' => $step,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+        return true;
+    }
+
+    public function findActiveByUsername(string $username): ?array
+    {
+        $row = $this->db->table('lms_usp')
+            ->select('lms_usp.*, lms_emp.*, lms_company.*, lms_usp_gp.*')
+            ->join('lms_emp', 'lms_usp.emp_id = lms_emp.emp_id')
+            ->join('lms_company', 'lms_emp.com_id = lms_company.com_id')
+            ->join('lms_usp_gp', 'lms_usp.ug_id = lms_usp_gp.ug_id')
+            ->where('lms_usp.useri', $username)->where('lms_emp.status', '1')
+            ->where('lms_emp.emp_isDelete', '0')->where('lms_usp.u_isDelete', '0')
+            ->get()->getRowArray();
+        return $row ?: null;
     }
 }

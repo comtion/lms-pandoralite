@@ -4624,6 +4624,8 @@ class Querydata extends CI_Controller
 				$choice_2txt = "พอใช้";
 				$choice_1txt = "ควรปรับปรุง";
 				$Suggestion_anothertxt = "ข้อเสนอแนะ (ถ้ามี)";
+				$Suggestion_helptxt = "ความคิดเห็นของคุณช่วยให้เราพัฒนาหลักสูตรให้ดียิ่งขึ้น";
+				$Suggestion_placeholder = "บอกเราได้เลยว่าอะไรดีอยู่แล้ว หรือส่วนไหนที่ควรปรับปรุง...";
 			} else if ($_REQUEST['lang_select'] == "english") {
 				$questiontxt = "Question";
 				$Suggestiontxt = "Suggestion";
@@ -4633,6 +4635,8 @@ class Querydata extends CI_Controller
 				$choice_2txt = "Fair";
 				$choice_1txt = "Need improvement";
 				$Suggestion_anothertxt = "Suggestion";
+				$Suggestion_helptxt = "Your feedback helps us improve this course.";
+				$Suggestion_placeholder = "Tell us what worked well or what we could improve...";
 			} else {
 				$questiontxt = "質問";
 				$Suggestiontxt = "コメント";
@@ -4642,6 +4646,8 @@ class Querydata extends CI_Controller
 				$choice_2txt = "まあまあ";
 				$choice_1txt = "改善必要";
 				$Suggestion_anothertxt = "コメント";
+				$Suggestion_helptxt = "ご意見はコースの改善に役立ちます。";
+				$Suggestion_placeholder = "良かった点や改善してほしい点をご記入ください...";
 			}
 			?>
 			<div class="table-responsive">
@@ -4783,12 +4789,25 @@ class Querydata extends CI_Controller
 					</tbody>
 				</table>
 				<?php if ($result['sv_suggestion_status'] == "1") { ?>
-					<?php echo $Suggestion_anothertxt; ?>
-					<textarea id="qnu_suggestion" name="qnu_suggestion" <?php if ($qnu_status == '1') {
+					<section class="survey-suggestion-card">
+						<div class="survey-suggestion-heading">
+							<span class="survey-suggestion-icon"><i class="mdi mdi-lightbulb-on-outline"></i></span>
+							<div>
+								<h4><?php echo $Suggestion_anothertxt; ?></h4>
+								<p><?php echo $Suggestion_helptxt; ?></p>
+							</div>
+							<span class="survey-suggestion-optional"><?php echo $_REQUEST['lang_select'] == 'thai' ? 'ไม่บังคับ' : ($_REQUEST['lang_select'] == 'japan' ? '任意' : 'Optional'); ?></span>
+						</div>
+						<div class="survey-suggestion-field">
+					<textarea id="qnu_suggestion" name="qnu_suggestion" maxlength="500"
+						placeholder="<?php echo htmlspecialchars($Suggestion_placeholder, ENT_QUOTES, 'UTF-8'); ?>" <?php if ($qnu_status == '1') {
 																																echo "disabled";
 																															} ?> class="form-control" rows="5"><?php if (isset($fetch_status['qnu_suggestion']) && $fetch_status['qnu_suggestion'] != "" && $_REQUEST['type'] == "real") {
 																																																		echo $fetch_status['qnu_suggestion'];
 																																																	} ?></textarea>
+							<span class="survey-suggestion-count"><strong id="surveySuggestionCount">0</strong>/500</span>
+						</div>
+					</section>
 				<?php } ?>
 			</div>
 <?php

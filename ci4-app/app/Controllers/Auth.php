@@ -40,10 +40,41 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('auth_error', $this->session->getFlashdata('auth_error') ?: 'Invalid username or password.');
         }
 
+        if (is_array($this->session->get('mfa_pending_user'))) {
+            return redirect()->to(site_url('login/mfa'));
+        }
+
+        $loggedInUser = $this->session->get('user');
+        if (config('P0')->mfaRequiredForAdmins
+            && (string) ($loggedInUser['Is_admin'] ?? '0') === '1'
+            && ! model(\App\Models\UserModel::class)->mfaEnabled((int) $loggedInUser['u_id'])) {
+            return redirect()->to(site_url('security/mfa'))->with('message', 'ผู้ดูแลระบบต้องเปิดใช้ MFA ก่อนใช้งานส่วนอื่น');
+        }
+
         $redirect = $this->session->get('redirect_url') ?: site_url('dashboard');
         $this->session->remove('redirect_url');
 
         return redirect()->to($redirect);
+    }
+
+    public function mfa()
+    {
+        if (! is_array($this->session->get('mfa_pending_user'))) {
+            return redirect()->to(site_url('login'));
+        }
+        return view('auth/mfa', ['error' => $this->session->getFlashdata('auth_error')]);
+    }
+
+    public function verifyMfa()
+    {
+        $key = 'mfa-' . hash('sha256', $this->request->getIPAddress());
+        if (! service('throttler')->check($key, 6, 300)) {
+            return redirect()->back()->with('auth_error', 'Too many verification attempts.');
+        }
+        if (! (new AuthService())->completeMfa(trim((string) $this->request->getPost('code')))) {
+            return redirect()->back()->with('auth_error', 'Invalid or already used verification code.');
+        }
+        return redirect()->to(site_url('dashboard'));
     }
 
     public function logout()
