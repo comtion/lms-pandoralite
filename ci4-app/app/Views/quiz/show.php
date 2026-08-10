@@ -26,7 +26,7 @@
         .score { color:var(--muted); font-size:12px; font-weight:800; white-space:nowrap; }
         .choice { display:flex; align-items:flex-start; gap:10px; border:1px solid var(--line); border-radius:8px; padding:12px; margin:9px 0; cursor:pointer; }
         .choice input { margin-top:2px; }
-        textarea, .blank-input { width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-size:14px; background:#fff; }
+        textarea, .blank-input, .answer-input, .match-select { width:100%; border:1px solid var(--line); border-radius:8px; padding:12px; font-size:14px; background:#fff; }
         textarea { min-height:100px; }
         .blank-sentence { line-height:2.8; }
         .blank-inline { display:inline-block; width:180px; max-width:100%; margin:0 5px; vertical-align:middle; }
@@ -78,19 +78,31 @@
         <?php endif; ?>
     </section>
 
-    <form method="post" action="<?= site_url('coursemain/quiz/' . $quiz['qiz_id'] . '/submit') ?>"><?= csrf_field() ?>
+    <form method="post" enctype="multipart/form-data" action="<?= site_url('coursemain/quiz/' . $quiz['qiz_id'] . '/submit') ?>"><?= csrf_field() ?>
         <?php foreach (($quiz['questions'] ?? []) as $index => $question): ?>
             <section class="question">
                 <div class="question-head">
                     <div class="question-title"><?= ($index + 1) ?>. <?= esc($question['title']) ?></div>
                     <div class="score"><?= esc($question['ques_score']) ?> pts</div>
                 </div>
-                <?php if ($question['ques_type'] === 'multi'): ?>
+                <?php if (in_array($question['ques_type'], ['multi', '2choice', 'true_false'], true)): ?>
                     <?php foreach (($question['choices'] ?? []) as $choice): ?>
                         <label class="choice">
                             <input type="radio" name="answers[<?= esc($question['ques_id']) ?>]" value="<?= esc($choice['value']) ?>">
                             <span><?= esc($choice['text']) ?></span>
                         </label>
+                    <?php endforeach; ?>
+                <?php elseif ($question['ques_type'] === 'multi_select'): ?>
+                    <?php foreach (($question['choices'] ?? []) as $choice): ?>
+                        <label class="choice"><input type="checkbox" name="answers[<?= esc($question['ques_id']) ?>][]" value="<?= esc($choice['value']) ?>"><span><?= esc($choice['text']) ?></span></label>
+                    <?php endforeach; ?>
+                <?php elseif ($question['ques_type'] === 'short_answer'): ?>
+                    <input class="answer-input" name="answers[<?= esc($question['ques_id']) ?>]" autocomplete="off" placeholder="Type a short answer">
+                <?php elseif ($question['ques_type'] === 'numeric'): ?>
+                    <input class="answer-input" type="number" step="any" name="answers[<?= esc($question['ques_id']) ?>]" inputmode="decimal" placeholder="Enter a number">
+                <?php elseif ($question['ques_type'] === 'matching'): ?>
+                    <?php foreach (($question['matching_pairs'] ?? []) as $pair): ?>
+                        <div class="choice"><span style="flex:1;font-weight:800"><?= esc($pair['left']) ?></span><select class="match-select" style="flex:1" name="answers[<?= esc($question['ques_id']) ?>][<?= esc($pair['value']) ?>]"><option value="">Select match</option><?php foreach (($question['matching_rights'] ?? []) as $right): ?><option value="<?= esc($right['value']) ?>"><?= esc($right['text']) ?></option><?php endforeach; ?></select></div>
                     <?php endforeach; ?>
                 <?php elseif ($question['ques_type'] === 'fill_blank'): ?>
                     <?php
@@ -132,6 +144,11 @@
                         </div>
                     <?php endforeach; ?>
                     </div>
+                <?php elseif ($question['ques_type'] === 'file_upload'): ?>
+                    <textarea name="answers[<?= esc($question['ques_id']) ?>]" placeholder="Optional written answer"></textarea>
+                    <p class="muted"><?= esc($question['ques_upload_note'] ?? '') ?></p>
+                    <input class="answer-input" type="file" name="answer_files[<?= esc($question['ques_id']) ?>]" <?= !empty($question['ques_upload_required']) ? 'required' : '' ?> accept="<?= ($question['ques_upload_type'] ?? 'both') === 'image' ? 'image/jpeg,image/png,image/webp' : (($question['ques_upload_type'] ?? 'both') === 'document' ? '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt' : 'image/jpeg,image/png,image/webp,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt') ?>">
+                    <div class="muted">Maximum <?= esc($question['ques_upload_max_mb'] ?? 10) ?> MB.</div>
                 <?php else: ?>
                     <textarea name="answers[<?= esc($question['ques_id']) ?>]" placeholder="Type your answer"></textarea>
                 <?php endif; ?>

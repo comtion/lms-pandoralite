@@ -988,6 +988,85 @@
 
           </div>
         </form>
+        <script>
+        (function () {
+          var form = document.getElementById('quiz_form');
+          if (!form || form.querySelector('.quiz-settings-panel')) return;
+
+          var definitions = [
+            {title:'ช่วงเวลาที่เปิดให้ทำแบบทดสอบ',desc:'กำหนดวันและเวลาที่ผู้เรียนสามารถเข้าทำแบบทดสอบได้',icon:'mdi-calendar-clock',items:[
+              {id:'period_open',name:'วันและเวลาเปิด–ปิด',help:'นอกช่วงเวลานี้ผู้เรียนจะไม่สามารถเริ่มทำแบบทดสอบได้',wide:true}
+            ]},
+            {title:'รูปแบบการทำข้อสอบ',desc:'ตั้งค่าลำดับคำถาม วิธีตอบ และตัวช่วยระหว่างทำข้อสอบ',icon:'mdi-tune',items:[
+              {id:'quiz_random',name:'สุ่มลำดับคำถาม',help:'ผู้เรียนแต่ละคนจะเห็นคำถามเรียงลำดับต่างกัน'},
+              {id:'quiz_random_choice',name:'สุ่มลำดับตัวเลือก',help:'สลับตำแหน่งตัวเลือกคำตอบโดยอัตโนมัติ'},
+              {id:'quiz_ishint',name:'แสดงคำใบ้',help:'ผู้เรียนสามารถเปิดดูคำใบ้ที่กำหนดไว้ในแต่ละข้อ'},
+              {id:'quiz_model',name:'บังคับตอบให้ถูกก่อนผ่านไปข้อถัดไป',help:'เหมาะกับแบบฝึกหัด หากปิด ผู้เรียนสามารถข้ามและย้อนกลับมาทำได้',wide:true}
+            ]},
+            {title:'การแสดงผลแก่ผู้เรียน',desc:'ควบคุมสิ่งที่ผู้เรียนมองเห็นก่อนและหลังส่งคำตอบ',icon:'mdi-eye-outline',items:[
+              {id:'quiz_grade',name:'แสดงคะแนนหลังส่ง',help:'แจ้งคะแนนรวมให้ผู้เรียนทราบทันทีหลังส่งข้อสอบ'},
+              {id:'quiz_type',name:'ประเภทแบบทดสอบ',help:'สวิตช์ซ้ายคือก่อนเรียน และขวาคือหลังเรียน'},
+              {id:'quiz_show',name:'เผยแพร่ให้ผู้เรียนเห็น',help:'หากปิด แบบทดสอบยังอยู่ในระบบแต่ผู้เรียนจะไม่เห็น'},
+              {id:'quiz_answer',name:'แสดงเฉลย',help:'แสดงคำตอบที่ถูกต้องหลังผู้เรียนส่งข้อสอบ'}
+            ]},
+            {title:'เกณฑ์และจำนวนครั้ง',desc:'กำหนดจำนวนข้อที่แสดง คะแนนผ่าน และสิทธิ์ในการทำซ้ำ',icon:'mdi-shield-check-outline',items:[
+              {id:'quiz_limit',name:'จำกัดจำนวนครั้งในการทำ',help:'เปิดเมื่อต้องการกำหนดจำนวนครั้งสูงสุด'},
+              {id:'quiz_limitval',name:'จำนวนครั้งสูงสุด',help:'กรอกจำนวนเต็ม เช่น 1 หรือ 3'},
+              {id:'quiz_numofshown',name:'จำนวนข้อที่แสดง',help:'จำนวนคำถามที่จะเลือกมาแสดงต่อผู้เรียน'},
+              {id:'quiz_maxscore',name:'คะแนนผ่าน (%)',help:'กำหนดตั้งแต่ 0–100 เปอร์เซ็นต์'},
+              {id:'qize_id',name:'เทมเพลตแบบทดสอบ',help:'เลือกต้นแบบที่มีอยู่ หรือเว้นว่างเพื่อสร้างใหม่'}
+            ]}
+          ];
+
+          var first = document.getElementById('period_open');
+          if (!first) return;
+          var panel = document.createElement('div');
+          panel.className = 'quiz-settings-panel col-md-12';
+          var firstGroup = first.closest('.form-group');
+          firstGroup.parentNode.insertBefore(panel, firstGroup);
+
+          definitions.forEach(function (definition) {
+            var section = document.createElement('section');
+            section.className = 'quiz-settings-section';
+            section.innerHTML = '<div class="quiz-settings-head"><span class="quiz-settings-icon"><i class="mdi '+definition.icon+'"></i></span><div><h4 class="quiz-settings-title">'+definition.title+'</h4><p class="quiz-settings-desc">'+definition.desc+'</p></div></div><div class="quiz-setting-grid"></div>';
+            var grid = section.querySelector('.quiz-setting-grid');
+            definition.items.forEach(function (item) {
+              var control = document.getElementById(item.id);
+              if (!control) return;
+              var group = control.closest('.form-group');
+              if (!group || group.classList.contains('quiz-setting-card')) return;
+              group.classList.add('quiz-setting-card');
+              if (item.wide) group.classList.add('quiz-setting-wide');
+              var intro = document.createElement('div');
+              intro.innerHTML = '<p class="quiz-setting-name">'+item.name+'</p><p class="quiz-setting-help">'+item.help+'</p>';
+              group.insertBefore(intro, group.firstChild);
+              if (item.id === 'quiz_limitval') { control.min='1'; control.step='1'; control.placeholder='เช่น 3'; }
+              if (item.id === 'quiz_numofshown') { control.min='1'; control.step='1'; }
+              if (item.id === 'quiz_maxscore') { control.type='number'; control.min='0'; control.max='100'; control.step='0.01'; }
+              grid.appendChild(group);
+            });
+            panel.appendChild(section);
+          });
+
+          var actions = form.querySelector('#action');
+          if (actions) {
+            var actionGroup = actions.closest('.form-group');
+            actionGroup.classList.add('quiz-settings-actions');
+            panel.appendChild(actionGroup);
+          }
+
+          function syncLimitField() {
+            var toggle = document.getElementById('quiz_limit');
+            var value = document.getElementById('quiz_limitval');
+            if (!toggle || !value) return;
+            value.readOnly = !toggle.checked;
+            if (!toggle.checked) value.value = '';
+          }
+          var limitToggle = document.getElementById('quiz_limit');
+          if (limitToggle) limitToggle.addEventListener('change', syncLimitField);
+          syncLimitField();
+        })();
+        </script>
       </div>
 
       <div id="div_quiz" class="col-md-12">
@@ -1288,6 +1367,13 @@
               <label class="control-label">Max upload size (MB):</label>
               <input name="ques_upload_max_mb" type="number" min="1" max="200" step="1" class="form-control" id="ques_upload_max_mb" value="10">
             </div>
+            <style>
+              .quiz-settings-panel{width:100%;margin-top:10px}.quiz-settings-section{border:1px solid #e3e8f1;border-radius:14px;background:#fff;margin-bottom:18px;padding:20px;box-shadow:0 3px 14px rgba(38,51,77,.05)}
+              .quiz-settings-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}.quiz-settings-icon{width:40px;height:40px;flex:0 0 40px;border-radius:11px;background:#fff0f1;color:#e71921;display:flex;align-items:center;justify-content:center;font-size:21px}.quiz-settings-title{font-size:17px;font-weight:800;color:#25324b;margin:0}.quiz-settings-desc{font-size:13px;line-height:1.5;color:#77839a;margin:3px 0 0}
+              .quiz-setting-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.quiz-setting-card{width:auto!important;max-width:none!important;margin:0!important;padding:15px!important;border:1px solid #e3e8f1;border-radius:12px;background:#fafbfd;min-height:120px;display:flex;flex-direction:column;justify-content:space-between}.quiz-setting-card.quiz-setting-wide{grid-column:span 2}.quiz-setting-card>.control-label:first-child{display:none}.quiz-setting-name{font-size:14px;font-weight:800;color:#25324b;margin:0}.quiz-setting-help{font-size:12px;line-height:1.45;color:#77839a;margin:5px 0 12px}.quiz-setting-card .row{margin-left:0;margin-right:0}.quiz-setting-card .switch{margin:0}.quiz-setting-card .form-control{min-height:42px;border-radius:9px}.quiz-setting-card .input-group-text{border-radius:0 9px 9px 0}.quiz-field-help{display:block;color:#77839a;font-size:12px;line-height:1.45;margin-top:7px}.quiz-settings-panel .text-danger{color:#e71921!important}.quiz-settings-actions{display:flex!important;justify-content:flex-end!important;gap:10px;padding:5px 0 0!important}.quiz-settings-actions .btn{min-width:112px;border-radius:9px;padding:10px 17px;font-weight:700}
+              @media(max-width:991px){.quiz-setting-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quiz-setting-card.quiz-setting-wide{grid-column:span 2}}
+              @media(max-width:767px){.quiz-settings-section{padding:15px}.quiz-setting-grid{grid-template-columns:1fr}.quiz-setting-card.quiz-setting-wide{grid-column:auto}.quiz-settings-actions{position:sticky;bottom:0;background:#fff;padding:12px!important;z-index:5;box-shadow:0 -5px 18px rgba(38,51,77,.1)}.quiz-settings-actions .btn{flex:1;min-width:0}}
+            </style>
             <div class="form-group col-md-12">
               <label class="control-label">Upload note for learner:</label>
               <textarea name="ques_upload_note" id="ques_upload_note" rows="3" class="form-control" placeholder="Example: Please upload a clear image or MP4 video. Maximum 10 MB."></textarea>

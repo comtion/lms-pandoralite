@@ -88,6 +88,7 @@ $routes->post('managecourse/quiz-questions/(:num)/update', 'QuizPortal::updateQu
 $routes->post('managecourse/quiz-questions/(:num)/status', 'QuizPortal::questionStatus/$1', ['filter' => 'auth']);
 $routes->get('managecourse/quizzes/(:num)/grading', 'QuizPortal::grading/$1', ['filter' => 'auth']);
 $routes->post('managecourse/quiz-answers/(:num)/grade', 'QuizPortal::gradeAnswer/$1', ['filter' => 'auth']);
+$routes->get('managecourse/quiz-answers/(:num)/download', 'QuizPortal::downloadAnswer/$1', ['filter' => 'auth']);
 $routes->get('managecourse/surveys', 'SurveyPortal::manage', ['filter' => 'auth']);
 $routes->get('managecourse/surveys/create', 'SurveyPortal::create', ['filter' => 'auth']);
 $routes->post('managecourse/surveys/create', 'SurveyPortal::store', ['filter' => 'auth']);

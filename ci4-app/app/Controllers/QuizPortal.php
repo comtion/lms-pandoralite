@@ -142,13 +142,19 @@ class QuizPortal extends BaseController
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Quiz Import');
-        $headers = ['type', 'question_eng', 'question_th', 'score', 'choice1', 'choice2', 'choice3', 'choice4', 'choice5', 'choice6', 'choice7', 'choice8', 'choice9', 'choice10', 'correct_answer', 'blank_score_mode', 'status'];
+        $headers = ['type', 'question_eng', 'question_th', 'score', 'choice1', 'choice2', 'choice3', 'choice4', 'choice5', 'choice6', 'choice7', 'choice8', 'choice9', 'choice10', 'correct_answer', 'blank_score_mode', 'text_match_mode', 'numeric_answer', 'numeric_tolerance', 'upload_required', 'upload_type', 'upload_max_mb', 'upload_note', 'status'];
         $sheet->fromArray($headers, null, 'A1');
         $sheet->fromArray(['multi', 'What is the correct safety step?', 'Correct safety step', 1, 'Wear PPE', 'Ignore warning sign', 'Skip inspection', '', '', '', '', '', '', '', 1, '', 1], null, 'A2');
         $sheet->fromArray(['text', 'Explain how to report an incident.', 'Incident report explanation', 2, '', '', '', '', '', '', '', '', '', '', '', '', 1], null, 'A3');
         $sheet->fromArray(['fill_blank', 'The emergency number is ____ and the assembly point is ____.', 'Emergency number and assembly point', 2, '191', 'Gate A', '', '', '', '', '', '', '', '', '', 'partial', 1], null, 'A4');
         $sheet->fromArray(['sort_order', 'Arrange the safety process.', 'Safety process order', 2, 'Inspect area', 'Wear PPE', 'Start work', '', '', '', '', '', '', '', '1,2,3', '', 1], null, 'A5');
-        foreach (range('A', 'Q') as $column) {
+        $sheet->fromArray(['multi_select', 'Select all required PPE.', '', 2, 'Helmet', 'Gloves', 'Sandals', '', '', '', '', '', '', '', '1,2', '', '', '', '', '', '', '', '', 1], null, 'A6');
+        $sheet->fromArray(['true_false', 'PPE is optional.', '', 1, '', '', '', '', '', '', '', '', '', '', '2', '', '', '', '', '', '', '', '', 1], null, 'A7');
+        $sheet->fromArray(['matching', 'Match each hazard.', '', 2, 'Fire ||| Extinguisher', 'Chemical ||| SDS', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 1], null, 'A8');
+        $sheet->fromArray(['numeric', 'Maximum safe value?', '', 1, '', '', '', '', '', '', '', '', '', '', '', '', '', '100', '0.5', '', '', '', '', 1], null, 'A9');
+        $sheet->fromArray(['short_answer', 'Enter the emergency code.', '', 1, 'CODE RED', 'RED CODE', '', '', '', '', '', '', '', '', '', '', 'exact', '', '', '', '', '', '', 1], null, 'A10');
+        $sheet->fromArray(['file_upload', 'Upload the completed inspection.', '', 5, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '1', 'document', '10', 'PDF or DOCX', 1], null, 'A11');
+        foreach (range('A', 'X') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
         $sheet->freezePane('A2');
@@ -193,6 +199,18 @@ class QuizPortal extends BaseController
         return redirect()->to(site_url('managecourse/quizzes/' . (int) ($result['quiz_id'] ?? 0) . '/grading'))->with($result['ok'] ? 'course_notice' : 'course_error', $result['message']);
     }
 
+    public function downloadAnswer($answerId)
+    {
+        $context = $this->adminContext('ru_view');
+        if (! is_array($context)) return $context;
+        $answer = (new QuizModel())->answerUpload((int) $answerId);
+        if (! $answer) throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Answer file');
+        $base = realpath(WRITEPATH . 'uploads/quiz_answers');
+        $path = realpath(WRITEPATH . 'uploads/quiz_answers/' . ltrim((string) $answer['tc_upload_file'], '/\\'));
+        if (! $base || ! $path || ! str_starts_with($path, $base . DIRECTORY_SEPARATOR) || ! is_file($path)) throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Answer file');
+        return $this->response->download($path, null)->setFileName(basename((string) ($answer['tc_upload_original'] ?: 'answer-file')));
+    }
+
     public function show($quizId)
     {
         $user = $this->session->get('user');
@@ -234,7 +252,15 @@ class QuizPortal extends BaseController
             $answers = [];
         }
 
-        $result = (new QuizModel())->submit((int) $quizId, $answers, $user, $lang);
+        $model = new QuizModel();
+        $uploadResult = $model->storeAnswerUploads((int) $quizId, (array) ($this->request->getFiles()['answer_files'] ?? []));
+        if (! $uploadResult['ok']) {
+            return redirect()->to(site_url('coursemain/quiz/' . (int) $quizId))->with('course_error', $uploadResult['message']);
+        }
+        $result = $model->submit((int) $quizId, $answers, $user, $lang, $uploadResult['uploads']);
+        if (! $result['ok']) {
+            $model->discardAnswerUploads($uploadResult['uploads']);
+        }
 
         return redirect()
             ->to(site_url('coursemain/quiz/' . (int) $quizId))
@@ -323,7 +349,7 @@ class QuizPortal extends BaseController
             } elseif (preg_match('/^choice(10|[1-9])$/', $correct, $match)) {
                 $correct = 'mul_c' . $match[1];
             }
-            if ($type === 'sort_order') {
+            if (in_array($type, ['sort_order', 'multi_select'], true)) {
                 $correct = implode(',', array_map(static function ($part) {
                     $part = trim(strtolower($part));
                     if (preg_match('/^(10|[1-9])$/', $part)) {
@@ -337,7 +363,7 @@ class QuizPortal extends BaseController
                 }, explode(',', $correct)));
             }
 
-            $questionType = in_array($type, ['text', 'fill_blank', 'sort_order'], true) ? $type : 'multi';
+            $questionType = in_array($type, ['multi', 'multi_select', 'true_false', '2choice', 'text', 'short_answer', 'fill_blank', 'sort_order', 'matching', 'numeric', 'file_upload'], true) ? $type : 'multi';
 
             $rows[] = [
                 '_line' => $mapped['_line'],
@@ -347,6 +373,13 @@ class QuizPortal extends BaseController
                 'ques_score' => $mapped['score'] ?? '1',
                 'ques_status' => ($mapped['status'] ?? '1') === '0' ? '0' : '1',
                 'ques_blank_score_mode' => ($mapped['blank_score_mode'] ?? '') === 'partial' ? 'partial' : 'all_or_nothing',
+                'ques_text_match_mode' => $mapped['text_match_mode'] ?? 'exact',
+                'ques_numeric_answer' => $mapped['numeric_answer'] ?? '',
+                'ques_numeric_tolerance' => $mapped['numeric_tolerance'] ?? '0',
+                'ques_upload_required' => ($mapped['upload_required'] ?? '0') === '1' ? '1' : '0',
+                'ques_upload_type' => $mapped['upload_type'] ?? 'both',
+                'ques_upload_max_mb' => $mapped['upload_max_mb'] ?? '10',
+                'ques_upload_note' => $mapped['upload_note'] ?? '',
                 'mul_c1_eng' => $mapped['choice1'] ?? '',
                 'mul_c2_eng' => $mapped['choice2'] ?? '',
                 'mul_c3_eng' => $mapped['choice3'] ?? '',

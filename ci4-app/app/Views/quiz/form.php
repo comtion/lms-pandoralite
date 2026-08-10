@@ -6,8 +6,14 @@ $dateValue = static fn ($value): string => ((string) $value === '' || str_starts
 $typeLabel = static function (string $type): string {
     return match ($type) {
         'text' => 'Text answer',
+        'short_answer' => 'Short answer (auto graded)',
+        'true_false', '2choice' => 'True / False',
+        'multi_select' => 'Multiple response',
         'fill_blank' => 'Fill in the blank',
         'sort_order' => 'Sort order',
+        'matching' => 'Matching',
+        'numeric' => 'Numeric answer',
+        'file_upload' => 'Essay / file upload',
         default => 'Multiple choice',
     };
 };
@@ -64,13 +70,16 @@ $typeLabel = static function (string $type): string {
         <section class="panel">
             <h2>Questions</h2>
             <form method="post" action="<?= site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/questions/create') ?>" class="grid"><?= csrf_field() ?>
-                <div class="field"><label>Question Type</label><select name="ques_type" id="questionType" class="question-type"><option value="multi">Multiple choice</option><option value="text">Text answer</option><option value="fill_blank">Fill in the blank</option><option value="sort_order">Sort order</option></select></div>
+                <div class="field"><label>Question Type</label><select name="ques_type" id="questionType" class="question-type"><option value="multi">Multiple choice</option><option value="multi_select">Multiple response</option><option value="true_false">True / False</option><option value="short_answer">Short answer (auto)</option><option value="fill_blank">Fill in the blank</option><option value="sort_order">Sort order</option><option value="matching">Matching</option><option value="numeric">Numeric answer</option><option value="text">Essay / text (manual)</option><option value="file_upload">Essay / file upload (manual)</option></select></div>
                 <div class="field"><label>Score</label><input type="number" step="0.01" min="0" name="ques_score" value="1"></div>
                 <div class="field"><label>Status</label><select name="ques_status"><option value="1">Active</option><option value="0">Inactive</option></select></div>
                 <div class="field full"><label>English Question</label><input name="ques_name_eng" required><div class="question-help">For fill in the blank, use ____ in the sentence for each answer field below.</div></div>
-                <div class="field full choice-settings"><label id="choiceLabel" class="choice-label">Choices / Answers / Sort Items</label><div class="choice-grid"><?php for ($i = 1; $i <= 10; $i++): ?><input name="mul_c<?= $i ?>_eng" placeholder="Choice <?= $i ?>"><?php endfor; ?></div></div>
-                <div class="field correct-answer"><label>Correct Answer</label><select name="mul_answer"><?php for ($i = 1; $i <= 10; $i++): ?><option value="mul_c<?= $i ?>">Choice <?= $i ?></option><?php endfor; ?></select><div class="question-help">For sort order imports use 1,2,3. In this form, the displayed item order is the correct order.</div></div>
+                <div class="field full choice-settings"><label id="choiceLabel" class="choice-label">Choices / Answers / Sort Items</label><div class="choice-grid"><?php for ($i = 1; $i <= 10; $i++): ?><input name="mul_c<?= $i ?>_eng" placeholder="Choice <?= $i ?>"><?php endfor; ?></div><div class="question-help matching-help">For matching, enter each pair as Left ||| Right.</div></div>
+                <div class="field correct-answer"><label>Correct Answer(s)</label><input name="mul_answer" value="mul_c1" placeholder="mul_c1 or mul_c1,mul_c3"><div class="question-help">Use comma-separated keys for multiple response, e.g. mul_c1,mul_c3.</div></div>
                 <div class="field blank-mode"><label>Fill Blank Scoring</label><select name="ques_blank_score_mode"><option value="all_or_nothing">All blanks must be correct</option><option value="partial">Partial score per correct blank</option></select></div>
+                <div class="field numeric-settings"><label>Numeric Answer</label><input type="number" step="any" name="ques_numeric_answer"></div><div class="field numeric-settings"><label>Tolerance (+/-)</label><input type="number" step="any" min="0" name="ques_numeric_tolerance" value="0"></div>
+                <div class="field short-settings"><label>Text Matching</label><select name="ques_text_match_mode"><option value="exact">Exact (case-insensitive)</option><option value="contains">Contains</option><option value="regex">Regular expression</option></select></div>
+                <div class="field upload-settings"><label>File Required</label><select name="ques_upload_required"><option value="0">No</option><option value="1">Yes</option></select></div><div class="field upload-settings"><label>Allowed Files</label><select name="ques_upload_type"><option value="both">Documents and images</option><option value="document">Documents only</option><option value="image">Images only</option></select></div><div class="field upload-settings"><label>Maximum MB</label><input type="number" min="1" max="50" name="ques_upload_max_mb" value="10"></div>
                 <div class="field full actions"><button class="btn primary" type="submit">Add Question</button></div>
             </form>
             <form method="post" enctype="multipart/form-data" action="<?= site_url('managecourse/quizzes/' . $quiz['qiz_id'] . '/questions/import') ?>" class="grid" style="border-top:1px solid var(--line);margin-top:18px;padding-top:18px"><?= csrf_field() ?>
@@ -90,13 +99,16 @@ $typeLabel = static function (string $type): string {
                             <details>
                                 <summary>Edit question</summary>
                                 <form method="post" action="<?= site_url('managecourse/quiz-questions/' . $question['ques_id'] . '/update') ?>" class="grid edit-question"><?= csrf_field() ?>
-                                    <div class="field"><label>Question Type</label><select name="ques_type" class="question-type"><option value="multi" <?= (string) $question['ques_type'] === 'multi' ? 'selected' : '' ?>>Multiple choice</option><option value="text" <?= (string) $question['ques_type'] === 'text' ? 'selected' : '' ?>>Text answer</option><option value="fill_blank" <?= (string) $question['ques_type'] === 'fill_blank' ? 'selected' : '' ?>>Fill in the blank</option><option value="sort_order" <?= (string) $question['ques_type'] === 'sort_order' ? 'selected' : '' ?>>Sort order</option></select></div>
+                                    <div class="field"><label>Question Type</label><select name="ques_type" class="question-type"><?php foreach (['multi'=>'Multiple choice','multi_select'=>'Multiple response','true_false'=>'True / False','short_answer'=>'Short answer (auto)','fill_blank'=>'Fill in the blank','sort_order'=>'Sort order','matching'=>'Matching','numeric'=>'Numeric answer','text'=>'Essay / text (manual)','file_upload'=>'Essay / file upload (manual)'] as $value=>$label): ?><option value="<?= esc($value) ?>" <?= in_array((string)$question['ques_type'], $value === 'true_false' ? ['true_false','2choice'] : [$value], true) ? 'selected' : '' ?>><?= esc($label) ?></option><?php endforeach; ?></select></div>
                                     <div class="field"><label>Score</label><input type="number" step="0.01" min="0" name="ques_score" value="<?= esc($question['ques_score']) ?>"></div>
                                     <div class="field"><label>Status</label><select name="ques_status"><option value="1" <?= (string) $question['ques_status'] === '1' ? 'selected' : '' ?>>Active</option><option value="0" <?= (string) $question['ques_status'] === '0' ? 'selected' : '' ?>>Inactive</option></select></div>
                                     <div class="field full"><label>English Question</label><input name="ques_name_eng" required value="<?= esc($question['ques_name_eng'] ?? '') ?>"><div class="question-help">For fill in the blank, use ____ in the sentence for each answer field below.</div></div>
                                     <div class="field full choice-settings"><label class="choice-label">Choices / Answers / Sort Items</label><div class="choice-grid"><?php for ($i = 1; $i <= 10; $i++): ?><input name="mul_c<?= $i ?>_eng" value="<?= esc($choiceRow['mul_c' . $i . '_eng'] ?? '') ?>" placeholder="Choice <?= $i ?>"><?php endfor; ?></div></div>
-                                    <div class="field correct-answer"><label>Correct Answer</label><select name="mul_answer"><?php for ($i = 1; $i <= 10; $i++): ?><option value="mul_c<?= $i ?>" <?= $correctAnswer === 'mul_c' . $i ? 'selected' : '' ?>>Choice <?= $i ?></option><?php endfor; ?></select><div class="question-help">For sort order, the item order above is the correct order.</div></div>
+                                    <div class="field correct-answer"><label>Correct Answer(s)</label><input name="mul_answer" value="<?= esc($correctAnswer) ?>"><div class="question-help">Comma-separated keys are supported.</div></div>
                                     <div class="field blank-mode"><label>Fill Blank Scoring</label><select name="ques_blank_score_mode"><option value="all_or_nothing" <?= (string) ($question['ques_blank_score_mode'] ?? 'all_or_nothing') === 'all_or_nothing' ? 'selected' : '' ?>>All blanks must be correct</option><option value="partial" <?= (string) ($question['ques_blank_score_mode'] ?? '') === 'partial' ? 'selected' : '' ?>>Partial score per correct blank</option></select></div>
+                                    <div class="field numeric-settings"><label>Numeric Answer</label><input type="number" step="any" name="ques_numeric_answer" value="<?= esc($question['ques_numeric_answer'] ?? '') ?>"></div><div class="field numeric-settings"><label>Tolerance (+/-)</label><input type="number" step="any" min="0" name="ques_numeric_tolerance" value="<?= esc($question['ques_numeric_tolerance'] ?? '0') ?>"></div>
+                                    <div class="field short-settings"><label>Text Matching</label><select name="ques_text_match_mode"><?php foreach (['exact'=>'Exact','contains'=>'Contains','regex'=>'Regular expression'] as $value=>$label): ?><option value="<?= esc($value) ?>" <?= (string)($question['ques_text_match_mode'] ?? 'exact') === $value ? 'selected' : '' ?>><?= esc($label) ?></option><?php endforeach; ?></select></div>
+                                    <div class="field upload-settings"><label>File Required</label><select name="ques_upload_required"><option value="0">No</option><option value="1" <?= (string)($question['ques_upload_required'] ?? '0') === '1' ? 'selected' : '' ?>>Yes</option></select></div><div class="field upload-settings"><label>Allowed Files</label><select name="ques_upload_type"><?php foreach (['both'=>'Documents and images','document'=>'Documents only','image'=>'Images only'] as $value=>$label): ?><option value="<?= esc($value) ?>" <?= (string)($question['ques_upload_type'] ?? 'both') === $value ? 'selected' : '' ?>><?= esc($label) ?></option><?php endforeach; ?></select></div><div class="field upload-settings"><label>Maximum MB</label><input type="number" min="1" max="50" name="ques_upload_max_mb" value="<?= esc($question['ques_upload_max_mb'] ?? '10') ?>"></div>
                                     <div class="field full actions"><button class="btn primary" type="submit">Save Question</button></div>
                                 </form>
                             </details>
@@ -116,10 +128,14 @@ function syncQuestionFields(select) {
     const correctAnswer = form ? form.querySelector('.correct-answer') : null;
     const blankMode = form ? form.querySelector('.blank-mode') : null;
     const choiceLabel = form ? form.querySelector('.choice-label') : null;
-    if (choiceSettings) choiceSettings.style.display = type === 'text' ? 'none' : '';
-    if (correctAnswer) correctAnswer.style.display = type === 'multi' ? '' : 'none';
+    const choiceTypes = ['multi','multi_select','short_answer','fill_blank','sort_order','matching'];
+    if (choiceSettings) choiceSettings.style.display = choiceTypes.includes(type) ? '' : 'none';
+    if (correctAnswer) correctAnswer.style.display = ['multi','multi_select','true_false'].includes(type) ? '' : 'none';
     if (blankMode) blankMode.style.display = type === 'fill_blank' ? '' : 'none';
-    if (choiceLabel) choiceLabel.textContent = type === 'fill_blank' ? 'Blank Answers' : (type === 'sort_order' ? 'Items in Correct Order' : 'Choices');
+    form.querySelectorAll('.numeric-settings').forEach(el => el.style.display = type === 'numeric' ? '' : 'none');
+    form.querySelectorAll('.short-settings').forEach(el => el.style.display = type === 'short_answer' ? '' : 'none');
+    form.querySelectorAll('.upload-settings').forEach(el => el.style.display = type === 'file_upload' ? '' : 'none');
+    if (choiceLabel) choiceLabel.textContent = type === 'fill_blank' || type === 'short_answer' ? 'Accepted Answers' : (type === 'sort_order' ? 'Items in Correct Order' : (type === 'matching' ? 'Matching Pairs (Left ||| Right)' : 'Choices'));
 }
 document.querySelectorAll('.question-type').forEach((select) => {
     select.addEventListener('change', () => syncQuestionFields(select));

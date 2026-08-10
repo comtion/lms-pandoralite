@@ -167,7 +167,7 @@ class QuizModel extends Model
         ];
         $this->db->table('lms_ques')->insert($data);
         $questionId = (int) $this->db->insertID();
-        if (in_array($data['ques_type'], ['multi', 'fill_blank', 'sort_order'], true)) {
+        if ($this->usesChoices((string) $data['ques_type'])) {
             $this->saveChoices($questionId, $payload['choices'], $user);
         }
         $this->db->transComplete();
@@ -216,7 +216,7 @@ class QuizModel extends Model
             ];
             $this->db->table('lms_ques')->insert($data);
             $questionId = (int) $this->db->insertID();
-            if (in_array($data['ques_type'], ['multi', 'fill_blank', 'sort_order'], true)) {
+            if ($this->usesChoices((string) $data['ques_type'])) {
                 $this->saveChoices($questionId, $payload['choices'], $user);
             }
         }
@@ -247,7 +247,7 @@ class QuizModel extends Model
         ];
         $this->db->transStart();
         $this->db->table('lms_ques')->where('ques_id', $questionId)->update($data);
-        if (in_array($data['ques_type'], ['multi', 'fill_blank', 'sort_order'], true)) {
+        if ($this->usesChoices((string) $data['ques_type'])) {
             $this->saveChoices($questionId, $payload['choices'], $user);
         } else {
             $this->db->table('lms_ques_mul')->where('ques_id', $questionId)->update(['mul_isDelete' => 1]);
@@ -292,7 +292,7 @@ class QuizModel extends Model
             ->join('lms_ques', 'lms_ques.ques_id = lms_ques_tc.ques_id')
             ->join('lms_emp', 'lms_emp.emp_id = lms_ques_tc.emp_id', 'left')
             ->where('lms_ques_tc.qiz_id', $quizId)
-            ->whereNotIn('lms_ques.ques_type', ['multi', '2choice', 'fill_blank', 'sort_order'])
+            ->whereNotIn('lms_ques.ques_type', ['multi', '2choice', 'true_false', 'multi_select', 'fill_blank', 'sort_order', 'matching', 'numeric', 'short_answer'])
             ->orderBy('lms_ques_tc.tc_finish', 'DESC')
             ->limit(300)
             ->get()
@@ -309,6 +309,8 @@ class QuizModel extends Model
     public function gradeAnswer(int $answerId, float $score, string $note, array $user): array
     {
         $answer = $this->db->table('lms_ques_tc')
+            ->select('lms_ques_tc.*, lms_ques.ques_score')
+            ->join('lms_ques', 'lms_ques.ques_id = lms_ques_tc.ques_id')
             ->where('tc_id', $answerId)
             ->get()
             ->getRowArray();
@@ -317,13 +319,19 @@ class QuizModel extends Model
         }
 
         $this->db->table('lms_ques_tc')->where('tc_id', $answerId)->update([
-            'tc_score' => max(0, $score),
+            'tc_score' => min((float) $answer['ques_score'], max(0, $score)),
             'tc_note' => $note,
             'tc_isSavescore' => 1,
         ]);
         $this->recalculateAttempt((int) $answer['qiztc_id']);
 
         return ['ok' => true, 'message' => 'Answer score updated.', 'quiz_id' => (int) $answer['qiz_id']];
+    }
+
+    public function answerUpload(int $answerId): ?array
+    {
+        $row = $this->db->table('lms_ques_tc')->select('tc_upload_file, tc_upload_original, tc_upload_type')->where('tc_id', $answerId)->where('tc_upload_file !=', '')->get()->getRowArray();
+        return $row ?: null;
     }
 
     public function quizDetail(int $quizId, array $user, string $lang): ?array
@@ -343,7 +351,7 @@ class QuizModel extends Model
         return $quiz;
     }
 
-    public function submit(int $quizId, array $answers, array $user, string $lang): array
+    public function submit(int $quizId, array $answers, array $user, string $lang, array $uploads = []): array
     {
         $quiz = $this->quizDetail($quizId, $user, $lang);
         if (! $quiz) {
@@ -354,10 +362,19 @@ class QuizModel extends Model
         if (! $enrollment) {
             return ['ok' => false, 'message' => 'Enrollment is required before taking quiz.'];
         }
+        $attemptLimit = max(0, (int) ($quiz['quiz_limitval'] ?? 0));
+        if ($attemptLimit > 0 && $this->attemptCount($quizId, $user, (int) $enrollment['cosen_id']) >= $attemptLimit) {
+            return ['ok' => false, 'message' => 'The attempt limit for this quiz has been reached.'];
+        }
 
         $questions = $quiz['questions'];
         if ($questions === []) {
             return ['ok' => false, 'message' => 'This quiz has no active questions.'];
+        }
+        foreach ($questions as $question) {
+            if ((string) $question['ques_type'] === 'file_upload' && ! empty($question['ques_upload_required']) && empty($uploads[$question['ques_id']]['stored'])) {
+                return ['ok' => false, 'message' => 'A required answer file is missing for: ' . $question['title']];
+            }
         }
 
         $totalScore = 0.0;
@@ -395,6 +412,7 @@ class QuizModel extends Model
             $answer = $this->answerForStorage($rawAnswer);
             $score = $scoreData['score'];
 
+            $upload = $uploads[$question['ques_id']] ?? [];
             $this->db->table('lms_ques_tc')->insert([
                 'qiztc_id' => $attemptId,
                 'qiz_id' => $quizId,
@@ -407,6 +425,9 @@ class QuizModel extends Model
                 'tc_score' => $score,
                 'tc_number' => $number,
                 'tc_note' => '',
+                'tc_upload_file' => (string) ($upload['stored'] ?? ''),
+                'tc_upload_original' => (string) ($upload['original'] ?? ''),
+                'tc_upload_type' => (string) ($upload['mime'] ?? ''),
                 'cosen_id' => $enrollment['cosen_id'],
                 'tc_isSavescore' => (int) ($question['ques_isSavescore'] ?? 0),
             ]);
@@ -431,6 +452,43 @@ class QuizModel extends Model
             'passed' => $percent >= (float) ($quiz['quiz_maxscore'] ?? 0),
             'progress' => $progress,
         ];
+    }
+
+    public function storeAnswerUploads(int $quizId, array $files): array
+    {
+        $questions = $this->db->table('lms_ques')->where('qiz_id', $quizId)->where('ques_type', 'file_upload')->where('ques_status', '1')->where('ques_isDelete', '0')->get()->getResultArray();
+        $rules = [];
+        foreach ($questions as $question) $rules[(int) $question['ques_id']] = $question;
+        $uploads = [];
+        $documentMimes = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-powerpoint','application/vnd.openxmlformats-officedocument.presentationml.presentation','text/plain'];
+        $imageMimes = ['image/jpeg','image/png','image/webp'];
+        foreach ($files as $questionId => $file) {
+            $questionId = (int) $questionId;
+            if (! isset($rules[$questionId]) || ! $file instanceof \CodeIgniter\HTTP\Files\UploadedFile || $file->getError() === UPLOAD_ERR_NO_FILE) continue;
+            if (! $file->isValid()) return ['ok' => false, 'message' => 'One of the answer files could not be uploaded.', 'uploads' => []];
+            $type = (string) ($rules[$questionId]['ques_upload_type'] ?? 'both');
+            $allowed = $type === 'image' ? $imageMimes : ($type === 'document' ? $documentMimes : array_merge($imageMimes, $documentMimes));
+            $mime = $file->getMimeType();
+            if (! in_array($mime, $allowed, true)) return ['ok' => false, 'message' => 'File type is not allowed for question #' . $questionId . '.', 'uploads' => []];
+            $maxBytes = min(50, max(1, (int) ($rules[$questionId]['ques_upload_max_mb'] ?? 10))) * 1024 * 1024;
+            if ($file->getSize() > $maxBytes) return ['ok' => false, 'message' => 'File is too large for question #' . $questionId . '.', 'uploads' => []];
+            $directory = WRITEPATH . 'uploads/quiz_answers/' . date('Y/m');
+            if (! is_dir($directory) && ! mkdir($directory, 0750, true) && ! is_dir($directory)) return ['ok' => false, 'message' => 'Answer upload directory is unavailable.', 'uploads' => []];
+            $stored = $file->getRandomName();
+            $file->move($directory, $stored);
+            $uploads[$questionId] = ['stored' => date('Y/m') . '/' . $stored, 'original' => basename($file->getClientName()), 'mime' => $mime];
+        }
+        return ['ok' => true, 'message' => '', 'uploads' => $uploads];
+    }
+
+    public function discardAnswerUploads(array $uploads): void
+    {
+        $base = realpath(WRITEPATH . 'uploads/quiz_answers');
+        if (! $base) return;
+        foreach ($uploads as $upload) {
+            $path = realpath($base . DIRECTORY_SEPARATOR . ltrim((string) ($upload['stored'] ?? ''), '/\\'));
+            if ($path && str_starts_with($path, $base . DIRECTORY_SEPARATOR) && is_file($path)) @unlink($path);
+        }
     }
 
     private function quizRow(int $quizId): ?array
@@ -464,7 +522,7 @@ class QuizModel extends Model
             $row['title'] = $this->localized($row, $lang, 'ques_name');
             $row['choices'] = [];
             $row['correct_answers'] = [];
-            if (in_array((string) $row['ques_type'], ['multi', 'fill_blank', 'sort_order'], true)) {
+            if ($this->usesChoices((string) $row['ques_type'])) {
                 $multi = $this->db->table('lms_ques_mul')
                     ->where('ques_id', $row['ques_id'])
                     ->where('mul_status', '1')
@@ -482,8 +540,22 @@ class QuizModel extends Model
                     $row['correct_answers'] = array_values(array_filter(array_map('trim', explode(',', (string) ($multi['mul_answer'] ?? '')))));
                     if ((string) $row['ques_type'] === 'fill_blank') {
                         $row['blank_answers'] = array_map(static fn ($choice) => $choice['text'], $row['choices']);
+                    } elseif ((string) $row['ques_type'] === 'short_answer') {
+                        $row['blank_answers'] = array_map(static fn ($choice) => $choice['text'], $row['choices']);
                     } elseif ((string) $row['ques_type'] === 'sort_order') {
                         shuffle($row['choices']);
+                    } elseif ((string) $row['ques_type'] === 'matching') {
+                        $pairs = [];
+                        foreach ($row['choices'] as $choice) {
+                            [$left, $right] = array_pad(explode('|||', $choice['text'], 2), 2, '');
+                            if (trim($left) !== '' && trim($right) !== '') {
+                                $pairs[] = ['value' => $choice['value'], 'left' => trim($left), 'right' => trim($right)];
+                            }
+                        }
+                        $rights = array_map(static fn ($pair) => ['value' => $pair['value'], 'text' => $pair['right']], $pairs);
+                        shuffle($rights);
+                        $row['matching_pairs'] = $pairs;
+                        $row['matching_rights'] = $rights;
                     }
                 }
             }
@@ -594,7 +666,10 @@ class QuizModel extends Model
         }
 
         $type = (string) ($input['ques_type'] ?? 'multi');
-        if (! in_array($type, ['multi', 'text', 'fill_blank', 'sort_order'], true)) {
+        if ($type === '2choice') {
+            $type = 'true_false';
+        }
+        if (! in_array($type, ['multi', 'true_false', 'multi_select', 'text', 'short_answer', 'fill_blank', 'sort_order', 'matching', 'numeric', 'file_upload'], true)) {
             $type = 'multi';
         }
 
@@ -604,9 +679,7 @@ class QuizModel extends Model
             $choices['mul_c' . $i . '_th'] = trim((string) ($input['mul_c' . $i . '_th'] ?? ''));
             $choices['mul_c' . $i . '_jp'] = trim((string) ($input['mul_c' . $i . '_jp'] ?? ''));
         }
-        $answer = $this->normalizeCorrectAnswer($type, (string) ($input['mul_answer'] ?? 'mul_c1'), $choices);
-
-        if ($type === 'multi' && ! $this->hasAnyEnglishChoice($choices)) {
+        if (in_array($type, ['multi', 'multi_select'], true) && ! $this->hasAnyEnglishChoice($choices)) {
             return ['ok' => false, 'message' => 'At least one English choice is required.'];
         }
         if ($type === 'fill_blank' && ! $this->hasAnyEnglishChoice($choices)) {
@@ -622,6 +695,37 @@ class QuizModel extends Model
             if ($itemCount < 2) {
                 return ['ok' => false, 'message' => 'Sort order questions require at least two English items.'];
             }
+        }
+        if ($type === 'true_false') {
+            $choices['mul_c1_eng'] = 'True';
+            $choices['mul_c1_th'] = 'ถูก';
+            $choices['mul_c2_eng'] = 'False';
+            $choices['mul_c2_th'] = 'ผิด';
+        }
+        if ($type === 'matching') {
+            $pairCount = count(array_filter($this->choiceKeys(), static fn ($key) => str_contains((string) ($choices[$key . '_eng'] ?? ''), '|||')));
+            if ($pairCount < 2) {
+                return ['ok' => false, 'message' => 'Matching questions require at least two pairs written as Left ||| Right.'];
+            }
+        }
+        if ($type === 'short_answer' && ! $this->hasAnyEnglishChoice($choices)) {
+            return ['ok' => false, 'message' => 'Short answer questions require at least one accepted answer.'];
+        }
+        $requestedMatchMode = (string) ($input['ques_text_match_mode'] ?? 'exact');
+        $textMatchMode = in_array($requestedMatchMode, ['exact', 'contains', 'regex'], true) ? $requestedMatchMode : 'exact';
+        if ($type === 'short_answer' && $textMatchMode === 'regex') {
+            foreach ($this->choiceKeys() as $key) {
+                $pattern = trim((string) ($choices[$key . '_eng'] ?? ''));
+                if ($pattern !== '' && (strlen($pattern) > 200 || @preg_match($pattern, '') === false)) {
+                    return ['ok' => false, 'message' => 'Every regular expression answer must be valid and at most 200 characters.'];
+                }
+            }
+        }
+        $answer = $this->normalizeCorrectAnswer($type, (string) ($input['mul_answer'] ?? 'mul_c1'), $choices);
+        $numericAnswer = trim((string) ($input['ques_numeric_answer'] ?? ''));
+        $numericTolerance = trim((string) ($input['ques_numeric_tolerance'] ?? '0'));
+        if ($type === 'numeric' && (! is_numeric($numericAnswer) || ! is_numeric($numericTolerance) || (float) $numericTolerance < 0)) {
+            return ['ok' => false, 'message' => 'Numeric questions require a valid answer and a non-negative tolerance.'];
         }
 
         $blankScoreMode = (string) ($input['ques_blank_score_mode'] ?? 'all_or_nothing');
@@ -648,8 +752,15 @@ class QuizModel extends Model
                 'ques_hintdetail_jp' => '',
                 'ques_hintimg' => '',
                 'ques_status' => (int) ($input['ques_status'] ?? 1),
-                'ques_isSavescore' => in_array($type, ['multi', 'fill_blank', 'sort_order'], true) ? 1 : 0,
+                'ques_isSavescore' => in_array($type, ['multi', 'true_false', 'multi_select', 'short_answer', 'fill_blank', 'sort_order', 'matching', 'numeric'], true) ? 1 : 0,
                 'ques_blank_score_mode' => $blankScoreMode,
+                'ques_numeric_answer' => $type === 'numeric' ? (float) $numericAnswer : null,
+                'ques_numeric_tolerance' => $type === 'numeric' ? (float) $numericTolerance : 0,
+                'ques_text_match_mode' => $textMatchMode,
+                'ques_upload_required' => $type === 'file_upload' ? (int) ($input['ques_upload_required'] ?? 0) : 0,
+                'ques_upload_type' => in_array((string) ($input['ques_upload_type'] ?? 'both'), ['document', 'image', 'both'], true) ? (string) $input['ques_upload_type'] : 'both',
+                'ques_upload_max_mb' => min(50, max(1, (int) ($input['ques_upload_max_mb'] ?? 10))),
+                'ques_upload_note' => trim((string) ($input['ques_upload_note'] ?? '')),
             ],
             'choices' => $choices + ['mul_answer' => $answer],
         ];
@@ -682,7 +793,7 @@ class QuizModel extends Model
     private function normalizeCorrectAnswer(string $type, string $answer, array $choices): string
     {
         $validKeys = $this->choiceKeys();
-        if ($type === 'multi') {
+        if (in_array($type, ['multi', '2choice', 'true_false'], true)) {
             if (in_array($answer, $validKeys, true) && trim((string) ($choices[$answer . '_eng'] ?? '')) !== '') {
                 return $answer;
             }
@@ -694,6 +805,25 @@ class QuizModel extends Model
             }
 
             return 'mul_c1';
+        }
+
+        if (in_array($type, ['multi_select', 'matching'], true)) {
+            $keys = [];
+            foreach ($validKeys as $key) {
+                if (trim((string) ($choices[$key . '_eng'] ?? '')) !== '') {
+                    $keys[] = $key;
+                }
+            }
+            if ($type === 'matching') {
+                return implode(',', $keys);
+            }
+            $submitted = array_unique(array_filter(array_map('trim', explode(',', strtolower($answer)))));
+            $selected = array_values(array_intersect($validKeys, $submitted));
+            return implode(',', $selected !== [] ? $selected : array_slice($keys, 0, 1));
+        }
+
+        if ($type === 'short_answer') {
+            return implode(',', array_filter($validKeys, static fn ($key) => trim((string) ($choices[$key . '_eng'] ?? '')) !== ''));
         }
 
         if ($type === 'fill_blank') {
@@ -761,9 +891,42 @@ class QuizModel extends Model
         $maxScore = (float) ($question['ques_score'] ?? 0);
         $type = (string) ($question['ques_type'] ?? '');
 
-        if ($type === 'multi') {
+        if (in_array($type, ['multi', '2choice', 'true_false'], true)) {
             $answer = is_array($rawAnswer) ? '' : (string) ($rawAnswer ?? '');
             return ['score' => in_array($answer, $question['correct_answers'] ?? [], true) ? $maxScore : 0.0];
+        }
+
+        if ($type === 'multi_select') {
+            $submitted = is_array($rawAnswer) ? array_values(array_unique(array_map('strval', $rawAnswer))) : [];
+            $expected = array_values(array_unique((array) ($question['correct_answers'] ?? [])));
+            sort($submitted);
+            sort($expected);
+            return ['score' => $expected !== [] && $submitted === $expected ? $maxScore : 0.0];
+        }
+
+        if ($type === 'matching') {
+            $submitted = is_array($rawAnswer) ? $rawAnswer : [];
+            $expected = array_column((array) ($question['matching_pairs'] ?? []), 'value', 'value');
+            return ['score' => $expected !== [] && count(array_diff_assoc($expected, $submitted)) === 0 && count($submitted) === count($expected) ? $maxScore : 0.0];
+        }
+
+        if ($type === 'numeric') {
+            if (is_array($rawAnswer) || ! is_numeric(trim((string) $rawAnswer))) {
+                return ['score' => 0.0];
+            }
+            return ['score' => abs((float) $rawAnswer - (float) ($question['ques_numeric_answer'] ?? 0)) <= (float) ($question['ques_numeric_tolerance'] ?? 0) ? $maxScore : 0.0];
+        }
+
+        if ($type === 'short_answer') {
+            if (is_array($rawAnswer)) return ['score' => 0.0];
+            $actual = $this->normalizeLearnerText((string) $rawAnswer);
+            $mode = (string) ($question['ques_text_match_mode'] ?? 'exact');
+            foreach ((array) ($question['blank_answers'] ?? []) as $candidate) {
+                $expected = $this->normalizeLearnerText((string) $candidate);
+                $matched = $mode === 'contains' ? str_contains($actual, $expected) : ($mode === 'regex' ? @preg_match((string) $candidate, (string) $rawAnswer) === 1 : $actual === $expected);
+                if ($expected !== '' && $matched) return ['score' => $maxScore];
+            }
+            return ['score' => 0.0];
         }
 
         if ($type === 'fill_blank') {
@@ -810,6 +973,11 @@ class QuizModel extends Model
     private function normalizeLearnerText(string $value): string
     {
         return mb_strtolower(trim(preg_replace('/\s+/u', ' ', $value) ?? $value), 'UTF-8');
+    }
+
+    private function usesChoices(string $type): bool
+    {
+        return in_array($type, ['multi', '2choice', 'true_false', 'multi_select', 'short_answer', 'fill_blank', 'sort_order', 'matching'], true);
     }
 
     private function recalculateAttempt(int $attemptId): void
