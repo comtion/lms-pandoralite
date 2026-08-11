@@ -3,11 +3,11 @@ $title = (isset($lang) && $lang === 'thai')
     ? 'โปรไฟล์ของฉัน | ISUZU E-Learning'
     : 'My Profile | ISUZU E-Learning';
 ?>
-<?php $this->load->view('frontend/inc/inc-meta-dashboard.php'); ?>
+<?php $this->load->view('frontend/inc/inc-meta-dashboard.php', array('title' => $title)); ?>
     <link rel="stylesheet" type="text/css" href="<?php echo REAL_PATH; ?>/assets/plugins/datatables/media/css/dataTables.bootstrap4.css">
 <!-- Page CSS -->
 <link href="<?php echo REAL_PATH; ?>/assets/css/pages/contact-app-page.css" rel="stylesheet">
-<link href="<?php echo REAL_PATH; ?>/assets/css/profile-luxury.css?v=20260806-5" rel="stylesheet">
+<link href="<?php echo REAL_PATH; ?>/assets/css/profile-luxury.css?v=20260811-5" rel="stylesheet">
     <style type="text/css">
         .transparent {
           color: rgb(0, 0, 0);
@@ -276,21 +276,20 @@ $title = (isset($lang) && $lang === 'thai')
                                                   }else{
                                                     $ugname = $profile['ug_name_en'];
                                                   } 
+                                                  $departmentName = $lang == "thai"
+                                                    ? (!empty($profile['dep_name_th']) ? $profile['dep_name_th'] : '-')
+                                                    : (!empty($profile['dep_name_en']) ? $profile['dep_name_en'] : '-');
+                                                  $positionName = $lang == "thai"
+                                                    ? (!empty($profile['posi_name_th']) ? $profile['posi_name_th'] : '-')
+                                                    : (!empty($profile['posi_name_en']) ? $profile['posi_name_en'] : '-');
                                                   echo $ugname; ?>
                                     </h6>
                                 </center>
-                                <div class="profile-signature"></div>
-                                <?php if($profile['email']!=""){ ?>
-                                    <h6 class="card-title profile-contact"><i class="mdi mdi-email-outline"></i><span><?php echo $profile['email']; ?></span></h6>
-                                <?php } ?>
-                                <?php if($profile['work_phone']!=""){ ?>
-                                    <h6 class="card-title profile-contact"><i class="mdi mdi-phone"></i><span><?php echo $profile['work_phone']; ?></span></h6>
-                                <?php } ?>
-                                <div class="profile-account-meta">
-                                  <h5><?php echo $lang == 'thai' ? 'เกี่ยวกับบัญชี' : 'Account details'; ?></h5>
-                                  <p><i class="mdi mdi-account-outline"></i><span><?php echo $lang == 'thai' ? 'บทบาท' : 'Role'; ?></span><strong><?php echo $ugname; ?></strong></p>
-                                  <p><i class="mdi mdi-shield"></i><span><?php echo $lang == 'thai' ? 'สถานะ' : 'Status'; ?></span><strong><?php echo $lang == 'thai' ? 'เปิดใช้งาน' : 'Active'; ?></strong></p>
-                                </div>
+                                <ul class="nav nav-tabs profile-tab" role="tablist">
+                                  <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#setting" role="tab"><i class="mdi mdi-account-outline"></i><span><?php echo label('ManageSetting'); ?></span></a></li>
+                                  <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#certificate" role="tab"><i class="mdi mdi-certificate"></i><span><?php echo label('certificate'); ?></span></a></li>
+                                </ul>
+                                <a class="profile-inline-logout" href="<?php echo REAL_PATH; ?>/dashboard/logout"><i class="mdi mdi-logout"></i><span><?php echo $lang == 'thai' ? 'ออกจากระบบ' : 'Sign out'; ?></span></a>
                                 <!-- <?php if($profile['bgpic_user']!=""){ ?>
                                   </div>
                                 <?php } ?> -->
@@ -301,18 +300,21 @@ $title = (isset($lang) && $lang === 'thai')
                     <!-- Column -->
                     <div class="col-lg-8 col-xlg-8 col-md-8 profile-form-column">
                         <div class="card profile-workspace-card">
-                            <!-- Nav tabs -->
-                            <ul class="nav nav-tabs profile-tab" role="tablist"><!-- 
-                              <?php if($user['Is_admin']=="0"){ ?>
-                                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#home" role="tab">Timeline</a> </li>
-                              <?php } ?> -->
-                                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#setting" role="tab"><?php echo label('ManageSetting'); ?></a> </li>
-                                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#certificate" role="tab"><?php echo label('certificate'); ?></a> </li>
-                            </ul>
+                            <div class="profile-workspace-heading">
+                              <h2><?php echo $lang == 'thai' ? 'ข้อมูลส่วนตัว' : 'Personal information'; ?></h2>
+                              <p><?php echo $lang == 'thai' ? 'ตรวจสอบข้อมูลส่วนตัวและช่องทางการติดต่อของคุณ' : 'Review your identity and contact information'; ?></p>
+                            </div>
+                            <div class="profile-summary-strip" aria-label="<?php echo $lang == 'thai' ? 'สรุปข้อมูลบัญชี' : 'Account summary'; ?>">
+                              <div class="profile-summary-item"><span class="profile-summary-icon"><i class="mdi mdi-email-outline"></i></span><span><small><?php echo $lang == 'thai' ? 'อีเมล' : 'Email'; ?></small><strong><?php echo $profile['email']; ?></strong></span></div>
+                              <div class="profile-summary-item"><span class="profile-summary-icon"><i class="mdi mdi-phone"></i></span><span><small><?php echo $lang == 'thai' ? 'เบอร์โทรศัพท์' : 'Phone number'; ?></small><strong><?php echo $profile['work_phone']; ?></strong></span></div>
+                              <div class="profile-summary-item"><span class="profile-summary-icon"><i class="mdi mdi-domain"></i></span><span><small><?php echo $lang == 'thai' ? 'แผนก' : 'Department'; ?></small><strong><?php echo $departmentName; ?></strong></span></div>
+                              <div class="profile-summary-item"><span class="profile-summary-icon"><i class="mdi mdi-briefcase-outline"></i></span><span><small><?php echo $lang == 'thai' ? 'ตำแหน่งงาน' : 'Job position'; ?></small><strong><?php echo $positionName; ?></strong></span></div>
+                              <div class="profile-summary-item profile-summary-status"><span class="profile-summary-icon"><i class="mdi mdi-check-circle-outline"></i></span><span><small><?php echo $lang == 'thai' ? 'สถานะ' : 'Status'; ?></small><strong><?php echo $lang == 'thai' ? 'เปิดใช้งาน' : 'Active'; ?></strong></span></div>
+                            </div>
                             <!-- Tab panes -->
                             <div class="tab-content">
 
-                                <div class="tab-pane active" id="certificate" role="tabpanel">
+                                <div class="tab-pane" id="certificate" role="tabpanel">
                                     <div class="card-body certificate-gallery-panel">
                                         <?php if($user['Is_admin']!="0"&&$user['ug_for']=="OWNER"){ ?>
                                         <form  enctype="multipart/form-data" id="certificate_form" name="certificate_form" autocomplete="off" method="POST" accept-charset="utf-8"  class="form-horizontal p-t-20">
@@ -388,16 +390,17 @@ $title = (isset($lang) && $lang === 'thai')
                                     </div>
                                 </div>
 
-                                <div class="tab-pane" id="setting" role="tabpanel">
+                                <div class="tab-pane active" id="setting" role="tabpanel">
                                     <div class="card card-body profile-settings-panel">
                                         <form method="post" id="userprofile_form" autocomplete="off" name="userprofile_form" enctype="multipart/form-data"  class="form-horizontal form-material" role="form">
                                           <div class="profile-upload-field" aria-hidden="true">
                                             <input type="file" name="img_profile" id="img_profile" accept="image/png, image/jpeg, image/gif" tabindex="-1" />
                                             <input type="hidden" id="img_profile_ori" name="img_profile_ori" value="<?php echo $profile['img_profile']; ?>">
                                           </div>
-                                          <div class="profile-form-heading">
-                                            <h3><?php echo $lang == 'thai' ? 'ข้อมูลส่วนตัว' : 'Personal information'; ?></h3>
-                                            <p><?php echo $lang == 'thai' ? 'ตรวจสอบข้อมูลชื่อและช่องทางการติดต่อของคุณ' : 'Review your identity and contact information'; ?></p>
+                                          <section class="profile-field-card">
+                                          <div class="profile-form-heading profile-section-heading">
+                                            <i class="mdi mdi-account-outline"></i>
+                                            <h3><?php echo $lang == 'thai' ? 'ชื่อ-นามสกุล (ภาษาไทย)' : 'Name (Thai)'; ?></h3>
                                           </div>
                                                       <input type="hidden" name="prefix_th" id="prefix_th">
                                                       <input type="hidden" name="prefix_en" id="prefix_en">
@@ -418,6 +421,12 @@ $title = (isset($lang) && $lang === 'thai')
                                                                   <input type="text" class="form-control" required id="lname_th" name="lname_th" readonly value="<?php echo $user['lname_th']; ?>"> </div>
                                                           </div>
                                                       </div>
+                                                      </section>
+                                                      <section class="profile-field-card">
+                                                      <div class="profile-form-heading profile-section-heading profile-section-heading-en">
+                                                        <i class="mdi mdi-translate"></i>
+                                                        <h3><?php echo $lang == 'thai' ? 'ชื่อ-นามสกุล (ภาษาอังกฤษ)' : 'Name (English)'; ?></h3>
+                                                      </div>
                                                       <div class="row"><!-- 
                                                           <div class="col-md-4">
                                                               <div class="form-group">
@@ -435,6 +444,7 @@ $title = (isset($lang) && $lang === 'thai')
                                                                   <input type="text" class="form-control" required id="lname_en" name="lname_en" readonly value="<?php echo $user['lname_en']; ?>"> </div>
                                                           </div>
                                                       </div>
+                                                      </section>
 
                                                       <!-- <div class="row">
                                                           <div class="col-md-12">
@@ -463,29 +473,37 @@ $title = (isset($lang) && $lang === 'thai')
                                                                   <input type="text" class="form-control" id="phone" name="phone" value="<?php echo $user['phone']; ?>"> </div>
                                                           </div>
                                                       </div> -->
-                                                      <div class="row">
-                                                          <div class="col-md-12">
+                                                      <div class="row profile-contact-fields">
+                                                          <div class="col-lg-4 col-md-6">
                                                               <div class="form-group">
                                                                   <label for="email"><b style="color: #FF2D00">*</b><?php echo label('m_mail'); ?>: </label>
                                                                   <input type="email" class="form-control" <?php if($user['email']==""){?>required <?php }else{?> readonly <?php } ?> id="email" name="email" value="<?php echo $user['email']; ?>"> </div>
                                                           </div>
-                                                      </div>
-                                                      <div class="row profile-detail-row">
-                                                          <div class="col-md-6">
+                                                          <div class="col-lg-4 col-md-6">
                                                               <div class="form-group">
                                                                   <label for="work_phone"><b style="color: #FF2D00">*</b><?php echo $lang == 'thai' ? 'เบอร์โทรศัพท์' : 'Phone number'; ?>: </label>
                                                                   <input type="text" class="form-control" id="work_phone" name="work_phone" value="<?php echo $user['work_phone']; ?>">
                                                               </div>
                                                           </div>
-                                                          <div class="col-md-6">
+                                                          <div class="col-lg-4 col-md-6">
                                                               <div class="form-group">
-                                                                  <label for="profile_role"><?php echo $lang == 'thai' ? 'ตำแหน่ง' : 'Role'; ?>: </label>
+                                                                  <label for="profile_department"><?php echo $lang == 'thai' ? 'แผนก' : 'Department'; ?>: </label>
+                                                                  <input type="text" class="form-control" id="profile_department" readonly value="<?php echo htmlspecialchars($departmentName, ENT_QUOTES, 'UTF-8'); ?>">
+                                                              </div>
+                                                          </div>
+                                                          <div class="col-lg-4 col-md-6">
+                                                              <div class="form-group">
+                                                                  <label for="profile_position"><?php echo $lang == 'thai' ? 'ตำแหน่งงาน' : 'Job position'; ?>: </label>
+                                                                  <input type="text" class="form-control" id="profile_position" readonly value="<?php echo htmlspecialchars($positionName, ENT_QUOTES, 'UTF-8'); ?>">
+                                                              </div>
+                                                          </div>
+                                                          <div class="col-lg-4 col-md-6">
+                                                              <div class="form-group">
+                                                                  <label for="profile_role"><?php echo $lang == 'thai' ? 'บทบาทในระบบ' : 'System role'; ?>: </label>
                                                                   <input type="text" class="form-control" id="profile_role" readonly value="<?php echo $ugname; ?>">
                                                               </div>
                                                           </div>
-                                                      </div>
-                                                      <div class="row profile-detail-row">
-                                                          <div class="col-md-12">
+                                                          <div class="col-lg-4 col-md-6">
                                                               <div class="form-group">
                                                                   <label for="profile_language"><?php echo $lang == 'thai' ? 'ภาษาเริ่มต้นของระบบ' : 'Default system language'; ?>: </label>
                                                                   <div class="profile-language-select">
@@ -494,7 +512,6 @@ $title = (isset($lang) && $lang === 'thai')
                                                                       <option value="english" <?php echo $lang == 'english' ? 'selected' : ''; ?>>English</option>
                                                                       <option value="japan" <?php echo $lang == 'japan' ? 'selected' : ''; ?>>日本語</option>
                                                                     </select>
-                                                                    <i class="mdi mdi-chevron-down" aria-hidden="true"></i>
                                                                   </div>
                                                               </div>
                                                           </div>

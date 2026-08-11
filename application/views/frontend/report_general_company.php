@@ -15,9 +15,10 @@
 
     <script type="text/javascript" src="<?php echo REAL_PATH;?>/assets/js/adapter.min.js"></script>
     <script type="text/javascript" src="<?php echo REAL_PATH;?>/assets/js/vue.min.js"></script>
+    <link href="<?php echo REAL_PATH;?>/assets/css/report-theme.css?v=20260811-1" rel="stylesheet">
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
+<body class="fix-header fix-sidebar card-no-border report-theme-page">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
@@ -37,11 +38,14 @@
         <!-- ============================================================== -->
         <div class="page-wrapper">
             <div class="container-fluid">
-                <div class="row col-12 page-titles">
-                    <div class="col-md-5 align-self-center">
-                        <b><?php echo ucwords(strtolower($title)); ?></b>
+                <div class="row col-12 page-titles report-hero">
+                    <div class="col-md-6 align-self-center">
+                        <div class="report-hero-title">
+                            <span class="report-hero-icon"><i class="mdi mdi-domain"></i></span>
+                            <div><span class="report-kicker"><?php echo $title_main != '' ? ucwords(strtolower($title_main)) : 'Report'; ?></span><h1><?php echo ucwords(strtolower($title)); ?></h1><p><?php echo $lang == 'thai' ? 'ภาพรวมผู้ใช้งาน หลักสูตร และแบบสำรวจ แยกตามบริษัท' : 'Company-level users, courses, and survey overview'; ?></p></div>
+                        </div>
                     </div>
-                    <div class="col-md-7 align-self-right">
+                    <div class="col-md-6 align-self-right">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="<?php echo REAL_PATH;?>/dashboard"><?php echo ucwords(label('dashboard')); ?></a></li>
                             <?php if($title_main!=""){ ?>
@@ -52,12 +56,15 @@
                     </div>
                 </div>  
 
-                <div class="row col-12 page-titles">
-                    <div class="col-md-12 card">
+                <div class="row col-12 report-content-row">
+                    <div class="col-md-12 card report-workspace">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6"></div>
-                                <div class="col-md-6">
+                            <div class="report-section-head">
+                                <div><span class="report-section-icon"><i class="mdi mdi-filter-variant"></i></span><div><h2><?php echo $lang == 'thai' ? 'ตัวกรองรายงาน' : 'Report filters'; ?></h2><p><?php echo $lang == 'thai' ? 'เลือกบริษัทเพื่อดูข้อมูลสรุปเฉพาะหน่วยงาน' : 'Select a company to narrow the summary'; ?></p></div></div>
+                                <span class="report-data-badge"><i class="mdi mdi-circle"></i> <?php echo $lang == 'thai' ? 'ข้อมูลล่าสุด' : 'Live data'; ?></span>
+                            </div>
+                            <div class="report-filter-area"><div class="row justify-content-end">
+                                <div class="col-xl-5 col-lg-6 col-md-8">
                                   <div class="form-group">
                                                 <?php if($com_admin!="com_associated"&&($user['ug_id']=="1")){ ?>
                                                 <label for="status_cr"><b style="color: #FF2D00">*</b><?php echo label('com_name'); ?>:</label>
@@ -72,11 +79,9 @@
                                                 <?php } ?>
                                   </div>
                                 </div>
-                            </div>
-                            <?php if($com_admin!="com_associated"){ ?>
-                            <hr>
-                            <?php } ?>
-                            <div class="table-responsive">
+                            </div></div>
+                            <div class="report-table-title"><div><h2><?php echo $lang == 'thai' ? 'ภาพรวมรายบริษัท' : 'Company overview'; ?></h2><p><?php echo $lang == 'thai' ? 'เปรียบเทียบจำนวนบัญชี ผู้เรียน หลักสูตร และแบบสำรวจ' : 'Compare accounts, learners, courses, and surveys'; ?></p></div></div>
+                            <div class="table-responsive report-data-table">
                                   <table id="myTable" width="100%" class="table table-bordered table-striped">
                                     <thead>
                                       <tr>

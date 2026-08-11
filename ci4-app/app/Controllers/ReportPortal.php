@@ -135,6 +135,9 @@ class ReportPortal extends BaseController
         }
         $filters = $this->filters();
         return view('reports/scorm', [
+            'title' => 'Advanced SCORM Tracking',
+            'title_main' => $context['permissions']->parentMenuTitle('report/learnerReport', $context['lang']),
+            'name' => $this->session->get('name'),
             'rows' => (new ReportModel())->scormSummaryRows($context['user'], $context['lang'], $filters),
             'companies' => (new ReportModel())->companies($context['user']),
             'courses' => (new ReportModel())->courses(),

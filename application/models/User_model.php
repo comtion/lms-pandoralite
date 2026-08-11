@@ -20,11 +20,20 @@ class User_model extends CI_Model
 
     public function checkSession($dest)
     {
-      if ($this->session->userdata("user") == null) {
-        redirect(base_url() . "dashboard/login?redirect=" . $dest);
-      } else {
-        return true;
+      $user = $this->session->userdata('user');
+      $verified = $this->session->userdata('auth_verified') === true;
+      $hasIdentity = is_array($user)
+        && !empty($user['u_id'])
+        && !empty($user['emp_id'])
+        && !empty($user['useri']);
+
+      if (!$verified || !$hasIdentity) {
+        $this->session->unset_userdata(array('user', 'auth_verified'));
+        redirect(base_url() . 'home?redirect=' . rawurlencode((string) $dest), 'location', 302);
+        exit;
       }
+
+      return true;
     }
 
     public function sendLogin($dest)
@@ -269,6 +278,10 @@ class User_model extends CI_Model
       $username = strtolower(trim((string) $username));
       $password = (string) $password;
 
+      // A fresh login attempt must earn a new authenticated session.  Never
+      // allow a stale user payload to survive an invalid password attempt.
+      $this->session->unset_userdata(array('user', 'auth_verified'));
+
       if ($username === '' || $password === '') {
         return array('status' => 'invalid_credentials');
       }
@@ -353,6 +366,7 @@ class User_model extends CI_Model
     private function preparePasswordChange($username, $reason)
     {
       $this->session->sess_regenerate(TRUE);
+      $this->session->unset_userdata(array('user', 'auth_verified'));
       $this->session->set_userdata(array(
         'username_firsttime' => $username,
         'firsttime' => $reason === 'first_login',
@@ -369,6 +383,7 @@ class User_model extends CI_Model
       $this->session->sess_regenerate(TRUE);
       $this->session->set_userdata(array(
         'user' => $user,
+        'auth_verified' => true,
         'lang' => $lang,
 		'p0_session_started' => time(),
 		'p0_last_activity' => time(),

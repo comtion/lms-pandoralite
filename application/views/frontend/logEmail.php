@@ -8,11 +8,12 @@
     <link href="<?php echo REAL_PATH;?>/assets/plugins/daterangepicker/daterangepicker.css" rel="stylesheet">
     <!-- Page plugins css -->
     <link href="<?php echo REAL_PATH;?>/assets/plugins/clockpicker/dist/jquery-clockpicker.min.css" rel="stylesheet">
+    <link href="<?php echo REAL_PATH;?>/assets/css/email-log-report.css?v=20260811-2" rel="stylesheet">
     <!-- Clock Plugin JavaScript -->
     <script src="<?php echo REAL_PATH; ?>/assets/plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
+<body class="fix-header fix-sidebar card-no-border email-log-report-page report-theme-page">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
@@ -32,11 +33,18 @@
         <!-- ============================================================== -->
         <div class="page-wrapper">
             <div class="container-fluid">
-                <div class="row col-12 page-titles">
-                    <div class="col-md-4 align-self-center">
-                        <b><?php echo ucwords(strtolower($title)); ?></b>
+                <div class="row col-12 page-titles email-log-heading">
+                    <div class="col-md-6 align-self-center">
+                        <div class="email-log-title-wrap">
+                            <span class="email-log-title-icon"><i class="mdi mdi-email-outline"></i></span>
+                            <div>
+                                <span class="email-log-kicker"><?php echo $title_main != '' ? ucwords(strtolower($title_main)) : 'Report'; ?></span>
+                                <h1><?php echo ucwords(strtolower($title)); ?></h1>
+                                <p><?php echo $lang == 'thai' ? 'ตรวจสอบสถานะและประวัติการส่งอีเมลจากระบบ' : 'Monitor email delivery history and status'; ?></p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-8 align-self-right">
+                    <div class="col-md-6 align-self-right">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="<?php echo REAL_PATH;?>/dashboard"><?php echo ucwords(label('dashboard')); ?></a></li>
                             <?php if($title_main!=""){ ?>
@@ -48,10 +56,14 @@
                 </div>  
 
 
-                <div class="row col-12 page-titles">
-                    <div class="col-md-12 card">
+                <div class="row col-12 email-log-content">
+                    <div class="col-md-12 card email-log-card">
                         <div class="card-body">
-                            <form method="post" id="search_form" autocomplete="off" name="search_form" enctype="multipart/form-data" accept-charset="utf-8"  class="form-horizontal p-t-20">
+                            <div class="email-log-card-head">
+                                <div><span class="email-log-section-icon"><i class="mdi mdi-filter-variant"></i></span><div><h2><?php echo $lang == 'thai' ? 'ตัวกรองรายงาน' : 'Report filters'; ?></h2><p><?php echo $lang == 'thai' ? 'เลือกช่วงเวลา บริษัท และสถานะการส่งที่ต้องการตรวจสอบ' : 'Choose a date range, company, and delivery status'; ?></p></div></div>
+                                <span class="email-log-live"><i class="mdi mdi-circle"></i> <?php echo $lang == 'thai' ? 'ข้อมูลระบบ' : 'System data'; ?></span>
+                            </div>
+                            <form method="post" id="search_form" autocomplete="off" name="search_form" enctype="multipart/form-data" accept-charset="utf-8" class="form-horizontal report-filter-form">
                                 <div class="row">
 
                                         <div class="col-12 col-md-8">
@@ -137,8 +149,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="offset-xl-12 col-xl-12">
-                                        <div class="row m-0">
+                                    <div class="col-xl-12 email-log-actions-wrap">
+                                        <div class="row m-0 email-log-actions">
                                             <?php if ($user["ug_id"] == "1") { ?>
                                             <div class="col-xl-3 col-sm-12">
                                                 <button type="button" name="update-log" id="update-log" class="btn btn-block btn-outline-primary update-log float-right"><i class="mdi mdi-email-variant"></i> <?php echo label('update_log_email'); ?></button>
@@ -159,7 +171,8 @@
                                     </div>
                                 </div>
                             </form>
-                            <div class="table-responsive">
+                            <div class="email-log-table-head"><div><h2><?php echo $lang == 'thai' ? 'รายการบันทึกการส่งอีเมล' : 'Email delivery records'; ?></h2><p><?php echo $lang == 'thai' ? 'ผลลัพธ์จะแสดงตามตัวกรองที่เลือก' : 'Results based on the selected filters'; ?></p></div></div>
+                            <div class="table-responsive email-log-table-wrap">
                                 <table id="myTable" class="table table-bordered table-striped">
                                     <thead>
                                     <tr>

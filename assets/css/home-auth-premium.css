@@ -22,6 +22,57 @@ body.premium-auth-page.lms-premium-dashboard.precision-sidebar-collapsed .page-w
   margin:0;
   padding:26px 24px 48px;
 }
+body.premium-auth-page.lms-premium-dashboard .topbar .navbar-collapse > .premium-guest-language-nav {
+  display:flex !important;
+  align-items:center;
+  margin-left:auto;
+  margin-right:24px;
+}
+.premium-auth-page .premium-guest-language > .nav-link {
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 14px !important;
+  border:1px solid #dce3ec;
+  border-radius:12px;
+  background:#fff;
+  color:#344054 !important;
+  font-size:13px;
+  font-weight:700;
+  box-shadow:0 4px 14px rgba(15,23,42,.06);
+}
+.premium-auth-page .premium-guest-language > .nav-link:hover,
+.premium-auth-page .premium-guest-language.show > .nav-link {
+  border-color:#f4a7aa;
+  background:#fff7f7;
+  color:var(--auth-red) !important;
+}
+.premium-auth-page .premium-guest-language-globe { font-size:19px; line-height:1; }
+.premium-auth-page .premium-guest-language .flag-icon { flex:0 0 auto; }
+.premium-auth-page .premium-guest-language .dropdown-menu {
+  min-width:180px;
+  margin-top:8px;
+  padding:7px;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  box-shadow:0 16px 38px rgba(15,23,42,.14);
+}
+.premium-auth-page .premium-guest-language:hover > .dropdown-menu,
+.premium-auth-page .premium-guest-language:focus-within > .dropdown-menu {
+  display:block;
+}
+.premium-auth-page .premium-guest-language .dropdown-item {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 11px;
+  border-radius:8px;
+  color:#475467;
+  font-size:13px;
+}
+.premium-auth-page .premium-guest-language .dropdown-item:hover { background:#fff3f3; color:#b9161d; }
+.premium-auth-page .premium-guest-language .dropdown-item.active { background:#fdebec; color:#b9161d; font-weight:700; }
 .premium-auth-page .premium-auth-layout {
   align-items:stretch;
   margin:0;
@@ -210,6 +261,9 @@ body.premium-auth-page.lms-premium-dashboard.precision-sidebar-collapsed .precis
   .premium-auth-page .premium-auth-orbit { width:180px; height:180px; opacity:.7; }
 }
 @media (max-width:575.98px) {
+  .premium-auth-page .premium-guest-language-nav { margin-right:10px; }
+  .premium-auth-page .premium-guest-language > .nav-link { padding:8px 10px !important; }
+  .premium-auth-page .premium-guest-language-label { display:none; }
   body.premium-auth-page.lms-premium-dashboard .precision-footer-main,
   body.premium-auth-page.lms-premium-dashboard .precision-footer-bottom,
   body.premium-auth-page.lms-premium-dashboard.precision-sidebar-collapsed .precision-footer-main,

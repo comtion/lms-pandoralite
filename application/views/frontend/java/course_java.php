@@ -465,17 +465,23 @@ function display_quiz(field_name) {
   Select_quiz_type(val_chk);
 }
 $(document).ready(function() {
-  var cos_id = '';
   var updateOutput = function(e) {
     var list = e.length ? e : $(e.target),
       output = list.data('output');
+    var cos_id = $('#course_id_pp').val();
+
     if (window.JSON) {
       output.val(window.JSON.stringify(list.nestable('serialize'))); //, null, 2));
     } else {
-      cos_id = $('#course_id_pp').val();
       output.val('JSON browser support required for this demo.');
+      return;
     }
-    var myObj = JSON.parse(window.JSON.stringify(list.nestable('serialize')));
+
+    var myObj = list.nestable('serialize');
+    if (!cos_id || !myObj.length) {
+      return;
+    }
+
     $.ajax({
       url: "<?= base_url() ?>index.php/course/edit_li_lesson",
       method: 'POST',
@@ -492,7 +498,13 @@ $(document).ready(function() {
     group: 1,
     maxDepth: 7,
   }).on('change', updateOutput);
-  var arr_out = updateOutput($('#nestable').data('output', $('#nestable-output')));
+
+  var nestable = $('#nestable');
+  var nestableOutput = $('#nestable-output');
+  nestable.data('output', nestableOutput);
+  if (window.JSON && nestableOutput.length) {
+    nestableOutput.val(window.JSON.stringify(nestable.nestable('serialize')));
+  }
 
 });
 

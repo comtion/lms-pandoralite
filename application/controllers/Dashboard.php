@@ -28,6 +28,11 @@ class Dashboard extends CI_Controller
 
 	public function index()
 	{
+		// Authenticate before loading dashboard data or permission-dependent
+		// models. A user payload alone is not proof of a successful login.
+		$this->load->model('User_model', 'login', false);
+		$this->login->checkSession('dashboard');
+
 		$lang = $this->session->userdata("lang") == null ? "english" : $this->session->userdata("lang");
 		$this->lang->load($lang, $lang);
 		$arr['lang'] = $lang;
@@ -40,7 +45,6 @@ class Dashboard extends CI_Controller
 		$this->load->model('Function_query_model', 'func_query', false);
 		$this->dashboard->loadDB();
 		$arr['arr_permission'] = $this->manage->chk_permission_page();
-		$this->load->model('User_model', 'login', false);
 		$this->load->model('Home_model', 'home', false);
 		$this->home->loadDB();
 		if ($this->login->checkSession($arr['page'])) {

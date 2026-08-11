@@ -23,6 +23,22 @@
       #myModal_process #circle-b{
         margin:0;
       }
+      .qr-toolbar { display:flex; gap:12px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; margin:18px 0; }
+      .qr-filters { display:flex; gap:10px; flex-wrap:wrap; }
+      .qr-filters .form-group { margin:0; min-width:180px; }
+      .qr-summary { display:grid; grid-template-columns:repeat(3,minmax(125px,1fr)); gap:12px; margin:18px 0; }
+      .qr-summary-card { border:1px solid #e5eaf0; border-radius:12px; padding:14px 16px; background:#fff; }
+      .qr-summary-card strong { display:block; font-size:24px; line-height:1.1; color:#24344d; }
+      .qr-summary-card span { color:#718096; font-size:13px; }
+      .qr-actions { display:flex; justify-content:center; gap:5px; min-width:150px; }
+      .qr-action { width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
+      .qr-link { display:flex; align-items:center; gap:4px; max-width:360px; }
+      .qr-link a { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .qr-name { font-weight:600; color:#334155; }
+      .qr-detail { display:block; max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .qr-status { padding:7px 10px; border-radius:20px; font-weight:500; }
+      .qr-preview-image { width:260px; max-width:100%; border:1px solid #e5eaf0; border-radius:14px; padding:12px; background:#fff; }
+      @media (max-width:767px) { .qr-summary { grid-template-columns:1fr; } .qr-toolbar,.qr-filters { display:block; } .qr-filters .form-group { margin-bottom:10px; } }
     </style>
 </head>
 
@@ -87,6 +103,18 @@
                         <?php }else{ ?>
                             <input type="hidden" id="com_id_search" name="com_id_search" value="<?php echo $com_id; ?>">
                         <?php } ?>
+                      </div>
+                      <div class="qr-summary" aria-label="QR Code summary">
+                        <div class="qr-summary-card"><strong id="qr_total">0</strong><span><?php echo $lang=='thai'?'QR Code ทั้งหมด':'Total QR Codes'; ?></span></div>
+                        <div class="qr-summary-card"><strong id="qr_active">0</strong><span><?php echo $lang=='thai'?'กำลังใช้งาน':'Active'; ?></span></div>
+                        <div class="qr-summary-card"><strong id="qr_inactive">0</strong><span><?php echo $lang=='thai'?'ปิดใช้งาน':'Inactive'; ?></span></div>
+                      </div>
+                      <div class="qr-toolbar">
+                        <div class="qr-filters">
+                          <div class="form-group"><label for="filter_type"><?php echo $lang=='thai'?'ประเภทไฟล์':'File type'; ?></label><select id="filter_type" class="form-control"><option value=""><?php echo $lang=='thai'?'ทุกประเภท':'All types'; ?></option><option value="1"><?php echo label('qr_typefile_a'); ?></option><option value="2"><?php echo label('qr_typefile_b'); ?></option><option value="3"><?php echo label('qr_typefile_c'); ?></option><option value="4"><?php echo label('qr_typefile_d'); ?></option></select></div>
+                          <div class="form-group"><label for="filter_status"><?php echo label('status'); ?></label><select id="filter_status" class="form-control"><option value=""><?php echo $lang=='thai'?'ทุกสถานะ':'All statuses'; ?></option><option value="1"><?php echo label('open'); ?></option><option value="0"><?php echo label('close'); ?></option></select></div>
+                        </div>
+                        <button type="button" id="reset_filters" class="btn btn-outline-secondary"><i class="mdi mdi-filter-remove"></i> <?php echo $lang=='thai'?'ล้างตัวกรอง':'Clear filters'; ?></button>
                       </div>
                       <div class="table-responsive">
                           <table id="myTable" width="100%" class="table table-bordered table-striped">
@@ -190,6 +218,14 @@
     </div>
     <!-- /.modal -->
 
+    <div class="modal fade" id="qr-preview-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h4 class="modal-title" id="qr-preview-title">QR Code</h4><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+        <div class="modal-body text-center"><img id="qr-preview-image" class="qr-preview-image" alt="QR Code preview"><p id="qr-preview-url" class="small text-muted mt-3 text-break"></p></div>
+        <div class="modal-footer"><button type="button" id="qr-preview-copy" class="btn btn-outline-primary"><i class="mdi mdi-content-copy"></i> <?php echo $lang=='thai'?'คัดลอกลิงก์':'Copy link'; ?></button><a id="qr-preview-open" class="btn btn-primary" target="_blank" rel="noopener"><i class="mdi mdi-open-in-new"></i> <?php echo $lang=='thai'?'เปิดเนื้อหา':'Open'; ?></a></div>
+      </div></div>
+    </div>
+
       
       <div
         id="myModal_process"
@@ -277,10 +313,32 @@
                         page_num = length-1;
                       }
                       table.page(page_num).draw(false);
+                      updateQrSummary(table);
                     }, 10 );
-                  }
+                  },
+                  "drawCallback": function(){ updateQrSummary(this.api()); }
             });
          }
+
+        function updateQrSummary(table){
+          var total=0, active=0, inactive=0;
+          table.rows({search:'none'}).every(function(){ var node=this.node(); if(!node){return;} total++; var status=$(node).find('.qr-status').data('status'); String(status)==='1'?active++:inactive++; });
+          $('#qr_total').text(total); $('#qr_active').text(active); $('#qr_inactive').text(inactive);
+        }
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex){
+          if(settings.nTable.id!=='myTable'){return true;}
+          var row=settings.aoData[dataIndex].nTr, type=String($(row).find('.qr-type').data('type')||''), status=String($(row).find('.qr-status').data('status'));
+          return (!$('#filter_type').val()||$('#filter_type').val()===type) && ($('#filter_status').val()===''||$('#filter_status').val()===status);
+        });
+        $('#filter_type,#filter_status').on('change',function(){ $('#myTable').DataTable().draw(); });
+        $('#reset_filters').on('click',function(){ $('#filter_type,#filter_status').val(''); $('#myTable').DataTable().search('').draw(); });
+        function copyQrUrl(url){
+          if(navigator.clipboard && window.isSecureContext){ return navigator.clipboard.writeText(url); }
+          var input=$('<textarea>').val(url).appendTo('body').select(); document.execCommand('copy'); input.remove(); return Promise.resolve();
+        }
+        $(document).on('click','.copy-qr-link',function(){ var button=$(this),url=button.data('url'); copyQrUrl(url).then(function(){ button.addClass('text-success'); setTimeout(function(){button.removeClass('text-success');},1200); }); });
+        $(document).on('click','.preview-qr',function(){ var item=$(this); $('#qr-preview-title').text(item.data('name')); $('#qr-preview-image').attr('src',item.data('image')); $('#qr-preview-url').text(item.data('url')); $('#qr-preview-open').attr('href',item.data('url')); $('#qr-preview-copy').data('url',item.data('url')); $('#qr-preview-modal').modal('show'); });
+        $('#qr-preview-copy').on('click',function(){ copyQrUrl($(this).data('url')); });
 
         function onchk_typeupload(value){
                 if(value=="1"){
@@ -441,6 +499,8 @@
                             var page_current = info.page;
                             fetch_data_qrcode(page_current);
                           })
+                      }else if(data==="4"){
+                          swal({title:'<?php echo $lang=="thai"?"ไฟล์ไม่ถูกต้อง หรือมีขนาดเกิน 5 MB":"Invalid file or file exceeds 5 MB"; ?>',text:"",type:'warning',confirmButtonText:'<?php echo label("m_ok"); ?>'});
                       }else{
                           swal({
                               title: '<?php echo label("com_msg_error_save"); ?>',

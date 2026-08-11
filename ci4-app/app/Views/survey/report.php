@@ -13,21 +13,23 @@
         table { width:100%; border-collapse:collapse; font-size:14px; } th,td { text-align:left; padding:12px 10px; border-bottom:1px solid var(--line); vertical-align:top; } th { background:#fafafa; color:var(--muted); font-size:12px; text-transform:uppercase; } .bar { height:8px; background:#f1f2f4; border-radius:999px; overflow:hidden; min-width:110px; } .fill { height:100%; background:var(--brand); }
         @media (max-width:850px) { .brand-row,.summary { grid-template-columns:1fr; } .brand-center,.brand-actions { text-align:left; justify-content:flex-start; } .head { display:block; } .head .btn { margin-top:12px; } }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="<?= base_url('css/enterprise-pages.css?v=20260701-2') ?>" rel="stylesheet">
+    <link href="<?= base_url('css/report-suite.css?v=20260811-1') ?>" rel="stylesheet">
 </head>
 <body>
 <header class="topbar"><div class="brand-row"><a class="brand-mark" href="<?= site_url('dashboard') ?>">LMS CI4</a><div class="brand-center">E-LEARNING</div><div class="brand-actions"><span><?= esc($name ?? '-') ?></span><a class="logout" href="<?= site_url('logout') ?>">Logout</a></div></div></header>
-<main class="page">
+<main class="page report-page">
     <div class="head">
         <div><div class="kicker"><?= esc($title_main ?: 'Manage Course') ?></div><h1><?= esc($survey['title']) ?></h1><p class="sub"><?= esc(($survey['ccode'] ?: '-') . ' - ' . ($survey['course_title'] ?? '-')) ?></p></div>
         <div><a class="btn" href="<?= site_url('managecourse/surveys/' . $survey['sv_id'] . '/edit') ?>">Edit</a> <a class="btn primary" href="<?= site_url('managecourse/surveys/' . $survey['sv_id'] . '/report/export') ?>">Export XLSX</a></div>
     </div>
-    <section class="summary">
+    <section class="summary report-metrics">
         <div class="metric"><span>Questions</span><strong><?= esc(count($report['summary'])) ?></strong></div>
         <div class="metric"><span>Submissions</span><strong><?= esc(count($report['submissions'])) ?></strong></div>
         <div class="metric"><span>Status</span><strong><?= (string) $survey['sv_status'] === '1' ? 'Active' : 'Inactive' ?></strong></div>
     </section>
-    <section class="panel">
+    <section class="panel report-panel">
         <table>
             <thead><tr><th>Question</th><th>Average</th><th>Rating Distribution</th></tr></thead>
             <tbody>

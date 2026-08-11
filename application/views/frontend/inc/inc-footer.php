@@ -299,3 +299,4 @@ function notificationForDatatableError(id, message) {
 <!--Menu sidebar -->
 <script src="<?php echo REAL_PATH; ?>/assets/js/sidebarmenu.js"></script>
 <script src="<?php echo REAL_PATH; ?>/assets/plugins/jquery-circle-progress-1.2.2/dist/circle-progress.js"></script>
+<script src="<?php echo REAL_PATH; ?>/assets/js/report-theme.js?v=20260811-3"></script>

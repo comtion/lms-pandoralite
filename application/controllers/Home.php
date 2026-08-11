@@ -4,11 +4,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Home extends CI_Controller {
 	private function redirectBack()
 	{
-		$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : base_url();
-		redirect($referer);
+		$user = $this->session->userdata('user');
+		$isAuthenticated = $this->session->userdata('auth_verified') === true && is_array($user) && !empty($user['u_id']);
+		$referer = isset($_SERVER['HTTP_REFERER']) ? (string) $_SERVER['HTTP_REFERER'] : '';
+		$base = rtrim(base_url(), '/');
+
+		// Guests always stay on the public login page.  An external or stale
+		// dashboard referer must never turn a language change into navigation
+		// across the authentication boundary.
+		if (!$isAuthenticated) {
+			$redirect = isset($_GET['redirect']) ? trim((string) $_GET['redirect'], '/') : 'dashboard';
+			if ($redirect === '' || preg_match('#^(?:https?:)?//#i', $redirect) || strpos($redirect, '..') !== false) {
+				$redirect = 'dashboard';
+			}
+			redirect($base . '/home?redirect=' . rawurlencode($redirect), 'location', 302);
+			return;
+		}
+
+		if ($referer === '' || strpos($referer, $base) !== 0) {
+			$referer = $base . '/dashboard';
+		}
+		redirect($referer, 'location', 302);
 	}
 
 	public function change_lang($lang){
+		if (!in_array($lang, array('thai', 'english', 'japan'), true)) {
+			show_404();
+			return;
+		}
 		$this->config->set_item('language', $lang);
 		$this->session->set_userdata('lang', $lang);
 		$this->redirectBack();
@@ -24,7 +47,7 @@ class Home extends CI_Controller {
 		//echo $lang;
 		$sess = $this->session->userdata("user");
     	date_default_timezone_set("Asia/Bangkok");
-    	if(!empty($sess) && $sess["firsttime"] == 0){
+		if($this->session->userdata('auth_verified') === true && is_array($sess) && !empty($sess['u_id']) && isset($sess["firsttime"]) && (int) $sess["firsttime"] === 0){
 			redirect(base_url().'dashboard', 'location', 302);
     	}
 		$arr['dest'] = isset( $_GET['redirect'] ) ? $_GET['redirect'] : 'dashboard';

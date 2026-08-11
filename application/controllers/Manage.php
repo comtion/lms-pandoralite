@@ -363,7 +363,11 @@ class Manage extends CI_Controller
 		$this->manage->loadDB();
 		$user = $this->session->userdata('user');
 		$isError = isset($user["u_id"]) ? false : label("table_session_lost")."_".label("m_ok");
-		$query = isset($user["emp_id"]) ? $this->manage->fetch_data_qrcode($_REQUEST['com_id']) : array();
+		$requestedCompany = isset($_REQUEST['com_id']) ? (int) $_REQUEST['com_id'] : 0;
+		if (isset($user['ug_id']) && $user['ug_id'] != '1') {
+			$requestedCompany = (int) $user['com_id'];
+		}
+		$query = isset($user["emp_id"]) ? $this->manage->fetch_data_qrcode($requestedCompany) : array();
 		$draw = intval($this->input->get("draw"));
 		$count = countArray($query);
 		$result = array(
@@ -750,27 +754,47 @@ class Manage extends CI_Controller
 		$this->load->model('Manage_model', 'manage', false);
 		$this->load->model('Function_query_model', 'func_query', false);
 		$this->manage->loadDB();
+		$requestedOperation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : '';
+		if (empty($sess['u_id']) || $this->manage->chk_permission('qrcode/create', $requestedOperation === 'Add' ? 'ru_add' : 'ru_edit') != '1') {
+			show_error('Permission denied', 403);
+			return;
+		}
 		if (countArray($_REQUEST) > 0) {
 			$qr_id = isset($_REQUEST['qr_id']) ? $_REQUEST['qr_id'] : "";
 			$operation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : "";
 			$qr_status = isset($_REQUEST['qr_status']) ? $_REQUEST['qr_status'] : "0";
+			if ($operation === 'Edit' && $sess['ug_id'] != '1') {
+				$ownedQr = $this->func_query->query_row('lms_qrcode', '', '', '', 'qr_id="' . (int) $qr_id . '" and com_id="' . (int) $sess['com_id'] . '" and qr_isDelete="0"');
+				if (empty($ownedQr)) { show_error('Permission denied', 403); return; }
+			}
 
 			$data = array(
 				'qr_name' => $_REQUEST['qr_name'],
 				'qr_type' => $_REQUEST['qr_type'],
-				'com_id' => $_REQUEST['com_id'],
+				'com_id' => $sess['ug_id'] == '1' ? (int) $_REQUEST['com_id'] : (int) $sess['com_id'],
 				'qr_status' => $qr_status,
 				'qr_detail' => $_REQUEST['qr_detail'],
 				'qr_modifiedby' => $sess['u_id'],
 				'qr_modifieddate' => date('Y-m-d H:i')
 			);
 
-			if (isset($_FILES['qr_path']) && $_FILES['qr_path'] != "") {
+			if (isset($_FILES['qr_path']) && $_FILES['qr_path']['error'] !== UPLOAD_ERR_NO_FILE) {
+				$allowed = array(
+					'1' => array('jpg', 'jpeg', 'png', 'gif'),
+					'2' => array('mp4'),
+					'3' => array('pdf'),
+					'4' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx')
+				);
+				$extension = strtolower(pathinfo($_FILES['qr_path']['name'], PATHINFO_EXTENSION));
+				if ($_FILES['qr_path']['error'] !== UPLOAD_ERR_OK || $_FILES['qr_path']['size'] > 5 * 1024 * 1024 || !isset($allowed[$_REQUEST['qr_type']]) || !in_array($extension, $allowed[$_REQUEST['qr_type']], true)) {
+					echo '4';
+					return;
+				}
 				if (isset($_FILES['qr_path'])) {
 					$imageSourcePath = $_FILES['qr_path']['tmp_name'];
 					$path_parts = pathinfo($_FILES['qr_path']['name']);
 					if (isset($path_parts['extension'])) {
-						$qr_path = "qr_path_" . date('YmdHis') . "." . $path_parts['extension'];
+						$qr_path = "qr_path_" . date('YmdHis') . "_" . bin2hex(random_bytes(4)) . "." . $extension;
 
 						$imageTargetPath = ROOT_DIR . "uploads/file_forqrcode/" . $qr_path;
 						if (audit_move_uploaded_file($imageSourcePath, $imageTargetPath)) {
@@ -808,8 +832,16 @@ class Manage extends CI_Controller
 		$this->load->model('Manage_model', 'manage', false);
 		$this->load->model('Function_query_model', 'func_query', false);
 		$this->manage->loadDB();
+		if (empty($sess['u_id']) || $this->manage->chk_permission('qrcode/create', 'ru_del') != '1') {
+			show_error('Permission denied', 403);
+			return;
+		}
 		if (countArray($_REQUEST) > 0) {
 			$fetch_chk = $this->func_query->query_row('lms_qrcode', '', '', '', 'qr_id="' . $_REQUEST['qr_id_delete'] . '"');
+			if (empty($fetch_chk) || ($sess['ug_id'] != '1' && $fetch_chk['com_id'] != $sess['com_id'])) {
+				show_error('Permission denied', 403);
+				return;
+			}
 			if ($fetch_chk['qr_path'] != "") {
 				if (is_file(ROOT_DIR . "uploads/file_forqrcode/" . $fetch_chk['qr_path'])) {
 					audit_unlink(ROOT_DIR . "uploads/file_forqrcode/" . $fetch_chk['qr_path']);
@@ -3849,8 +3881,17 @@ class Manage extends CI_Controller
 		$this->lang->load($lang, $lang);
 		$this->load->model('Manage_model', 'manage', false);
 		$this->manage->loadDB();
+		$user = $this->session->userdata('user');
+		if (empty($user['u_id']) || $this->manage->chk_permission('qrcode/create', 'ru_edit') != '1') {
+			show_error('Permission denied', 403);
+			return;
+		}
 		if (countArray($_REQUEST) > 0) {
 			$result = $this->manage->query_data_onupdate($_REQUEST['qr_id_update'], 'lms_qrcode', 'qr_id');
+			if (empty($result) || ($user['ug_id'] != '1' && $result['com_id'] != $user['com_id'])) {
+				show_error('Permission denied', 403);
+				return;
+			}
 			echo json_encode($result);
 		}
 	}

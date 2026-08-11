@@ -30,7 +30,12 @@ class Qrcode extends CI_Controller {
 		$this->setting->loadDB();
         $this->manage->loadDB();
 		$this->foot->loadDB();
-		$arr['data_query'] = $this->func_query->query_row('lms_qrcode','','','','qr_id = "'.$qr_id.'"');
+		$qr_id = (int) $qr_id;
+		$arr['data_query'] = $this->func_query->query_row('lms_qrcode','','','','qr_id = "'.$qr_id.'" and qr_isDelete = "0"');
+		if (empty($arr['data_query']) || $arr['data_query']['qr_status'] != '1') {
+			show_404();
+			return;
+		}
 		$arr['foote'] = $this->foot->getfooter();
 
 		$this->home->closeDB();

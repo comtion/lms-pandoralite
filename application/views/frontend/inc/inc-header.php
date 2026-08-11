@@ -246,13 +246,16 @@ document.body.classList.add('lms-premium-dashboard','precision-app-shell');
         </div></div>
       </div>
       <?php } ?>
-      <ul class="navbar-nav my-lg-0">
+      <ul class="navbar-nav my-lg-0<?php echo empty($emp_c) ? ' premium-guest-language-nav' : ''; ?>">
         <!-- <?php if (strpos($page, 'home') !== false) { ?>
                 <li class="nav-item hidden-xs-down search-box"> <a class="nav-link hidden-sm-down waves-effect waves-dark"  data-toggle="modal" data-target="#modal-searchform" href="javascript:void(0)"><i class="ti-search"></i></a></li>
             <?php } ?> -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" data-toggle="dropdown"
+        <li class="nav-item dropdown<?php echo empty($emp_c) ? ' premium-guest-language' : ''; ?>">
+          <a class="nav-link dropdown-toggle waves-effect waves-dark" href="#" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
+            <?php if (empty($emp_c)) { ?>
+            <i class="mdi mdi-web premium-guest-language-globe" aria-hidden="true"></i>
+            <?php } ?>
             <?php if ($lang == "thai") { ?>
             <style>
             * {
@@ -274,6 +277,9 @@ document.body.classList.add('lms-premium-dashboard','precision-app-shell');
             }
             </style>
             <i class="flag-icon flag-icon-jp"></i>
+            <?php } ?>
+            <?php if (empty($emp_c)) { ?>
+            <span class="premium-guest-language-label"><?php echo $lang === 'thai' ? 'ไทย' : ($lang === 'japan' ? '日本語' : 'English'); ?></span>
             <?php } ?>
           </a>
           <div class="dropdown-menu dropdown-menu-right animated bounceInDown">

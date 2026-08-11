@@ -65,9 +65,10 @@
       @media(max-width:991px){.personal-report .container-fluid{padding:24px 18px 40px}.personal-report__head{display:block}.personal-report__head-right{margin-top:16px}.personal-report__head .breadcrumb{justify-content:flex-start}.report-overview{grid-template-columns:1fr 1fr}.report-stat:nth-child(2){border-right:0}.report-stat:nth-child(-n+2){border-bottom:1px solid var(--report-line);padding-bottom:18px;margin-bottom:12px}.report-filters{grid-template-columns:1fr}.report-field--date{grid-column:auto}.report-date{grid-template-columns:1fr 76px}.report-date__dash{display:none}.report-table-wrap{padding:16px 14px}}
       @media(max-width:575px){.report-overview{grid-template-columns:1fr}.report-stat{border-right:0!important;border-bottom:1px solid var(--report-line);padding:14px}.report-stat:last-child{border-bottom:0}.report-date{grid-template-columns:1fr 72px}.report-table-wrap .dataTables_filter,.report-table-wrap .dataTables_length{float:none;text-align:left}.report-table-wrap .dataTables_filter input{width:100%!important;margin:8px 0 0}.report-table-wrap .dataTables_filter label{width:100%}}
     </style>
+    <link href="<?php echo REAL_PATH;?>/assets/css/report-theme.css?v=20260811-1" rel="stylesheet">
 </head>
 
-<body class="fix-header fix-sidebar card-no-border">
+<body class="fix-header fix-sidebar card-no-border report-theme-page">
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->

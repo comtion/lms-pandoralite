@@ -31,7 +31,9 @@
         .muted { color:var(--muted); font-size:13px; }
         @media (max-width:980px) { .brand-row,.filters { grid-template-columns:1fr; } .brand-center,.brand-actions { text-align:left; justify-content:flex-start; } .head { display:block; } }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="<?= base_url('css/enterprise-pages.css?v=20260701-2') ?>" rel="stylesheet">
+    <link href="<?= base_url('css/report-suite.css?v=20260811-1') ?>" rel="stylesheet">
 </head>
 <body>
 <header class="topbar">
@@ -41,11 +43,11 @@
         <div class="brand-actions"><span><?= esc($name ?? '-') ?></span><a href="<?= site_url('logout') ?>">Logout</a></div>
     </div>
 </header>
-<main class="page">
-    <section class="panel">
+<main class="page report-page">
+    <section class="panel report-panel">
         <div class="head">
             <div>
-                <div class="kicker">Report</div>
+                <div class="kicker"><?= esc($title_main ?: 'Reports') ?></div>
                 <h1><?= esc($title) ?></h1>
                 <div class="muted"><?= count($rows ?? []) ?> records</div>
             </div>
@@ -56,12 +58,12 @@
             <select name="status"><option value="">All status</option><option value="0" <?= $filters['status'] === '0' ? 'selected' : '' ?>>Not started</option><option value="2" <?= $filters['status'] === '2' ? 'selected' : '' ?>>In progress</option><option value="1" <?= $filters['status'] === '1' ? 'selected' : '' ?>>Completed</option></select>
             <input type="date" name="date_start" value="<?= esc($filters['date_start']) ?>">
             <input type="date" name="date_end" value="<?= esc($filters['date_end']) ?>">
-            <button class="btn primary" type="submit">Filter</button>
-            <a class="btn" href="<?= site_url('report/learnerReport/export?' . http_build_query($filters)) ?>">Export XLSX</a>
+            <button class="btn primary" type="submit"><i class="bi bi-search"></i> Filter</button>
+            <a class="btn" href="<?= site_url('report/learnerReport/export?' . http_build_query($filters)) ?>"><i class="bi bi-file-earmark-excel"></i> Export XLSX</a>
         </form>
         <div class="export-row">
             <a class="btn" href="<?= site_url('report/courseSummary/export?' . http_build_query($filters)) ?>">Course Summary</a>
-            <a class="btn" href="<?= site_url('report/scormTracking/export?' . http_build_query($filters)) ?>">SCORM Tracking</a>
+            <a class="btn" href="<?= site_url('report/scormTracking?' . http_build_query($filters)) ?>"><i class="bi bi-activity"></i> SCORM Tracking</a>
             <a class="btn" href="<?= site_url('report/certificateIssued/export?' . http_build_query($filters)) ?>">Certificates</a>
         </div>
         <div class="table-wrap">
@@ -74,14 +76,14 @@
                             <td><?= esc($row['emp_c']) ?></td>
                             <td><?= esc($row['learner_name']) ?></td>
                             <td><strong><?= esc($row['course_title']) ?></strong><div class="muted"><?= esc($row['ccode']) ?></div></td>
-                            <td><?= esc($row['status_label']) ?></td>
+                            <?php $statusClass = (string)$row['status_label'] === 'Completed' ? 'complete' : ((string)$row['status_label'] === 'In progress' ? 'progress' : 'pending'); ?><td><span class="badge report-badge--<?= $statusClass ?>"><?= esc($row['status_label']) ?></span></td>
                             <td><?= esc($row['cosen_score_per']) ?>%</td>
                             <td><?= esc($row['cosen_grade']) ?></td>
                             <td><?= str_starts_with((string) $row['cosen_firsttime'], '0000-00-00') ? '' : esc($row['cosen_firsttime']) ?></td>
                             <td><?= str_starts_with((string) $row['cosen_finishtime'], '0000-00-00') ? '' : esc($row['cosen_finishtime']) ?></td>
                         </tr>
                     <?php endforeach; ?>
-                    <?php if (empty($rows)): ?><tr><td colspan="9" class="muted">No records found.</td></tr><?php endif; ?>
+                    <?php if (empty($rows)): ?><tr><td colspan="9" class="report-empty"><div class="report-empty__icon"><i class="bi bi-inbox"></i></div><strong>No records found</strong><span class="muted">Try changing the selected filters.</span></td></tr><?php endif; ?>
                 </tbody>
             </table>
         </div>

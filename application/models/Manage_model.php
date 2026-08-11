@@ -1513,10 +1513,10 @@ class Manage_model extends CI_Model
 		if ($datatable == "lms_usp") {
 			//$this->db->select('lms_usp.u_id, lms_emp.lang,lms_emp.emp_c,lms_emp.emp_id, lms_emp.prefix_th, lms_emp.fname_th, lms_emp.lname_th,lms_emp.fullname_th,lms_emp.fullname_en, lms_emp.prefix_en, lms_emp.fname_en, lms_emp.lname_en,lms_emp.gender,lms_emp.address_th,lms_emp.address_en,lms_emp.work_phone,lms_emp.phone,lms_emp.email,lms_emp.employ_date,lms_usp.useri, lms_usp_gp.ug_id, lms_usp_gp.ug_name_en,lms_usp_gp.ug_for,lms_usp.dep_id, lms_depart.dep_name_th,lms_depart.dep_name_en,lms_company.com_id, lms_company.com_name_th,lms_company.com_name_eng,lms_company.com_bgpic_user,lms_emp.status, lms_emp.lang,lms_emp.is_manager,lms_usp.login ,lms_usp.last_act,lms_usp.firsttime,lms_usp.expiredate,lms_usp.img_profile,lms_position.posi_id,lms_position.posi_name_th,lms_position.posi_name_en');
 			$this->db->join('lms_emp', 'lms_usp.emp_id = lms_emp.emp_id');
-			//$this->db->join('lms_depart','lms_usp.dep_id = lms_depart.dep_id');
+			$this->db->join('lms_depart', 'lms_usp.dep_id = lms_depart.dep_id', 'left');
 			$this->db->join('lms_company', 'lms_emp.com_id = lms_company.com_id');
 			$this->db->join('lms_usp_gp', 'lms_usp.ug_id = lms_usp_gp.ug_id');
-			//$this->db->join('lms_position','lms_usp.posi_id = lms_position.posi_id');
+			$this->db->join('lms_position', 'lms_usp.posi_id = lms_position.posi_id', 'left');
 		} else if ($datatable == "lms_les") {
 			$this->db->join('lms_cos', 'lms_les.cos_id = lms_cos.cos_id');
 			if ($user['ug_name_en'] == "User") {
@@ -2410,9 +2410,13 @@ class Manage_model extends CI_Model
 		$count = 0;
 		$fetch_arr = array();
 		foreach ($fetch as $key => $value) {
-			$update = '<button type="button" name="update" id="' . $value['qr_id'] . '" title="' . label('m_edit') . '" class="btn btn-warning btn-xs update"><i class="mdi mdi-lead-pencil"></i></button>';
-			$delete = '<button type="button" name="delete" id="' . $value['qr_id'] . '" class="btn btn-danger btn-xs delete" title="' . label('delete') . '"><i class="mdi mdi-window-close"></i></button>';
-			$downloadqr = '<a title="' . label('qr_download') . '" class="btn btn-info btn-xs" href="' . REAL_PATH . '/uploads/qrcode_file/' . $value['qr_id'] . '.png" download><i class="mdi mdi-download"></i></a>';
+			$publicUrl = base_url() . 'qrcode/view/' . $value['qr_id'];
+			$safeName = htmlspecialchars($value['qr_name'], ENT_QUOTES, 'UTF-8');
+			$safeDetail = htmlspecialchars((string) $value['qr_detail'], ENT_QUOTES, 'UTF-8');
+			$update = '<button type="button" name="update" id="' . $value['qr_id'] . '" title="' . label('m_edit') . '" class="btn btn-warning btn-xs update qr-action"><i class="mdi mdi-lead-pencil"></i></button>';
+			$delete = '<button type="button" name="delete" id="' . $value['qr_id'] . '" class="btn btn-danger btn-xs delete qr-action" title="' . label('delete') . '"><i class="mdi mdi-delete"></i></button>';
+			$downloadqr = '<a title="' . label('qr_download') . '" class="btn btn-info btn-xs qr-action" href="' . REAL_PATH . '/uploads/qrcode_file/' . $value['qr_id'] . '.png" download="QR-' . $safeName . '.png"><i class="mdi mdi-download"></i></a>';
+			$preview = '<button type="button" class="btn btn-primary btn-xs qr-action preview-qr" title="Preview QR Code" data-name="' . $safeName . '" data-url="' . htmlspecialchars($publicUrl, ENT_QUOTES, 'UTF-8') . '" data-image="' . REAL_PATH . '/uploads/qrcode_file/' . $value['qr_id'] . '.png"><i class="mdi mdi-qrcode-scan"></i></button>';
 			$output = array();
 			if ($btn_update != "1") {
 				$update = "";
@@ -2434,15 +2438,15 @@ class Manage_model extends CI_Model
 			$output['1'] = "<span style='float:right;'>" . $num . "</span>";
 			$num++;
 			$output['2'] = $value['com_code'];
-			$output['3'] = $qr_type;
-			$output['4'] = $value['qr_name'];
-			$output['5'] = '<a target="_blank" href="' . base_url() . 'qrcode/view/' . $value['qr_id'] . '">' . base_url() . 'qrcode/view/' . $value['qr_id'] . '</a>';
-			$output['0'] = "<center>" . $downloadqr ." ". $update ." ". $delete . "</center>";
+			$output['3'] = '<span class="qr-type" data-type="' . $value['qr_type'] . '">' . $qr_type . '</span>';
+			$output['4'] = '<div class="qr-name">' . $safeName . '</div>' . ($safeDetail !== '' ? '<small class="text-muted qr-detail" title="' . $safeDetail . '">' . $safeDetail . '</small>' : '');
+			$output['5'] = '<div class="qr-link"><a target="_blank" rel="noopener" href="' . $publicUrl . '">' . $publicUrl . '</a><button type="button" class="btn btn-link btn-sm copy-qr-link" data-url="' . htmlspecialchars($publicUrl, ENT_QUOTES, 'UTF-8') . '" title="Copy link"><i class="mdi mdi-content-copy"></i></button></div>';
+			$output['0'] = '<div class="qr-actions">' . $preview . $downloadqr . $update . $delete . '</div>';
 
 			if ($value['qr_status'] == "1") {
-				$output['6'] = "<center>" . label('open') . "</center>";
+				$output['6'] = '<span class="badge badge-success qr-status" data-status="1"><i class="mdi mdi-check-circle"></i> ' . label('open') . '</span>';
 			} else {
-				$output['6'] = "<center>" . label('close') . "</center>";
+				$output['6'] = '<span class="badge badge-secondary qr-status" data-status="0"><i class="mdi mdi-cancel"></i> ' . label('close') . '</span>';
 			}
 			/*}else{
               $output['0'] = "<span style='float:right;'>".$num."</span>";$num++;
