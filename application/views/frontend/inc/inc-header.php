@@ -254,7 +254,12 @@ document.body.classList.add('lms-premium-dashboard','precision-app-shell');
           <a class="nav-link dropdown-toggle waves-effect waves-dark" href="#" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
             <?php if (empty($emp_c)) { ?>
-            <i class="mdi mdi-web premium-guest-language-globe" aria-hidden="true"></i>
+            <span class="premium-guest-language-leading" aria-hidden="true">
+              <i class="mdi mdi-web premium-guest-language-globe"></i>
+            </span>
+            <span class="premium-guest-language-copy">
+              <small><?php echo $lang === 'thai' ? 'ภาษา' : ($lang === 'japan' ? '言語' : 'LANGUAGE'); ?></small>
+              <span class="premium-guest-language-current">
             <?php } ?>
             <?php if ($lang == "thai") { ?>
             <style>
@@ -280,6 +285,9 @@ document.body.classList.add('lms-premium-dashboard','precision-app-shell');
             <?php } ?>
             <?php if (empty($emp_c)) { ?>
             <span class="premium-guest-language-label"><?php echo $lang === 'thai' ? 'ไทย' : ($lang === 'japan' ? '日本語' : 'English'); ?></span>
+              </span>
+            </span>
+            <i class="mdi mdi-chevron-down premium-guest-language-chevron" aria-hidden="true"></i>
             <?php } ?>
           </a>
           <div class="dropdown-menu dropdown-menu-right animated bounceInDown">

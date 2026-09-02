@@ -2,7 +2,7 @@
 <?php $this->load->view('frontend/inc/inc-meta.php'); ?>
 
     <link href="<?php echo HTTP_CSS_PATH; ?>home.css" rel="stylesheet">
-    <link href="<?php echo REAL_PATH; ?>/assets/css/home-auth-premium.css?v=20260811-4" rel="stylesheet">
+    <link href="<?php echo REAL_PATH; ?>/assets/css/home-auth-premium.css?v=20260901-2" rel="stylesheet">
 
     <style>
       @media screen and (max-height: 600px) {

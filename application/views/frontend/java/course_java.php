@@ -3600,6 +3600,9 @@ $(document).on('click', '.update_lesson', function() {
             }
           }
           $('#les_lang').val(data.val_lang);
+          if (window.updateLessonReadiness) {
+            window.updateLessonReadiness();
+          }
           //$('#les_lang').html(data);
           //$('#les_lang').val($('#les_lang option:first-child').val()).trigger('change');
         }
@@ -3758,9 +3761,15 @@ $(document).on('click', '.update_lesson', function() {
       } else {
         document.getElementById('tb_media').style.display = 'none';
       }
+      if (window.updateLessonReadiness) {
+        window.updateLessonReadiness();
+      }
     }
   });
   display_style('div_create_lesson', 'div_lesson');
+  if (window.updateLessonReadiness) {
+    window.setTimeout(window.updateLessonReadiness, 0);
+  }
 });
 
 function onchangefilemedia() {

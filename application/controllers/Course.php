@@ -2737,6 +2737,103 @@ class Course extends CI_Controller {
 		}
 	}
 
+	public function lesson_media_detail(){
+		$this->output->set_content_type('application/json');
+		$this->load->model('Course_model', 'course', true);
+		$this->course->loadDB();
+		$user = $this->session->userdata('user');
+		if (!isset($user['emp_id'])) {
+			$this->output->set_status_header(401)->set_output(json_encode(array('success' => false, 'message' => 'Session expired')));
+			return;
+		}
+		$id = (int)$this->input->get('id');
+		$media = $this->db->where('id', $id)->where('type', 'upload')->get('lms_med')->row_array();
+		if (!$media) {
+			$this->output->set_status_header(404)->set_output(json_encode(array('success' => false, 'message' => 'Video not found')));
+			return;
+		}
+		$this->output->set_output(json_encode(array('success' => true, 'data' => array(
+			'id' => (int)$media['id'],
+			'med_name_th' => isset($media['med_name_th']) ? $media['med_name_th'] : '',
+			'med_name_eng' => isset($media['med_name_eng']) ? $media['med_name_eng'] : '',
+			'med_name_jp' => isset($media['med_name_jp']) ? $media['med_name_jp'] : '',
+			'thumbnail' => isset($media['thumbnail_med']) ? $media['thumbnail_med'] : '',
+			'video' => isset($media['video']) ? $media['video'] : ''
+		))));
+	}
+
+	public function update_lesson_media(){
+		$this->output->set_content_type('application/json');
+		$this->load->model('Course_model', 'course', true);
+		$this->course->loadDB();
+		$user = $this->session->userdata('user');
+		if (!isset($user['emp_id'])) {
+			$this->output->set_status_header(401)->set_output(json_encode(array('success' => false, 'message' => 'Session expired')));
+			return;
+		}
+		$id = (int)$this->input->post('id');
+		$media = $this->db->where('id', $id)->where('type', 'upload')->get('lms_med')->row_array();
+		if (!$media) {
+			$this->output->set_status_header(404)->set_output(json_encode(array('success' => false, 'message' => 'Video not found')));
+			return;
+		}
+
+		$updates = array();
+		foreach (array('med_name_th', 'med_name_eng', 'med_name_jp') as $nameField) {
+			$value = $this->input->post($nameField);
+			if ($value !== null) $updates[$nameField] = trim((string)$value);
+		}
+		$moved = array();
+		$oldFiles = array();
+
+		if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] !== UPLOAD_ERR_NO_FILE) {
+			if ($_FILES['thumbnail']['error'] !== UPLOAD_ERR_OK || $_FILES['thumbnail']['size'] > 10 * 1024 * 1024 || strtolower(pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION)) !== 'jpg') {
+				$this->output->set_status_header(422)->set_output(json_encode(array('success' => false, 'message' => 'Cover image must be a JPG file up to 10 MB')));
+				return;
+			}
+			$newThumbnail = 'thumbnail_edit_'.date('YmdHis').'_'.mt_rand(1000, 9999).'.jpg';
+			$thumbnailPath = ROOT_DIR.'uploads/thumbnail/'.$newThumbnail;
+			if (!audit_move_uploaded_file($_FILES['thumbnail']['tmp_name'], $thumbnailPath)) {
+				$this->output->set_status_header(500)->set_output(json_encode(array('success' => false, 'message' => 'Unable to save cover image')));
+				return;
+			}
+			$updates['thumbnail_med'] = $newThumbnail;
+			$moved[] = $thumbnailPath;
+			if (!empty($media['thumbnail_med'])) $oldFiles[] = ROOT_DIR.'uploads/thumbnail/'.basename($media['thumbnail_med']);
+		}
+
+		if (isset($_FILES['video']) && $_FILES['video']['error'] !== UPLOAD_ERR_NO_FILE) {
+			if ($_FILES['video']['error'] !== UPLOAD_ERR_OK || $_FILES['video']['size'] > 512 * 1024 * 1024 || strtolower(pathinfo($_FILES['video']['name'], PATHINFO_EXTENSION)) !== 'mp4') {
+				foreach ($moved as $path) audit_unlink($path);
+				$this->output->set_status_header(422)->set_output(json_encode(array('success' => false, 'message' => 'Video must be an MP4 file up to 512 MB')));
+				return;
+			}
+			$newVideo = 'MediaLesson_edit_'.date('YmdHis').'_'.mt_rand(1000, 9999).'.mp4';
+			$videoPath = ROOT_DIR.'uploads/media/'.$newVideo;
+			if (!audit_move_uploaded_file($_FILES['video']['tmp_name'], $videoPath)) {
+				foreach ($moved as $path) audit_unlink($path);
+				$this->output->set_status_header(500)->set_output(json_encode(array('success' => false, 'message' => 'Unable to save video')));
+				return;
+			}
+			$updates['video'] = $newVideo;
+			$moved[] = $videoPath;
+			if (!empty($media['video'])) $oldFiles[] = ROOT_DIR.'uploads/media/'.basename($media['video']);
+		}
+
+		$this->db->where('id', $id)->update('lms_med', $updates);
+		if ($this->db->error()['code']) {
+			foreach ($moved as $path) audit_unlink($path);
+			$this->output->set_status_header(500)->set_output(json_encode(array('success' => false, 'message' => 'Unable to update video')));
+			return;
+		}
+		if (!$this->db->affected_rows() && empty($moved)) {
+			$this->output->set_output(json_encode(array('success' => true, 'message' => 'No changes')));
+			return;
+		}
+		foreach ($oldFiles as $path) { if (is_file($path)) audit_unlink($path); }
+		$this->output->set_output(json_encode(array('success' => true, 'message' => 'Video updated')));
+	}
+
 	public function query_fil_lesson(){
 		$lang = $this->session->userdata("lang") == null ? "thai" : $this->session->userdata("lang") ;
 		$this->lang->load($lang,$lang);

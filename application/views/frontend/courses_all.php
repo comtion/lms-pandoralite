@@ -10,6 +10,7 @@
 <script src="<?php echo REAL_PATH; ?>/assets/plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
 <!--nestable CSS -->
 <link href="<?php echo REAL_PATH; ?>/assets/plugins/nestable/nestable.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo REAL_PATH; ?>/assets/css/lesson-authoring-premium.css?v=20260901-14" rel="stylesheet">
 <style type="text/css">
 .test[style] {
   padding-right: 0 !important;
@@ -96,6 +97,8 @@ strong {
 }
 
 </style>
+
+<script defer src="<?php echo REAL_PATH; ?>/assets/js/lesson-authoring-premium.js?v=20260901-14"></script>
 
 <link href="<?php echo REAL_PATH; ?>/assets/css/pages/tab-page.css" rel="stylesheet">
 <link href="<?php echo REAL_PATH; ?>/assets/css/custom_imat.css" rel="stylesheet">

@@ -240,7 +240,7 @@
 
     <div id="div_create_lesson" class="col-md-12" style="display: none;">
       <form enctype="multipart/form-data" id="lesson_form" name="lesson_form" autocomplete="off" method="POST"
-        accept-charset="utf-8" class="form-horizontal p-t-20">
+        accept-charset="utf-8" class="form-horizontal p-t-20 lesson-authoring-form">
         <input type="hidden" id="les_id" name="les_id">
         <input type="hidden" id="operation_lesson" name="operation_lesson" value="Add">
         <input type="hidden" id="course_id_lesson" name="course_id_lesson">
@@ -251,6 +251,29 @@
               <?php echo label('m_previous'); ?></button>
             <h3 id="txthead_lesson"></h3>
             <hr>
+          </div>
+          <div class="col-md-12">
+            <div class="lesson-workspace-intro">
+              <div class="lesson-workspace-icon" aria-hidden="true"><i class="mdi mdi-book-open-page-variant"></i></div>
+              <div>
+                <span class="lesson-workspace-eyebrow"><?php echo $lang === 'thai' ? 'พื้นที่สร้างบทเรียน' : 'LESSON WORKSPACE'; ?></span>
+                <h4><?php echo $lang === 'thai' ? 'สร้างเนื้อหาให้พร้อมก่อนเผยแพร่' : 'Prepare your lesson for publishing'; ?></h4>
+                <p><?php echo $lang === 'thai' ? 'ระบบจะตรวจชื่อบทเรียน ระยะเวลา และไฟล์เนื้อหาให้โดยอัตโนมัติ' : 'Lesson title, availability, and content are checked automatically.'; ?></p>
+              </div>
+              <span class="lesson-draft-badge"><i class="mdi mdi-pencil-outline" aria-hidden="true"></i><?php echo $lang === 'thai' ? 'ฉบับร่าง' : 'Draft'; ?></span>
+            </div>
+            <div class="lesson-readiness" aria-live="polite" data-ready-label="<?php echo $lang === 'thai' ? 'พร้อมบันทึก' : 'Ready to save'; ?>">
+              <div class="lesson-readiness-head">
+                <div><strong><?php echo $lang === 'thai' ? 'ความพร้อมของบทเรียน' : 'Lesson readiness'; ?></strong><span id="lessonReadinessText">0 / 4</span></div>
+                <div class="lesson-readiness-track" aria-hidden="true"><span id="lessonReadinessBar"></span></div>
+              </div>
+              <ul class="lesson-readiness-list">
+                <li data-lesson-check="title"><i class="mdi mdi-circle-outline" aria-hidden="true"></i><span><?php echo $lang === 'thai' ? 'ชื่อบทเรียน' : 'Lesson title'; ?></span></li>
+                <li data-lesson-check="schedule"><i class="mdi mdi-circle-outline" aria-hidden="true"></i><span><?php echo $lang === 'thai' ? 'ระยะเวลาเปิดเรียน' : 'Availability'; ?></span></li>
+                <li data-lesson-check="type"><i class="mdi mdi-circle-outline" aria-hidden="true"></i><span><?php echo $lang === 'thai' ? 'ประเภทเนื้อหา' : 'Content type'; ?></span></li>
+                <li data-lesson-check="content"><i class="mdi mdi-circle-outline" aria-hidden="true"></i><span><?php echo $lang === 'thai' ? 'ไฟล์หรือ URL' : 'File or URL'; ?></span></li>
+              </ul>
+            </div>
           </div>
           <input type="hidden" id="les_lang" name="les_lang">
 
@@ -307,7 +330,7 @@
 
           <div class="form-group col-md-12">
             <label class="control-label text-right"><?php echo label('period_les'); ?>: </label>
-            <div class="row">
+            <div class="row lesson-availability-fields" id="lessonAvailabilityFields">
               <div class="col-md-6">
                 <label class="control-label text-right"><?php echo label('r_start_on'); ?></label>
                 <div class="row">
@@ -343,6 +366,11 @@
                 </div>
               </div>
             </div>
+            <label class="lesson-always-open-option" for="lessonAlwaysOpen">
+              <input type="checkbox" id="lessonAlwaysOpen" name="lesson_always_open" value="1">
+              <span class="lesson-always-open-check"><i class="mdi mdi-infinity" aria-hidden="true"></i></span>
+              <span><strong><?php echo $lang === 'thai' ? 'เปิดเรียนตลอด' : 'Always available'; ?></strong><small><?php echo $lang === 'thai' ? 'ไม่กำหนดวันและเวลา' : 'No start or end date required'; ?></small></span>
+            </label>
           </div>
 
           <div class="col-md-6">
@@ -358,7 +386,7 @@
           <div class="col-md-6">
             <div class="form-group">
               <label for="les_type"><b style="color: #FF2D00">*</b><?php echo label('qr_typefile'); ?>:</label>
-              <div class="switch">
+              <div class="switch lesson-content-type-switch">
                 <label><?php echo "Media"; ?><input type="checkbox" onclick="changeValEnableDivMedia()" id="les_type"
                     name="les_type" value="2"><span
                     class="lever switch-col-indigo"></span><?php echo "Scorm"; ?></label>
@@ -370,17 +398,47 @@
             <div class="form-group col-md-12" style="margin: 0px auto 10px auto;">
               <!-- <h5 align="left"><?php echo label('Les_video'); ?></h5> -->
               <label for="status_cr"><?php echo label('media_type'); ?>:</label>
-              <select class="form-control" id="type_media" name="type_media" style="width: 100%;" required>
+              <select class="form-control lesson-media-source-select" id="type_media" name="type_media" style="width: 100%;" required>
                 <option value="0" selected><?php echo label('none'); ?></option>
                 <option value="1"><?php echo "URL"; ?></option>
                 <option value="2"><?php echo "Upload File"; ?></option>
               </select>
+              <fieldset class="lesson-media-source-picker" id="lessonMediaSourcePicker">
+                <legend class="sr-only"><?php echo label('media_type'); ?></legend>
+                <label>
+                  <input type="radio" name="lesson_media_source_picker" value="0" checked>
+                  <span class="lesson-media-source-icon"><i class="mdi mdi-minus-circle-outline" aria-hidden="true"></i></span>
+                  <span><strong><?php echo label('none'); ?></strong><small><?php echo $lang === 'thai' ? 'ยังไม่เพิ่มวิดีโอ' : 'No video content'; ?></small></span>
+                  <i class="mdi mdi-check-circle lesson-media-source-check" aria-hidden="true"></i>
+                </label>
+                <label>
+                  <input type="radio" name="lesson_media_source_picker" value="1">
+                  <span class="lesson-media-source-icon"><i class="mdi mdi-link-variant" aria-hidden="true"></i></span>
+                  <span><strong>URL</strong><small><?php echo $lang === 'thai' ? 'ฝังวิดีโอจากลิงก์' : 'Embed from a link'; ?></small></span>
+                  <i class="mdi mdi-check-circle lesson-media-source-check" aria-hidden="true"></i>
+                </label>
+                <label>
+                  <input type="radio" name="lesson_media_source_picker" value="2">
+                  <span class="lesson-media-source-icon"><i class="mdi mdi-upload" aria-hidden="true"></i></span>
+                  <span><strong>Upload File</strong><small><?php echo $lang === 'thai' ? 'อัปโหลด MP4 จากเครื่อง' : 'Upload an MP4 file'; ?></small></span>
+                  <i class="mdi mdi-check-circle lesson-media-source-check" aria-hidden="true"></i>
+                </label>
+              </fieldset>
               <div class="" id="div_multifile_url" style="display: none;">
                 <textarea class="form-control" name="url_media" id="url_media" rows="5" style="width: 100%"></textarea>
                 <label class="control-label text-right"><?php echo label('les_url_msg'); ?></label>
               </div>
-              <div class="" id="div_multifile_upload_file" style="display: none;"><br>
-                <div class="row">
+              <div class="lesson-video-manager" id="div_multifile_upload_file" style="display: none;" data-video-base="<?php echo base_url(); ?>" data-thumbnail-base="<?php echo base_url(); ?>uploads/thumbnail/" data-media-detail-url="<?php echo base_url(); ?>index.php/course/lesson_media_detail" data-media-update-url="<?php echo base_url(); ?>index.php/course/update_lesson_media"><br>
+                <div class="lesson-video-manager-head">
+                  <div class="lesson-video-manager-icon" aria-hidden="true"><i class="mdi mdi-video"></i></div>
+                  <div>
+                    <span><?php echo $lang === 'thai' ? 'VIDEO MANAGER' : 'VIDEO MANAGER'; ?></span>
+                    <h5><?php echo $lang === 'thai' ? 'จัดเตรียมวิดีโอและภาพปก' : 'Prepare video and cover image'; ?></h5>
+                    <p><?php echo $lang === 'thai' ? 'รองรับ MP4 สูงสุด 512 MB พร้อมตรวจข้อมูลและดูตัวอย่างก่อนบันทึก' : 'MP4 up to 512 MB with metadata checks and preview before saving.'; ?></p>
+                  </div>
+                  <div class="lesson-video-specs" aria-label="Video requirements"><span>MP4</span><span>≤ 512 MB</span><span>16:9</span></div>
+                </div>
+                <div class="row lesson-video-names">
                   <div class="form-group col-md-6 input_les_th">
                     <label class="control-label text-right"><b
                         style="color: #FF2D00">*</b><?php echo label('file_name') . " " . label('thailand'); ?>:</label>
@@ -397,16 +455,33 @@
                     <input name="med_name_jp" type="text" class="form-control" id="med_name_jp">
                   </div>
                 </div>
-                <div class="row">
-                  <div class="form-group col-md-12">
-                    <label class="control-label text-right"><?php echo label('thumbnail_med'); ?></label><input
-                      type="file" name="thumbnail_med" id="thumbnail_med" class="dropify" accept="image/jpeg" />
+                <div class="row lesson-video-upload-grid">
+                  <div class="form-group col-md-6 lesson-video-upload-card lesson-thumbnail-card">
+                    <label class="lesson-video-upload-card-head" for="thumbnail_med"><span class="lesson-video-upload-card-icon"><i class="mdi mdi-image-area" aria-hidden="true"></i></span><span><strong><?php echo label('thumbnail_med'); ?></strong><small><?php echo $lang === 'thai' ? 'ภาพแนวนอน JPG · แนะนำขนาด 400 × 300 px' : 'Landscape JPG · Recommended 400 × 300 px'; ?></small></span><em><?php echo $lang === 'thai' ? 'ไม่บังคับ' : 'Optional'; ?></em></label><input
+                      type="file" name="thumbnail_med" id="thumbnail_med" class="dropify" accept="image/jpeg,.jpg,.jpeg" data-allowed-file-extensions="jpg jpeg" data-max-file-size="10M" data-height="176" />
                   </div>
-                  <div class="form-group col-md-12">
-                    <label class="control-label text-right"><b
-                        style="color: #FF2D00">*</b><?php echo label('media_file') . " (" . label('max_file') . ")"; ?>:</label>
+                  <div class="form-group col-md-6 lesson-video-upload-card lesson-source-card">
+                    <label class="lesson-video-upload-card-head" for="media_file"><span class="lesson-video-upload-card-icon"><i class="mdi mdi-video" aria-hidden="true"></i></span><span><strong><b style="color: #FF2D00">*</b><?php echo label('media_file'); ?></strong><small><?php echo $lang === 'thai' ? 'วิดีโอ MP4 · แนะนำอัตราส่วน 16:9' : 'MP4 video · Recommended 16:9'; ?></small></span><em>≤ 512 MB</em></label>
                     <input type="file" name="media_file" id="media_file" class="dropify" accept="video/mp4"
+                      data-allowed-file-extensions="mp4" data-max-file-size="512M" data-height="176"
                       onchange="ValidateSingleInputfile(this);onchangefilemedia();" />
+                  </div>
+                </div>
+                <div class="lesson-video-preview" id="lessonVideoPreviewPanel" hidden>
+                  <div class="lesson-video-preview-stage">
+                    <video id="lessonVideoPreview" controls preload="metadata"></video>
+                  </div>
+                  <div class="lesson-video-preview-details">
+                    <span class="lesson-video-preview-kicker"><?php echo $lang === 'thai' ? 'ตัวอย่างก่อนบันทึก' : 'PRE-SAVE PREVIEW'; ?></span>
+                    <h6 id="lessonVideoPreviewName">—</h6>
+                    <dl class="lesson-video-metadata">
+                      <div><dt><?php echo $lang === 'thai' ? 'ขนาดไฟล์' : 'File size'; ?></dt><dd id="lessonVideoSize">—</dd></div>
+                      <div><dt><?php echo $lang === 'thai' ? 'ความยาว' : 'Duration'; ?></dt><dd id="lessonVideoDuration">—</dd></div>
+                      <div><dt><?php echo $lang === 'thai' ? 'ความละเอียด' : 'Resolution'; ?></dt><dd id="lessonVideoResolution">—</dd></div>
+                      <div><dt><?php echo $lang === 'thai' ? 'ชนิดไฟล์' : 'Format'; ?></dt><dd id="lessonVideoFormat">—</dd></div>
+                    </dl>
+                    <button type="button" class="btn lesson-capture-thumbnail" id="lessonCaptureThumbnail"><i class="mdi mdi-camera" aria-hidden="true"></i><?php echo $lang === 'thai' ? 'ใช้เฟรมนี้เป็นภาพปก' : 'Use current frame as cover'; ?></button>
+                    <p class="lesson-video-feedback" id="lessonVideoFeedback" aria-live="polite"></p>
                   </div>
                 </div>
                 <script type="text/javascript">
@@ -462,7 +537,8 @@
                 }
                 </script>
                 <br>
-                <div class="table-responsive" id="tb_media" style="display: none;">
+                <div class="table-responsive lesson-video-library" id="tb_media" style="display: none;">
+                  <div class="lesson-video-library-head"><div><span><?php echo $lang === 'thai' ? 'VIDEO LIBRARY' : 'VIDEO LIBRARY'; ?></span><h6><?php echo $lang === 'thai' ? 'วิดีโอที่บันทึกแล้ว' : 'Saved videos'; ?></h6></div><p><?php echo $lang === 'thai' ? 'คลิกชื่อไฟล์เพื่อดูตัวอย่าง' : 'Select a filename to preview it.'; ?></p></div>
                   <table id="myTable_media" width="100%" class="table table-bordered table-striped">
                     <thead>
                       <tr>
@@ -474,7 +550,7 @@
                           <center><?php echo label('file_name'); ?></center>
                         </th>
                         <th width="40%">
-                          <center><?php echo label('menu_path'); ?></center>
+                          <center><?php echo $lang === 'thai' ? 'ไฟล์ / ดูตัวอย่าง' : 'File / Preview'; ?></center>
                         </th>
                       </tr>
                     </thead>
@@ -559,7 +635,8 @@
               aria-valuemax="100" style="width:0%; height:6px;"><span class="sr-only" id="txt_progress_lesson"></span>
             </div>
           </div>
-          <div class="form-group col-md-12" align="right">
+          <div class="form-group col-md-12 lesson-authoring-actions" align="right">
+            <span class="lesson-save-status" id="lessonSaveStatus"><i class="mdi mdi-shield-check-outline" aria-hidden="true"></i><span><?php echo $lang === 'thai' ? 'ตรวจสอบข้อมูลก่อนบันทึก' : 'Check lesson details before saving'; ?></span></span>
             <button type="submit" class="btn btn-outline-success btn-flat pull-left" name="action" id="action"><i
                 class="mdi mdi-content-save"></i> <?php echo label('saveR'); ?></button>
             <button type="button" class="btn btn-outline-danger btn-flat"

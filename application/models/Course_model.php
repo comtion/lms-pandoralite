@@ -3481,7 +3481,7 @@ class Course_model extends CI_model {
             }
               $output['2'] = $med_name;
               $output['3'] = '<a name="view_video" id="uploads/media/'.$value['video'].'" class="view_video" title="view_video">'.$value['video'].'</a>';
-              $output['0'] = '<center><button type="button" name="delete_media" id="'.$value['id'].'" class="btn btn-danger btn-xs delete_media" title="'.label('sdelete').'"><i class="mdi mdi-window-close"></i></button></center>';
+              $output['0'] = '<div class="lesson-media-actions"><button type="button" class="btn btn-xs edit_media" data-media-id="'.(int)$value['id'].'" title="'.label('sedit').'" aria-label="'.label('sedit').'"><i class="mdi mdi-lead-pencil" aria-hidden="true"></i></button><button type="button" name="delete_media" id="'.(int)$value['id'].'" class="btn btn-danger btn-xs delete_media" title="'.label('sdelete').'" aria-label="'.label('sdelete').'"><i class="mdi mdi-window-close" aria-hidden="true"></i></button></div>';
               $count++;
               array_push($fetch_arr, $output);
           }
